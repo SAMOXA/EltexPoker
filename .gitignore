@@ -33,3 +33,4 @@
 
 #vim temp files
 *~
+*.swp
