@@ -66,6 +66,23 @@ enum playerStates {
 	DISCONNECTED
 };
 
+enum serverMessagesTypes {
+	NEW_PLAYER,
+	PLAYER_STATE_CHANGED,
+	FULL_UPDATE,
+	ACTIVE_PLAYER_CHANGED,
+	NEW_CARD_TABLE,
+	NEW_CARD_PALYE
+};
+
+enum clientMessagesTypes {
+	EXIT,
+	CALL,
+	RISE,
+	FOLD,
+	CHECK,
+	ALL_IN
+};
 
 struct player_t {
 	unsigned int id;
@@ -100,6 +117,10 @@ struct changeCardOnTable_t {
 
 struct changePlayerCards_t {
 	unsigned char cards[2];
+};
+
+struct changePlayerState_t {
+	unsigned char state;
 };
 //////////////////////////////////////////////////////
 #endif //GLOBAL_H
