@@ -41,7 +41,7 @@ struct selectRequest_t {
 
 struct selectResponce_t {
 	int port;
-}
+};
 
 ////////////////////From game server logic structures/////////
 enum gameStates {
