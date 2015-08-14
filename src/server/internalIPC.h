@@ -3,11 +3,16 @@
 
 #include "global.h"
 
+enum sourceType_e {
+	PARENT,
+	CLIENT
+};
+
 enum messagesType {
-	NEW_PLAYER,
-	PLAYER_CONFIRMED,
-	PLAYER_LEFT,
-	PLAYERS_UPDATE,
+	INTERNAL_NEW_PLAYER,
+	INTERNAL_PLAYER_CONFIRMED,
+	INTERNAL_PLAYER_LEFT,
+	INTERNAL_PLAYERS_UPDATE,
 };
 
 struct newPlayer_t {
