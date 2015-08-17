@@ -10,6 +10,7 @@
 #include <errno.h>
 
 #include "../global.h"
+#include "internalIPC.h"
 #include "events.h"
 #include "server_network.h"
 
@@ -32,7 +33,7 @@ static int current_fd = 0;
 void init_listen_server_network(void)
 {
 	listen_socket = socket (AF_INET, SOCK_STREAM, 0);
-	if(listen_socket < 0){
+	if (listen_socket < 0) {
 		perror("[network] Creating listen socket, socket(): ");
 		exit(1);
 	}
@@ -42,7 +43,7 @@ void init_listen_server_network(void)
 	listen_server_addr.sin_port = htons(LISTEN_SERVER_PORT);
 	inet_aton(LISTEN_SERVER_IP, &listen_server_addr.sin_addr);
 
-	if(bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))){
+	if (bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))) {
 		perror("[network] Binding port error, bind(): ");
 		exit(1);
 	}
@@ -65,51 +66,58 @@ void listen_server_loop(void)
 
 	listen(listen_socket, 5);
 
-	while(1){
+	while (1) {
 		FD_ZERO (&fd_read_set);
 		FD_SET (listen_socket, &fd_read_set);
 		max_fd = listen_socket;
 
-		for(i = 0; i < connections_count; i++){
+		for (i = 0; i < connections_count; i++) {
 			FD_SET(active_connection_socket[i], &fd_read_set);
-			if(max_fd < active_connection_socket[i])
+			if (max_fd < active_connection_socket[i])
 				max_fd = active_connection_socket[i];
 		}
 		select_interval.tv_sec = 0;
-		select_interval.tv_usec = 100;
+		select_interval.tv_usec = 1000;
 
-		if(select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
+		if (select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[network] Listen server, select(): ");
 
-		if(FD_ISSET(listen_socket, &fd_read_set)){	/* обрабюотка нового подключения */
-			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr,(socklen_t *)  &new_client_addr_len);
-			if(new_client < 0){
+		if (FD_ISSET(listen_socket, &fd_read_set)) {	/* обрабюотка нового подключения */
+			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr, (socklen_t *)  &new_client_addr_len);
+			if (new_client < 0) {
 				perror("[network] Listen server accept error, accept(): ");
 			}
-			else{
+			else {
 				printf("[network] Connected new client: %s\n", inet_ntoa(new_client_addr.sin_addr));
 				active_connection_socket[connections_count] = new_client;
 				connections_count++;
 			}
+			current_fd = new_client;
 		}
-		current_fd = new_client;
-		for(i = 0; i < connections_count; i++){
-			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
+		for (i = 0; i < connections_count; i++) {
+			if (FD_ISSET(active_connection_socket[i], &fd_read_set)) {
+
+				printf("FD_ISSET_cl\n");
 				memset(buf, 0, MSG_BUF_LEN);
 				bytes_recv = 0;
 				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
+				if (bytes_recv < 0) {
+					perror("read");
+					break;
+				}
 				current_fd = active_connection_socket[i];
 				/* получить сообщение в соответствии с его длиной */
-				
+
 				/* вызвать events() */
 				buf_hdr = (struct msg_hdr_t *) buf;
-				events(0, 0, buf_hdr->type, (void *) (buf + 8));	
+
+				events(CLIENT, 0, buf_hdr->type, (void *) (buf + 8));
 			}
 		}
 	}
 }
 
-/* 
+/*
  * Создание сокета, добавление
  * файлового дескриптора слушающего сервера
  */
@@ -122,37 +130,41 @@ void game_server_loop()
 }
 /* Функция передачи сообщений */
 void send_message(int destination_type, int destination_id,
-		int message_type, int message_len, void *message)
+                  int message_type, int message_len, void *message)
 {
 	struct msg_hdr_t *buf_hdr;
 	char buf[MSG_BUF_LEN];
 
-	switch(destination_type){
-		case SERVER:
-			/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(pipe) */
-			break;
-		case CLIENT:
-			/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(tcp) */
-			break;
-		case CURRENT:
-			/* добавить заголовок msg_hdr_t, отправить сообщение через current_fd*/
-			memset(buf, 0 , MSG_BUF_LEN);
-			buf_hdr = (struct msg_hdr_t *) buf;
-			buf_hdr->type = message_type;
-			buf_hdr->len = message_len;
-			memcpy(buf + sizeof(struct msg_hdr_t), message, message_len);
-			
-			write(current_fd, buf, MSG_BUF_LEN);
-			break;
-		case ALL_CLIENTS:
-			/* отпрвить сообщение всем ФД из players_fd */
-			break;
-		default:
-			printf("[network] Send_message(): wrong destination argument\n");
-			break;
+	switch (destination_type) {
+	case SERVER:
+		/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(pipe) */
+		break;
+	case CLIENT:
+		/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(tcp) */
+		break;
+	case CURRENT:
+		/* добавить заголовок msg_hdr_t, отправить сообщение через current_fd*/
+		memset(buf, 0 , MSG_BUF_LEN);
+		buf_hdr = (struct msg_hdr_t *) buf;
+		buf_hdr->type = message_type;
+		buf_hdr->len = message_len;
+		memcpy(buf + sizeof(struct msg_hdr_t), message, message_len);
+
+		if (write(current_fd, buf, MSG_BUF_LEN) < 0 ) {
+			perror("write");
+		}
+		printf("Send\n");
+
+		break;
+	case ALL_CLIENTS:
+		/* отпрвить сообщение всем ФД из players_fd */
+		break;
+	default:
+		printf("[network] Send_message(): wrong destination argument\n");
+		break;
 	}
 }
-		
+
 /* Закрытие текущего соединения с клиентом */
 void close_current_connection(void)
 {
@@ -160,7 +172,7 @@ void close_current_connection(void)
 
 /*
  * Добавление и удаление записи
- * соответствия между id и текущим 
+ * соответствия между id и текущим
  * файловым дескриптором
  */
 void add_id_to_table(int table_id, int id)

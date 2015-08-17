@@ -5,7 +5,7 @@ int countAllPlayers = 0;
 int countCurrentTables = 0;
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
 
-static int readFile() {
+int readFile() {
 	FILE * fp;
 	bzero(&data, sizeof(struct dataPlayers) * SIZE_DATA);
 	if ((fp = fopen("data.txt", "rb")) == NULL) {
@@ -20,7 +20,7 @@ static int readFile() {
 	return 0;
 }
 
-static int checkName(char *name) {
+int checkName(char *name) {
 	int i;
 	for (i = 0; i <= countAllPlayers; i++) {
 		if (strcmp(name, data[i].name) == 0) {
@@ -30,7 +30,7 @@ static int checkName(char *name) {
 	return -1;
 }
 
-static void saveFile() {
+void saveFile() {
 	FILE *fp;
 	int i;
 	if ((fp = fopen("data.txt", "w+")) == NULL) {
@@ -45,6 +45,8 @@ void registration(void * buf) {
 
 	struct loginRequest_t *loginReq = (struct loginRequest_t *)buf;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
+	bzero(loginRes, sizeof(struct loginResponce_t));
+
 	readFile();
 	if (checkName(loginReq->name) == -1) {
 		strcpy(data[countAllPlayers].name, loginReq->name);
@@ -54,12 +56,13 @@ void registration(void * buf) {
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	} else {
 		loginRes->status = STATUS_BAD;
-		strcpy(loginRes->errorBuf, "Error");
+		strcpy(loginRes->errorBuf, "Error\0");
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	}
+	free(loginRes);
 }
 
-static int checkPasswd(int numCheck, char *pswd) {
+int checkPasswd(int numCheck, char *pswd) {
 	if (strcmp(pswd, data[numCheck].pswd) == 0) {
 		return 1;
 	}
@@ -69,27 +72,35 @@ static int checkPasswd(int numCheck, char *pswd) {
 void login(void *buf) {
 	int checkNum;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
-
+	struct loginRequest_t *loginReq = (struct loginRequest_t *) buf;
 	if (readFile() == -1) {
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "User not found");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректное имя*/
+		free(loginRes);
+
 		return;
 	}
-	if ((checkNum = checkName((char *)buf)) == -1) {
+	if ((checkNum = checkName(loginReq->name)) == -1) {
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "User not found");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Пользаватель с таким именем уже есть*/
+		free(loginRes);
+
 		return;
 	}
-	if (checkPasswd(checkNum, data[checkNum].pswd) == -1 ) {
+	if (checkPasswd(checkNum, loginReq->pass) == -1 ) {
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "Incorrectly password");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректный пароль*/
+		free(loginRes);
+
 		return;
 	} else {
 		loginRes->status = STATUS_OK;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
+		free(loginRes);
+
 	}
 }
 
