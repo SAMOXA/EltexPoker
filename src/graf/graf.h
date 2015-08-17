@@ -21,6 +21,7 @@
 
 #define NCS_GRAF_INPUT_TITLE_SIZE 128
 #define NCS_GRAF_INPUT_BUFFER_SIZE 128
+#define NCS_GRAF_BUTTON_TITLE_SIZE 128
 
 #define NCS_GRAF_TABLE_BOTTOM 0
 #define NCS_GRAF_TABLE_LEFT 1
@@ -71,7 +72,7 @@ struct ncs_graf_bank_t{
 //    WINDOW *timer_wnd;
 };
 
-struct ncs_graf_input{
+struct ncs_graf_input_t{
     int enabled;
     int selected;
     char title[NCS_GRAF_INPUT_TITLE_SIZE];
@@ -83,10 +84,22 @@ struct ncs_graf_input{
     WINDOW *wnd;
 };
 
+struct ncs_graf_button_t{
+    int enabled;
+    int selected;
+    char title[NCS_GRAF_BUTTON_TITLE_SIZE];
+    unsigned int pos[2];
+    unsigned int size[2];
+    unsigned int title_pos[2];
+    WINDOW *wnd;
+};
+
 struct ncs_graf_table_t{
     struct ncs_graf_player_t** players;
     struct ncs_graf_bank_t bank;
-    struct ncs_graf_input input;
+    struct ncs_graf_input_t input;
+    struct ncs_graf_button_t exit_btn;
+    struct ncs_graf_button_t pass_btn;
     unsigned int card_size[2];
 };
 
@@ -112,6 +125,7 @@ void ncsPrintInWnd(WINDOW*,const unsigned int*,const char*);
 void ncsShow(const struct ncs_graf_table_t*);
 void ncsShowBank(const struct ncs_graf_table_t*);
 void ncsShowInput(const struct ncs_graf_table_t*);
+void ncsShowBtn(const struct ncs_graf_button_t*);
 void ncsEndGraf();
 
 void* ncsControlsFunc(void*);

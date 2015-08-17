@@ -7,6 +7,8 @@ static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
 
 static struct ncs_graf_table_t *main_tbl=NULL;
 
+static selected_index=0;
+
 void (*graf_exit_event)(void)=ncsTempExit;
 void (*graf_bet_event)(int sum)=ncsTempBet;
 void (*graf_pass_event)(void)=ncsTempPass;
@@ -64,6 +66,10 @@ void ncsGrafDelTable(struct ncs_graf_table_t **tbl)
     delwin((*tbl)->input.wnd);
     (*tbl)->input.wnd=NULL;
 
+    delwin((*tbl)->exit_btn.wnd);
+    (*tbl)->exit_btn.wnd=NULL;
+    delwin((*tbl)->pass_btn.wnd);
+    (*tbl)->pass_btn.wnd=NULL;
 
     free((*tbl));
     (*tbl)=NULL;
@@ -163,7 +169,6 @@ void grafShowInput(const char *title,const char *default_text)
     strcpy(main_tbl->input.buffer,default_text);
     main_tbl->input.enabled=1;
     ncsShowInput(main_tbl);
-    
 }
 
 void grafHideInput()
@@ -244,6 +249,28 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
     tbl->input.title_pos[1]=1;
     tbl->input.buffer_pos[0]=2;
     tbl->input.buffer_pos[1]=1;
+
+    tbl->exit_btn.enabled=1;
+    tbl->exit_btn.selected=1;
+    strcpy(tbl->exit_btn.title,"EXIT");
+
+    tbl->exit_btn.size[0]=1+2;
+    tbl->exit_btn.size[1]=20+2;
+    tbl->exit_btn.pos[0]=NCS_GRAF_TABLE_SIZE_Y-1-2;
+    tbl->exit_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-20-2;
+    tbl->exit_btn.title_pos[0]=1;
+    tbl->exit_btn.title_pos[1]=1;
+
+    tbl->pass_btn.enabled=1;
+    tbl->pass_btn.selected=0;
+    strcpy(tbl->pass_btn.title,"PASS");
+
+    tbl->pass_btn.size[0]=1+2;
+    tbl->pass_btn.size[1]=20+2;
+    tbl->pass_btn.pos[0]=NCS_GRAF_TABLE_SIZE_Y-1-2-3;
+    tbl->pass_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-20-2;
+    tbl->pass_btn.title_pos[0]=1;
+    tbl->pass_btn.title_pos[1]=1;
 
     tbl->players=(struct ncs_graf_player_t**)(malloc(sizeof(struct ncs_graf_player_t*)*GRAF_MAX_PLAYERS));
     for(index=0;index<GRAF_MAX_PLAYERS;index++){
@@ -436,6 +463,16 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 			tbl->input.pos[0],\
 			tbl->input.pos[1]);
 
+    tbl->exit_btn.wnd=newwin(tbl->exit_btn.size[0],\
+			tbl->exit_btn.size[1],\
+			tbl->exit_btn.pos[0],\
+			tbl->exit_btn.pos[1]);
+
+    tbl->pass_btn.wnd=newwin(tbl->pass_btn.size[0],\
+			tbl->pass_btn.size[1],\
+			tbl->pass_btn.pos[0],\
+			tbl->pass_btn.pos[1]);
+
     ncsSetWndColor(stdscr,CUR_TEXT_COLOR,CUR_BACK_COLOR);
     for(index_player=0;index_player<GRAF_MAX_PLAYERS;index_player++){
 	if(tbl->players[index_player]!=NULL){
@@ -560,6 +597,21 @@ void ncsShowInput(const struct ncs_graf_table_t* tbl)
     refresh();
 }
 
+void ncsShowBtn(const struct ncs_graf_button_t* btn)
+{
+    ncsSetWndColor(btn->wnd,COLOR_WHITE,COLOR_BLUE);
+    wclear(btn->wnd);
+    ncsPrintInWnd(btn->wnd,\
+		btn->title_pos,\
+		btn->title);
+    if(btn->selected){
+        box(btn->wnd,0,0);
+    }
+    
+    wrefresh(btn->wnd);
+    refresh();
+}
+
 
 void ncsShow(const struct ncs_graf_table_t *tbl)
 {
@@ -629,6 +681,15 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
     if(tbl->input.enabled){
         ncsShowInput(tbl);
     }
+
+    if(tbl->exit_btn.enabled){
+        ncsShowBtn(&tbl->exit_btn);
+    }
+
+    if(tbl->pass_btn.enabled){
+        ncsShowBtn(&tbl->pass_btn);
+    }
+
     refresh();
 //    getch();
 
@@ -650,6 +711,47 @@ void* ncsGrafFunc(void* data)
     return NULL;    
 }
 
+void ncsChElem(int _step)
+{
+    int ok=0;
+    int step=1;
+
+    if(_step<0){
+	step=-1;
+    }
+    
+    while(ok==0){
+	selected_index+=step/abs(step);
+	if(selected_index<0){
+    	    selected_index+=3;
+	}
+	if(selected_index>=3){
+    	    selected_index-=3;
+	}
+	main_tbl->exit_btn.selected=0;
+	main_tbl->input.selected=0;
+	main_tbl->pass_btn.selected=0;
+
+	switch(selected_index){
+	    case 0: if(main_tbl->exit_btn.enabled){
+			ok=1;
+			main_tbl->exit_btn.selected=1;
+		    }
+		    break;
+	    case 1: if(main_tbl->input.enabled){
+			ok=1;
+			main_tbl->input.selected=1;
+		    }
+		    break;
+	    case 2: if(main_tbl->pass_btn.enabled){
+			ok=1;
+			main_tbl->pass_btn.selected=1;
+		    }
+		    break;
+	};
+    }
+}
+
 void* ncsControlsFunc(void* data)
 {
     int c=0;
@@ -660,6 +762,22 @@ void* ncsControlsFunc(void* data)
 
     while(1){
 	c=getch();
+	if(c==KEY_LEFT || c==KEY_UP){
+	    ncsChElem(-1);
+	    ncsShowBtn(&main_tbl->exit_btn);
+	    ncsShowBtn(&main_tbl->pass_btn);
+	    if(main_tbl->input.enabled){
+	        ncsShowInput(main_tbl);
+	    }
+	}
+	if(c==KEY_RIGHT || c==KEY_DOWN || c=='\t'){
+	    ncsChElem(1);
+	    ncsShowBtn(&main_tbl->exit_btn);
+	    ncsShowBtn(&main_tbl->pass_btn);
+	    if(main_tbl->input.enabled){
+	        ncsShowInput(main_tbl);
+	    }
+	}
 	if(c==27){
 	    graf_exit_event();
 	    break;
@@ -672,7 +790,9 @@ void* ncsControlsFunc(void* data)
 		graf_bet_event(res);			
 	    }
 	}
-	if(main_tbl->input.enabled==1 && isdigit(c)){
+	if(	main_tbl->input.enabled==1 && \
+		main_tbl->input.selected==1 &&\
+		 isdigit(c)){
 	    len=strlen(main_tbl->input.buffer);
 	    main_tbl->input.buffer[len]=c;
 	    main_tbl->input.buffer[len+1]='\0';
