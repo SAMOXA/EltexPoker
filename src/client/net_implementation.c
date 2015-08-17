@@ -76,7 +76,7 @@ int net_send(int fd, void *buffer, int size)
 void *net_receive(int fd, void *buffer, int size)
 {
     /* Receive buffer from server */
-    int rw_bytes = write(fd, (char*)buffer, size);
+    int rw_bytes = read(fd, (char*)buffer, size);
     if (rw_bytes < 0) {
 	//fprintf(stderr,"\033[0;31merror\033[0m: write()\n");
 	//exit(1);
