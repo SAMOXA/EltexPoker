@@ -3,20 +3,29 @@
 /*
 * Thread handler for communicate with server (only receive msg)
 */
+
+struct msg {
+    int type;
+    int lenght;
+};
+
 void *handler_recv(void *args)
 {
-/*    
     int socket_fd = *((int*)args);
 
     while(1) {
-        char *ptr = NULL;
-        ptr = net_receive(socket_fd, 256);
-        if (!ptr) {
+	char buffer[1024];
+	int ret_val;
+	struct msg *recv_msg;
+
+        ret_val = net_receive(socket_fd, &buffer, 1024);
+        if (ret_val == -1) {
             fprintf(stderr,"\033[0;31merror\033[0m: read()\n");
-            exit(1);    
+            exit(1);
         }
+	recv_msg = (struct msg*)buffer;
         // do something
-        switch  (serverMessagesTypes)  
+        switch  (recv_msg->type)
         {
             case STATE_NEW_PLAYER:
                 // do smething
@@ -39,9 +48,8 @@ void *handler_recv(void *args)
             default:
                 break;
         }
-        free(ptr);
     }
-
+/*
 	printf("Ready game tables:\n");
 	printf("%s\nChoose: ", ptr);
 	char input[256];

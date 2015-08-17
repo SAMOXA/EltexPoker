@@ -2,22 +2,19 @@
 
 /*
 * Receive message from server
-* return value error: NULL, good: buffer
+* return value error: -1, good: 0
 */
-void *net_receive(int fd, int size)
+int net_receive(int fd, void *buffer, int size)
 {
     int rw_bytes;
-
-    char *buffer = (char*)malloc(size);
 
     /* Zero out before read message */
     bzero((char*)buffer, size);
 
     /* Receive buffer from server */
-    rw_bytes = read(fd, buffer, size);
+    rw_bytes = read(fd, (char*)buffer, size);
     if (rw_bytes < 0) {
-    	free(buffer);
-        return NULL;
+        return -1;
     }
-    return buffer;
+    return 0;
 }
