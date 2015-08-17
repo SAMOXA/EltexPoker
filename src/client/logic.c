@@ -27,12 +27,6 @@ void logicHandlerLogin(void *buf, int type) {
 		{
 			struct loginResponce_t *logResp;
 			logResp = (struct loginResponce_t *) buf;
-			printf("status = %d\n", logResp->status);
-  int i;
-    for (i = 0; i < 64; ++i)
-    {
-        printf("%02X ", *((unsigned char*) buf+i));
-    }
 
 			if (logResp->status == STATUS_OK) {
 				printf("Авторизация прошла успешна\n");
@@ -86,6 +80,7 @@ void run(char *ip, char *namePort) {
 	cur_status = LOGIN;
 	while(cur_status != DEAD) {
 		switch(cur_status) {
+			// Авторизация
 			case LOGIN:		
 			{
 				//graf_draw_logging();
