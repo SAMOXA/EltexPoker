@@ -3,30 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "logic.h"
-#include "net_implementation.h"
+#include "net_header.h"
 
-
-struct msg {
-	int type;
-	int len;
-};
-
-enum status {
-	LOGIN,
-	SEL_TABLES,
-	GAME,
-	DEAD
-};
-
-enum initAction {
-	REGISTRATION,
-	LOG_IN,
-	CREATE_TABLE,
-	CONNECT_OF_TABLE,
-	LIST_TABLE
-};
-
-int fd, cur_status;
 
 void create_msg(int type, int len, void *data, unsigned char *buf) {
 	struct msg *msg;
@@ -38,18 +16,26 @@ void create_msg(int type, int len, void *data, unsigned char *buf) {
 	memcpy(buf + sizeof(struct msg), data, len);
 }
 
-int logicSend(int fd, int type, void* data, int len) {
-	unsigned char buf[MAX_LEN_MSG];
-	create_msg(type, len, data, buf);
-	return net_send(fd, buf, len + sizeof(struct msg));
-}
 
-int logicRecv(int fd, void *buf, int len) {
-	return net_receive(fd, buf, len);
-}
+void logicHandlerLogin(void *buf, int type) {
+	switch(type) {
+		case LOG_IN:
+			type = REGISTRATION;
+		case REGISTRATION:
+		{
+			loginResponce_t *logResp;
+			logResp = (loginResponce_t *) buf;
+			if (logResp->status == STATUS_OK) {
+				printf("Авторизация прошла успешна\n");
+			} else {
+				printf("%s\n", logResp->errorBuf);
+			}
+			break;
+		}	
+	}
+}   
 
-
-int logicEventLogin(char *login, char *pass, char registerFlag) {
+int logicEventLogin(char *login, char *pass, int type) {
 	int flg;
 	unsigned char buf[MAX_LEN_MSG];
 	struct loginRequest_t logReq;
@@ -59,32 +45,31 @@ int logicEventLogin(char *login, char *pass, char registerFlag) {
 	}
 	strcpy(logReq.name, login);
 	strcpy(logReq.pass, pass);
-	logReq.registerFlag = registerFlag;
-	flg = logicSend(fd, LOG_IN, (void *) &logReq, sizeof(logReq));
+	
+	flg = net_send(fd, buf, type, sizeof(struct msg) + sizeof(struct loginRequest_t));
 	if (flg == -1) {
+		printf("Проблемы с соединением\n");
 		//graf_draw_text("Проблемы с соединением");
 		return -1;
 	}
 	else {
-		logicRecv(fd, buf, sizeof(struct msg) + sizeof);
+		flg = net_receive(fd, buf, &type);
+		if (flg == -1) {
+			printf("Проблемы с соединением\n");
+			return -1;
+		}
+		logicHandlerLogin(buf, type);
 	}
+	return 0;
 }
 
-   
 
-
-void* listen(void *arg) {
-}
-
-void* sender(void *arg) {
-	
-}
 
 void run(char *ip, char *namePort) {
 	int port = atoi(namePort);
 	unsigned char buf_msg[MAX_LEN_MSG];
 
-	fd = net_connect_server(ip, port);
+	fd = net_create_connect_server(ip, port);
 	if (fd < 0) {
 		printf("Server unavaible\n");
 		exit(1);
@@ -95,8 +80,19 @@ void run(char *ip, char *namePort) {
 			case LOGIN:		
 			{
 				//graf_draw_logging();
-				//logicEventLogin(char *login, char *pass, char registerFlag)
-
+				char flg; 
+				int registerFlag;
+				char login[MAX_NAME_LENGTH], pass[MAX_NAME_LENGTH];
+				printf("Create new profile?(y/n)\n");
+				scanf("%s", &flg);
+				if (flg == 'y') registerFlag = REGISTRATION;
+				else registerFlag = LOG_IN; 
+				printf("Input login:\n");
+				scanf("%s", login);
+				printf("Input pass:\n");
+				scanf("%s", pass);
+				logicEventLogin(login, pass, registerFlag);
+				cur_status = DEAD;
 			}	
 			case SEL_TABLES:
 			{
@@ -111,5 +107,5 @@ void run(char *ip, char *namePort) {
 				break;
 			}
 		}
-
+	}
 }

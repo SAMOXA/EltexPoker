@@ -3,7 +3,7 @@
 #include "net_implementation.h"
 #include "logic.h"
 
-struct in_thread {
+/*struct in_thread {
 	int fd;
 
 };
@@ -20,13 +20,13 @@ void begin(char *ip, char *namePort) {
 	}
 	
 
-}
+}*/
 
 int main(int argc, char **argv){
 	if (argc < 3) {
 		printf("./main ip port\n");
 		exit(1);
 	}
-	begin(argv[1], argv[2]);
+	run(argv[1], argv[2]);
 	return 0;
 }
