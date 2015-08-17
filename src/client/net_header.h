@@ -13,8 +13,8 @@
 
 int net_create_socket(int fd);
 int net_create_connect_server(char *addres, int port);
-int net_send(int fd, void *buffer, int size);
-int net_receive(int fd, void *buffer, int size);
+int net_send(int fd, void *buffer, int type, int len);
+int net_receive(int fd, void *buffer, int *type);
 int net_connect(int fd, struct sockaddr_in server_addr);
 void *handler_send(void *args);
 void *handler_recv(void *args);

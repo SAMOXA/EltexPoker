@@ -11,6 +11,7 @@ struct msg {
 
 void *handler_recv(void *args)
 {
+/*
     int socket_fd = *((int*)args);
 
     while(1) {
@@ -28,13 +29,13 @@ void *handler_recv(void *args)
         switch  (recv_msg->type)
         {
             case STATE_NEW_PLAYER:
-                // do smething
+                // do something
                 break;
             case STATE_PLAYER_STATE_CHANGED:
-                // do smething
+                // do something
                 break;
             case STATE_FULL_UPDATE:
-                // do smething
+                // do something
                 break;
             case STATE_ACTIVE_PLAYER_CHANGED:
                 // do smething
@@ -49,7 +50,7 @@ void *handler_recv(void *args)
                 break;
         }
     }
-/*
+
 	printf("Ready game tables:\n");
 	printf("%s\nChoose: ", ptr);
 	char input[256];
