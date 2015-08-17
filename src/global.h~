@@ -6,14 +6,6 @@
 #define MAX_PLAYERS_PER_TABLE 4
 #define MAX_TABLES_COUNT 5
 #define SESSION_TOKEN_LENGTH 16
-#define MAX_ERROR_MSG_LEN 24
-#define STATUS_OK 1
-#define STATUS_BAD 0
-<<<<<<< HEAD
-=======
-
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
-#define FALSE_CARD 60
 
 enum lears{
 	HEARTS,
@@ -28,16 +20,18 @@ enum lears{
 struct loginRequest_t {
 	char name[MAX_NAME_LENGTH];
 	char pass[MAX_PASS_LENGTH];
+	char registerFlag;
 };
 
 struct table_t {
 	char id;
-	unsigned char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
+	unsigned char [MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
 };
 
 struct loginResponce_t {
-	int status;
-	char errorBuf[MAX_ERROR_MSG_LEN];
+	char status;
+	int startCounter;
+	struct table_t tables[MAX_TABLES_COUNT];
 };
 
 struct selectRequest_t {
@@ -49,32 +43,23 @@ struct selectResponce_t {
 	int port;
 };
 
-
-////////////////////From lobbi server logic structures////////
-enum initAction {
-	REGISTRATION,
-	LOG_IN,
-	CREATE_TABLE,
-	CONNECT_OF_TABLE,
-	LIST_TABLE
-};
-//////////////////////////////////////////////////////////////
-
-
 ////////////////////From game server logic structures/////////
 enum gameStates {
-	GAME_START, //Только на старте стола или если игрок остался один
+	GAME_START,
 	GAME_PRE_FLOP,
 	GAME_FIRST_ROUND,
-	GAME_FLOP_ROUND,
-	GAME_TERN_ROUND,
-	GAME_RIVER_ROUND,
-	GAME_FINAL //Сразу переходит в префлоп
+	GAME_FIRST_RISE,
+	GAME_FLOP,
+	GAME_ROUND,
+	GAME_ROUND_RISE,
+	GAME_TERN,
+	GAME_RIVER,
+	GAME_FINAL
 };
 
 enum playerStates {
 	PLAYER_ACTIVE,
-	PLAYER_PASSIVE,
+	PALYER_PASSIVE,
 	PLAYER_PASS,
 	PLAYER_CONNECTING,
 	PLAYER_WAIT,
@@ -88,9 +73,7 @@ enum serverMessagesTypes {
 	STATE_FULL_UPDATE,
 	STATE_ACTIVE_PLAYER_CHANGED,
 	STATE_NEW_CARD_TABLE,
-	STATE_NEW_CARD_PALAYER,
-	STATE_PLAYER_DISCONECTED,
-	STATE_ERROR
+	STATE_NEW_CARD_PALAYER
 };
 
 enum clientMessagesTypes {
@@ -99,8 +82,7 @@ enum clientMessagesTypes {
 	ACTION_RISE,
 	ACTION_FOLD,
 	ACTION_CHECK,
-	ACTION_ALL_IN,
-	ACTION_CONNECT_REQUEST
+	ACTION_ALL_IN
 };
 
 struct player_t {
@@ -110,21 +92,18 @@ struct player_t {
 	unsigned int bet;
 	unsigned int money;
 	unsigned char cards[2];
-	unsigned int session;
 };
 
 struct gameState_t {
 	unsigned int id;
 	unsigned char state;
-	unsigned char betPlayerId;
+	unsigned char betPlayerIndex;
 	unsigned int bet;
-	unsigned char wasRise;
-	unsigned char lastRisePlayerId;
+	unsigned char lastRisePlayerIndex;
 	unsigned int lastRiseCount;
 	unsigned int bank;
-	unsigned int dillerId;
 	unsigned char cards[5];
-	struct player_t players[MAX_PLAYERS_PER_TABLE];
+	player_t players[MAX_PLAYERS_PER_TABLE];
 };
 
 struct changeActivePlayer_t {
