@@ -29,7 +29,7 @@ struct loginRequest_t {
 
 struct table_t {
 	char id;
-	unsigned char players[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
+	char players[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
 };
 
 struct loginResponce_t {

@@ -1,9 +1,10 @@
 #include <stdio.h>
-#include "global.h"
-#include "internallPC.h"
+#include "../global.h"
+#include "internalIPC.h"
 #include "logic.h"
 
-void events(int dest_type, int id, int msg_type, void *buf) {
+
+void events(int dest_type, int id, int msg_type, void *buf) { 
 
 	switch (dest_type) {
 	case CLIENT:

@@ -2,6 +2,8 @@
 
 int flgReadFile = 0;
 int countAllPlayers = 0;
+int countCurrentTables = 0;
+struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
 
 int readFile() {
 	FILE * fp;
@@ -86,6 +88,16 @@ void login(void *buf) {
 	}
 }
 
+void tableList() {
+	if (!countCurrentTables) {
+		// send(); /*Нет столов :(*/
+		return;
+	} else {
+		void * buf = lists; /*Указатель на список столов*/
+		// send( buf); /*отправляем список*/
+	}
+
+}
 // int main() {
 
 // 	char n[] = {"lo"};

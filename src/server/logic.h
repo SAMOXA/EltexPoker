@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "global.h"
+#include "../global.h"
 
 
 #define SIZE_DATA MAX_TABLES_COUNT * 4
@@ -20,6 +20,7 @@ int checkPasswd(int numCheck, char *pswd);
 void saveFile();
 void registration(void * buf);
 void login(void *buf);
+void tableList();
 
 
 #endif //LOGIC_H
