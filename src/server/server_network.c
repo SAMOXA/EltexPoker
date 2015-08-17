@@ -28,6 +28,17 @@ static int connections_count = 0;	/* количество активных со�
 
 static int current_fd = 0;
 
+/* обработка сигнала SIGPIPE */
+static void sigpipe_handler(void){
+	int i = 0;
+	while((active_connection_socket[i] != 0) && (i < MAX_ACTIVE_CONNECTION))
+		i++;
+	printf("Client disconnected(SIGPIPE)\n");
+	close(active_connection_socket[i]);
+	active_connection_socket[i] = 0;
+	connections_count--;
+}
+
 /* Создание слушающего сокета */
 void init_listen_server_network(void)
 {
@@ -51,17 +62,19 @@ void init_listen_server_network(void)
 /* Цикл приема сообщений */
 void listen_server_loop(void)
 {
-	int i;
+	int i, j;
 	int max_fd = 0;
 	int new_client = 0;
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
-
+		
 	fd_set fd_read_set;
 	struct timeval select_interval;
 	struct msg_hdr_t *buf_hdr;
 	struct sockaddr_in new_client_addr;
 	size_t new_client_addr_len = sizeof(struct sockaddr_in);
+
+	signal(SIGPIPE, sigpipe_handler);
 
 	listen(listen_socket, 5);
 
@@ -70,8 +83,9 @@ void listen_server_loop(void)
 		FD_SET (listen_socket, &fd_read_set);
 		max_fd = listen_socket;
 
-		for(i = 0; i < connections_count; i++){
-			FD_SET(active_connection_socket[i], &fd_read_set);
+		for(i = 0; i < MAX_ACTIVE_CONNECTION; i++){
+			if(active_connection_socket[i] != 0)
+				FD_SET(active_connection_socket[i], &fd_read_set);
 			if(max_fd < active_connection_socket[i])
 				max_fd = active_connection_socket[i];
 		}
@@ -88,7 +102,10 @@ void listen_server_loop(void)
 			}
 			else{
 				printf("[network] Connected new client: %s\n", inet_ntoa(new_client_addr.sin_addr));
-				active_connection_socket[connections_count] = new_client;
+				j = 0;
+				while((active_connection_socket[j] != 0) && (j < MAX_ACTIVE_CONNECTION))
+					j++;
+				active_connection_socket[j] = new_client;
 				connections_count++;
 			}
 		}
