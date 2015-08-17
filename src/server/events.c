@@ -26,7 +26,7 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 			break;
 		}
 		break;
-	case PARENT:
+	case SERVER:
 		switch (msg_type) {
 		/*Внутресерверная логика*/
 		case 1: /*Подтверждение подключения*/

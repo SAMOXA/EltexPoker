@@ -1,11 +1,13 @@
 #ifndef INTERNAL_IPC_H
 #define INTERNAL_IPC_H
 
-#include "global.h"
+#include "../global.h"
 
 enum sourceType_e {
-	PARENT,
-	CLIENT
+	SERVER,
+	CLIENT,
+	CURRENT,
+	ALL_CLIENTS
 };
 
 enum messagesType {

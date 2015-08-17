@@ -14,13 +14,13 @@ struct dataPlayers {
 	char pswd[MAX_PASS_LENGTH];
 } data[SIZE_DATA];
 
-int readFile();
-int checkName(char *name);
-int checkPasswd(int numCheck, char *pswd);
-void saveFile();
-void registration(void * buf);
-void login(void *buf);
-void tableList();
+static int readFile();
+static int checkName(char *name);
+static int checkPasswd(int numCheck, char *pswd);
+static void saveFile();
+static void registration(void * buf);
+static void login(void *buf);
+static void tableList();
 
 
 #endif //LOGIC_H

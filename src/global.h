@@ -10,6 +10,7 @@
 #define STATUS_OK 1
 #define STATUS_BAD 0
 
+#define FALSE_CARD 60
 
 enum lears{
 	HEARTS,
@@ -29,7 +30,7 @@ struct loginRequest_t {
 
 struct table_t {
 	char id;
-	char players[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
+	unsigned char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
 };
 
 struct loginResponce_t {
@@ -61,21 +62,18 @@ enum initAction {
 
 ////////////////////From game server logic structures/////////
 enum gameStates {
-	GAME_START,
+	GAME_START, //Только на старте стола или если игрок остался один
 	GAME_PRE_FLOP,
 	GAME_FIRST_ROUND,
-	GAME_FIRST_RISE,
-	GAME_FLOP,
-	GAME_ROUND,
-	GAME_ROUND_RISE,
-	GAME_TERN,
-	GAME_RIVER,
-	GAME_FINAL
+	GAME_FLOP_ROUND,
+	GAME_TERN_ROUND,
+	GAME_RIVER_ROUND,
+	GAME_FINAL //Сразу переходит в префлоп
 };
 
 enum playerStates {
 	PLAYER_ACTIVE,
-	PALYER_PASSIVE,
+	PLAYER_PASSIVE,
 	PLAYER_PASS,
 	PLAYER_CONNECTING,
 	PLAYER_WAIT,
@@ -89,7 +87,9 @@ enum serverMessagesTypes {
 	STATE_FULL_UPDATE,
 	STATE_ACTIVE_PLAYER_CHANGED,
 	STATE_NEW_CARD_TABLE,
-	STATE_NEW_CARD_PALAYER
+	STATE_NEW_CARD_PALAYER,
+	STATE_PLAYER_DISCONECTED,
+	STATE_ERROR
 };
 
 enum clientMessagesTypes {
@@ -98,7 +98,8 @@ enum clientMessagesTypes {
 	ACTION_RISE,
 	ACTION_FOLD,
 	ACTION_CHECK,
-	ACTION_ALL_IN
+	ACTION_ALL_IN,
+	ACTION_CONNECT_REQUEST
 };
 
 struct player_t {
@@ -108,16 +109,19 @@ struct player_t {
 	unsigned int bet;
 	unsigned int money;
 	unsigned char cards[2];
+	unsigned int session;
 };
 
 struct gameState_t {
 	unsigned int id;
 	unsigned char state;
-	unsigned char betPlayerIndex;
+	unsigned char betPlayerId;
 	unsigned int bet;
-	unsigned char lastRisePlayerIndex;
+	unsigned char wasRise;
+	unsigned char lastRisePlayerId;
 	unsigned int lastRiseCount;
 	unsigned int bank;
+	unsigned int dillerId;
 	unsigned char cards[5];
 	struct player_t players[MAX_PLAYERS_PER_TABLE];
 };

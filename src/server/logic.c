@@ -5,7 +5,7 @@ int countAllPlayers = 0;
 int countCurrentTables = 0;
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
 
-int readFile() {
+static int readFile() {
 	FILE * fp;
 	bzero(&data, sizeof(struct dataPlayers) * SIZE_DATA);
 	if ((fp = fopen("data.txt", "rb")) == NULL) {
@@ -20,7 +20,7 @@ int readFile() {
 	return 0;
 }
 
-int checkName(char *name) {
+static int checkName(char *name) {
 	int i;
 	for (i = 0; i <= countAllPlayers; i++) {
 		if (strcmp(name, data[i].name) == 0) {
@@ -30,7 +30,7 @@ int checkName(char *name) {
 	return -1;
 }
 
-void saveFile() {
+static void saveFile() {
 	FILE *fp;
 	int i;
 	if ((fp = fopen("data.txt", "w+")) == NULL) {
@@ -44,7 +44,7 @@ void saveFile() {
 	fclose(fp);
 }
 
-void registration(void * buf) {
+static void registration(void * buf) {
 
 	// struct loginRequest_t * login = (struct loginRequest_t *)buf;
 
@@ -59,14 +59,14 @@ void registration(void * buf) {
 	}
 }
 
-int checkPasswd(int numCheck, char *pswd) {
+static int checkPasswd(int numCheck, char *pswd) {
 	if (strcmp(pswd, data[numCheck].pswd) == 0) {
 		return 1;
 	}
 	return -1;
 }
 
-void login(void *buf) {
+static void login(void *buf) {
 	int checkNum;
 	if (readFile() == -1) {
 
@@ -88,7 +88,7 @@ void login(void *buf) {
 	}
 }
 
-void tableList() {
+static void tableList() {
 	if (!countCurrentTables) {
 		// send(); /*Нет столов :(*/
 		return;
