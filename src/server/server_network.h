@@ -6,6 +6,7 @@
 
 #define MSG_BUF_LEN 1024
 #define MAX_ACTIVE_CONNECTION 30
+#define MAX TABLES 10
 
 /* Создание слушающего сокета */
 void init_listen_server_network(void);
