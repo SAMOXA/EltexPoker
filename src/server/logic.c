@@ -37,7 +37,6 @@ static void saveFile() {
 	}
 	for (i = 0; i <= countAllPlayers; i++) {
 		fprintf(fp, "%s %s\n", data[i].name, data[i].pswd);
-
 	}
 	fclose(fp);
 }
@@ -70,7 +69,7 @@ static int checkPasswd(int numCheck, char *pswd) {
 void login(void *buf) {
 	int checkNum;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
-	
+
 	if (readFile() == -1) {
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "User not found");
