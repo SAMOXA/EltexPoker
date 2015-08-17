@@ -13,6 +13,7 @@ struct msg {
 int net_receive(int fd, void *buffer, int *type)
 {
     int rw_bytes;
+    int offset;
     struct msg *recv_msg;
 
     /* Zero out before read message */
@@ -27,6 +28,8 @@ int net_receive(int fd, void *buffer, int *type)
     recv_msg = (struct msg*)buffer;
 
     *type = recv_msg->type;
-    buffer = buffer + 8;
+    offset = *((int*)(buffer + 4));
+    memmove(buffer, buffer + 8, offset);
+
     return 0;
 }
