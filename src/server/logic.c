@@ -34,9 +34,7 @@ static void saveFile() {
 	FILE *fp;
 	int i;
 	if ((fp = fopen("data.txt", "w+")) == NULL) {
-
 	}
-
 	for (i = 0; i <= countAllPlayers; i++) {
 		fprintf(fp, "%s %s\n", data[i].name, data[i].pswd);
 
@@ -44,18 +42,21 @@ static void saveFile() {
 	fclose(fp);
 }
 
-static void registration(void * buf) {
+void registration(void * buf) {
 
-	// struct loginRequest_t * login = (struct loginRequest_t *)buf;
-
+	struct loginRequest_t *loginReq = (struct loginRequest_t *)buf;
+	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
 	readFile();
-	if (checkName((char *)buf/*!!!!*/) == -1) {
-		strcpy(data[countAllPlayers].name, (char *)buf);
-		strcpy(data[countAllPlayers].pswd, "123");
+	if (checkName(loginReq->name) == -1) {
+		strcpy(data[countAllPlayers].name, loginReq->name);
+		strcpy(data[countAllPlayers].pswd, loginReq->pass);
 		saveFile();
-		// send();/*Зарегестрирован*/
+		loginRes->status = STATUS_OK;
+		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	} else {
-		// send(); /*Error*/
+		loginRes->status = STATUS_BAD;
+		strcpy(loginRes->errorBuf, "Error");
+		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	}
 }
 
@@ -66,29 +67,34 @@ static int checkPasswd(int numCheck, char *pswd) {
 	return -1;
 }
 
-static void login(void *buf) {
+void login(void *buf) {
 	int checkNum;
+	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
+	
 	if (readFile() == -1) {
-
-		// send(); /*Некоректное имя*/
+		loginRes->status = STATUS_BAD;
+		strcpy(loginRes->errorBuf, "User not found");
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректное имя*/
+		return;
 	}
 	if ((checkNum = checkName((char *)buf)) == -1) {
-		printf("LOG_IN bad1\n");
-		// send()/*Пользаватель с таким именем уже есть*/
+		loginRes->status = STATUS_BAD;
+		strcpy(loginRes->errorBuf, "User not found");
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Пользаватель с таким именем уже есть*/
 		return;
 	}
-	char pass[] = {"12"};
-	if (checkPasswd(checkNum, pass) == -1 ) {
-		printf("LOG_IN bad2\n");
-		// send()/*Некоректный пароль*/
+	if (checkPasswd(checkNum, data[checkNum].pswd) == -1 ) {
+		loginRes->status = STATUS_BAD;
+		strcpy(loginRes->errorBuf, "Incorrectly password");
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректный пароль*/
 		return;
 	} else {
-		printf("LOG_IN OK\n");
-		// send(); /*Залогиннился и отправка столов*/
+		loginRes->status = STATUS_OK;
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 	}
 }
 
-static void tableList() {
+void tableList() {
 	if (!countCurrentTables) {
 		// send(); /*Нет столов :(*/
 		return;

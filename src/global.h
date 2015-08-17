@@ -35,7 +35,6 @@ struct table_t {
 
 struct loginResponce_t {
 	int status;
-	struct table_t tables[MAX_TABLES_COUNT];
 	char errorBuf[MAX_ERROR_MSG_LEN];
 };
 

@@ -11,9 +11,10 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 		/*Клиентская логика*/
 		switch (msg_type) {
 		case REGISTRATION: /*Регистрация*/
+			registration(buf);
 			break;
 		case LOG_IN: /*Авторизация*/
-
+			login(buf);
 			break;
 		case CREATE_TABLE: /*Создание стола*/
 
