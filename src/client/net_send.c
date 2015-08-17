@@ -6,6 +6,7 @@
 */
 int net_send(int fd, void *buffer, int type, int len)
 {
+    printf("net_send()\n");
     int rw_bytes;
 
     /* Send buffer to server */

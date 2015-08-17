@@ -28,5 +28,6 @@ int main(int argc, char **argv){
 		exit(1);
 	}
 	run(argv[1], argv[2]);
+	//while(1);
 	return 0;
 }

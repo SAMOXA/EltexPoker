@@ -18,13 +18,22 @@ void create_msg(int type, int len, void *data, unsigned char *buf) {
 
 
 void logicHandlerLogin(void *buf, int type) {
+	printf("logicHandlerLogin()\n");
+	printf("type = %d\n", type);
 	switch(type) {
 		case LOG_IN:
 			type = REGISTRATION;
 		case REGISTRATION:
 		{
-			loginResponce_t *logResp;
-			logResp = (loginResponce_t *) buf;
+			struct loginResponce_t *logResp;
+			logResp = (struct loginResponce_t *) buf;
+			printf("status = %d\n", logResp->status);
+  int i;
+    for (i = 0; i < 64; ++i)
+    {
+        printf("%02X ", *((unsigned char*) buf+i));
+    }
+
 			if (logResp->status == STATUS_OK) {
 				printf("Авторизация прошла успешна\n");
 			} else {
@@ -37,7 +46,7 @@ void logicHandlerLogin(void *buf, int type) {
 
 int logicEventLogin(char *login, char *pass, int type) {
 	int flg;
-	unsigned char buf[MAX_LEN_MSG];
+	unsigned char buf[MAX_LEN_MSG] ="a";
 	struct loginRequest_t logReq;
 	if (strlen(login) >= MAX_NAME_LENGTH || strlen(pass) >= MAX_NAME_LENGTH) {
 		//grafDrawText("Превышена длина имени или пароля\n");
@@ -46,7 +55,7 @@ int logicEventLogin(char *login, char *pass, int type) {
 	strcpy(logReq.name, login);
 	strcpy(logReq.pass, pass);
 	
-	flg = net_send(fd, buf, type, sizeof(struct msg) + sizeof(struct loginRequest_t));
+	flg = net_send(fd, &logReq, type, sizeof(struct loginRequest_t));
 	if (flg == -1) {
 		printf("Проблемы с соединением\n");
 		//graf_draw_text("Проблемы с соединением");
@@ -92,6 +101,7 @@ void run(char *ip, char *namePort) {
 				printf("Input pass:\n");
 				scanf("%s", pass);
 				logicEventLogin(login, pass, registerFlag);
+				printf("dddd\n");
 				cur_status = DEAD;
 			}	
 			case SEL_TABLES:

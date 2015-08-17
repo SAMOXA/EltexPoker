@@ -14,7 +14,6 @@ int net_receive(int fd, void *buffer, int *type)
 {
     int rw_bytes;
     struct msg *recv_msg;
-
     /* Zero out before read message */
     bzero((char*)buffer, 1024);
 
@@ -27,6 +26,9 @@ int net_receive(int fd, void *buffer, int *type)
     recv_msg = (struct msg*)buffer;
 
     *type = recv_msg->type;
-    buffer = buffer + 8;
+
+    int len = *((int*)(buffer + 4));
+    printf("\nlen = %d\n", len);
+    memmove(buffer, buffer + 8, len);
     return 0;
 }

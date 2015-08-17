@@ -90,7 +90,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_pokerClient_OBJECTS = main.$(OBJEXT)
+am_pokerClient_OBJECTS = main.$(OBJEXT) logic.$(OBJEXT) \
+	net_connect.$(OBJEXT) net_create_connect_server.$(OBJEXT) \
+	net_disconnect.$(OBJEXT) net_fill_socket_addr.$(OBJEXT) \
+	net_create_socket.$(OBJEXT) net_send.$(OBJEXT) \
+	net_receive.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
 pokerClient_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -233,7 +237,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pokerClient_SOURCES = main.c ../global.h
+pokerClient_SOURCES = main.c ../global.h logic.c logic.h net_header.h \
+	net_connect.c net_create_connect_server.c net_disconnect.c \
+	net_fill_socket_addr.c net_create_socket.c net_send.c \
+	net_receive.c
 all: all-am
 
 .SUFFIXES:
@@ -321,7 +328,15 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_connect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_create_connect_server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_create_socket.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_disconnect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_fill_socket_addr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_receive.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_send.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

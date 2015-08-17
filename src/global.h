@@ -24,7 +24,6 @@ enum lears{
 struct loginRequest_t {
 	char name[MAX_NAME_LENGTH];
 	char pass[MAX_PASS_LENGTH];
-
 };
 
 struct table_t {
@@ -34,7 +33,6 @@ struct table_t {
 
 struct loginResponce_t {
 	int status;
-	struct table_t tables[MAX_TABLES_COUNT];
 	char errorBuf[MAX_ERROR_MSG_LEN];
 };
 

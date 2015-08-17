@@ -21,6 +21,5 @@ AC_PROG_CC
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 src/client/Makefile
-                 src/server/Makefile])
+                 src/client/Makefile])
 AC_OUTPUT
