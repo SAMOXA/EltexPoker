@@ -7,6 +7,7 @@
 #include <termios.h>
 #include <ncurses.h>
 #include <locale.h>
+#include <pthread.h>
 
 #include "graf_api.h"
 
@@ -112,5 +113,11 @@ void ncsShow(const struct ncs_graf_table_t*);
 void ncsShowBank(const struct ncs_graf_table_t*);
 void ncsShowInput(const struct ncs_graf_table_t*);
 void ncsEndGraf();
+
+void* ncsControlsFunc(void*);
+
+void ncsTempExit();
+void ncsTempBet(int sum);
+void ncsTempPass();
 
 #endif

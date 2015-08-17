@@ -7,6 +7,10 @@ static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
 
 static struct ncs_graf_table_t *main_tbl=NULL;
 
+void (*graf_exit_event)(void)=ncsTempExit;
+void (*graf_bet_event)(int sum)=ncsTempBet;
+void (*graf_pass_event)(void)=ncsTempPass;
+
 //-------------------------------------API connect block
 void ncsGrafDelPlayer(struct ncs_graf_player_t **player)
 {
@@ -111,18 +115,22 @@ void ncsGrafImportTable(const struct graf_table_t* api_tbl,\
 void grafInit(struct graf_table_t* tbl)
 {
     int index=0;
+    pthread_t thread;
 
     ncsGrafImportTable(tbl,&main_tbl);
 //    for(index)
 
 //    printf("%s\n",main_tbl->bank.money_text);
 
+    pthread_create(&thread,NULL,ncsControlsFunc,NULL);
+    pthread_detach(thread);
     ncsStartGraf(main_tbl);
 }
 
 void grafDrawAll()
 {
     ncsShow(main_tbl);
+    getch();
 }
 void grafDrawUserMsg(const char* msg)
 {
@@ -163,6 +171,7 @@ void grafHideInput()
     main_tbl->input.enabled=0;
     clear();
     ncsShow(main_tbl);
+    refresh();
 }
 
 //---------------------------------Ncurses opereations block
@@ -530,6 +539,7 @@ void ncsShowBank(const struct ncs_graf_table_t* tbl)
 	}
 	wrefresh(tbl->bank.cards[index_card].wnd);
     }
+    refresh();
 }
 
 void ncsShowInput(const struct ncs_graf_table_t* tbl)
@@ -547,6 +557,7 @@ void ncsShowInput(const struct ncs_graf_table_t* tbl)
     }
     
     wrefresh(tbl->input.wnd);
+    refresh();
 }
 
 
@@ -562,7 +573,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 //    SetWndColor(stdscr,COLOR_WHITE,COLOR_GREEN);
 
     move(0,0);
-//    clear();
+    clear();
 
     refresh();
 
@@ -618,7 +629,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
     if(tbl->input.enabled){
         ncsShowInput(tbl);
     }
-//    refresh();
+    refresh();
 //    getch();
 
     return;
@@ -628,5 +639,64 @@ void ncsEndGraf()
 {
     endwin();
     tcsetattr(0,TCSANOW,&stored_settings);
+    return;
+}
+
+//---------------------------Thread funcs
+void* ncsGrafFunc(void* data)
+{
+    
+
+    return NULL;    
+}
+
+void* ncsControlsFunc(void* data)
+{
+    int c=0;
+    char s[3];
+    int len=0;
+    int res=0;
+    int index=0;
+
+    while(1){
+	c=getch();
+	if(c==27){
+	    graf_exit_event();
+	    break;
+	}
+	if(c==10){
+	    len=strlen(main_tbl->input.buffer);
+	    res=0;
+	    for(index=0;index<len;index++){
+		res=res*10+main_tbl->input.buffer[index]-'0';
+		graf_bet_event(res);			
+	    }
+	}
+	if(main_tbl->input.enabled==1 && isdigit(c)){
+	    len=strlen(main_tbl->input.buffer);
+	    main_tbl->input.buffer[len]=c;
+	    main_tbl->input.buffer[len+1]='\0';
+	    ncsShowInput(main_tbl);
+//	    refresh();
+	}
+    }
+
+    return NULL;
+}
+
+void ncsTempExit()
+{
+    ncsEndGraf();
+    exit(0);
+
+}
+
+void ncsTempBet(int sum)
+{
+    grafHideInput();
+}
+
+void ncsTempPass()
+{
     return;
 }
