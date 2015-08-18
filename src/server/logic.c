@@ -3,7 +3,17 @@
 int flgReadFile = 0;
 int countAllPlayers = 0;
 int countCurrentTables = 0;
+unsigned int playersID = 0;
+unsigned int tableID = 0;
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
+
+enum statusTable {EMPTY, SLEEP, FULL, PLAY};
+
+struct infoOfTable {
+	int countPlayer;
+	int status;
+} inofList[MAX_TABLES_COUNT];
+
 
 int readFile() {
 	FILE * fp;
@@ -112,12 +122,75 @@ void tableList() {
 		void * buf = lists; /*Указатель на список столов*/
 		// send( buf); /*отправляем список*/
 	}
-
 }
+int getNewPort () {
+
+	return 0;
+}
+
+int getSession() {
+	srand(time(NULL));
+	return rand() / 10000;
+}
+
+int findEmptyTable() {
+	int i;
+	for ( i = 0; i < MAX_TABLES_COUNT; i++) {
+		if (inofList[i].status == EMPTY) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+void createTable(void *buf) {
+	int pipedes[2];
+	pid_t pid;
+	struct newPlayer_t newPlayer;
+	struct selectRequest_t *request = (struct selectRequest_t *) buf;
+	struct selectResponce_t responce;
+
+	int empt = findEmptyTable();
+	if (empt == -1) {
+		responce.status = STATUS_BAD;
+		strcat(responce.error, "Невозможно создать стол!");
+		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
+		return;
+	}
+
+	++countCurrentTables;
+	newPlayer.session = getSession();
+	newPlayer.id = playersID++;
+	newPlayer.money = 1000;
+	strcpy(newPlayer.name, request->name);
+
+	lists[empt].id = tableID++;
+	// lists[countCurrentTables].tables[] /*add name*/
+	strcpy(lists[empt].tables[inofList[empt].countPlayer], request->name);
+
+	pipe(pipedes);
+	write(pipedes[0], (void *)&newPlayer, sizeof(struct newPlayer_t));
+	pid = fork();
+	if (pid == 0) { /*Дочерний*/
+		close(pipedes[0]);
+		startGameServer(pipedes[1], tableID);
+		exit(0);
+	} else {
+		close(pipedes[1]);
+		responce.port = getNewPort();
+		responce.status = STATUS_OK;
+		add_id_to_table(tableID, pipedes[0]);
+		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), (void *)&responce);
+	}
+}
+
+void connectTable(void *buf) {
+	struct selectRequest_t *request = (struct selectRequest_t *) buf;
+	struct selectResponce_t responce;
+}
+
 // int main() {
 
-// 	char n[] = {"lo"};
-// 	// registration((void *)n);
-// 	login((void *)n);
+// 	printf("%d\n", getSession());
 // 	return 0;
 // }
