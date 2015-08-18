@@ -30,16 +30,8 @@ static int connections_count = 0;	/* количество активных со�
 
 static int current_fd = 0;
 
-/* обработка сигнала SIGPIPE */
-static void sigpipe_handler(){
-	int i = 0;
-	while((active_connection_socket[i] != 0) && (i < MAX_ACTIVE_CONNECTION))
-		i++;
-	printf("Client disconnected(SIGPIPE)\n");
-	close(active_connection_socket[i]);
-	active_connection_socket[i] = 0;
-	connections_count--;
-}
+static fd_set fd_read_set;
+
 
 /* Создание слушающего сокета */
 void init_listen_server_network(void)
@@ -69,14 +61,14 @@ void listen_server_loop(void)
 	int new_client = 0;
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
-		
+
 	fd_set fd_read_set;
+
 	struct timeval select_interval;
 	struct msg_hdr_t *buf_hdr;
 	struct sockaddr_in new_client_addr;
 	size_t new_client_addr_len = sizeof(struct sockaddr_in);
 
-	signal(SIGPIPE, sigpipe_handler);
 
 	listen(listen_socket, 5);
 
@@ -84,52 +76,71 @@ void listen_server_loop(void)
 		FD_ZERO (&fd_read_set);
 		FD_SET (listen_socket, &fd_read_set);
 		max_fd = listen_socket;
+		
+		if(connections_count > 0){
+			for(i = 0; i < MAX_ACTIVE_CONNECTION; i++){
+				if(active_connection_socket[i] != 0)
+					FD_SET(active_connection_socket[i], &fd_read_set);
+				if(max_fd < active_connection_socket[i])
+					max_fd = active_connection_socket[i];
+			}
 
-		for(i = 0; i < MAX_ACTIVE_CONNECTION; i++){
-			if(active_connection_socket[i] != 0)
-				FD_SET(active_connection_socket[i], &fd_read_set);
-			if(max_fd < active_connection_socket[i])
-				max_fd = active_connection_socket[i];
 		}
 		select_interval.tv_sec = 0;
-		select_interval.tv_usec = 1000;
+		select_interval.tv_usec = 100000UL;
 
 		if (select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[network] Listen server, select(): ");
 
-		if (FD_ISSET(listen_socket, &fd_read_set)) {	/* обрабюотка нового подключения */
-			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr, (socklen_t *)  &new_client_addr_len);
-			if (new_client < 0) {
-				perror("[network] Listen server accept error, accept(): ");
+		if(FD_ISSET(listen_socket, &fd_read_set)){	/* обрабюотка нового подключения */
+			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr,(socklen_t *)  &new_client_addr_len);
+			if(new_client < 0){
+				perror("[network] Listen server accept error, accept()");
 			}
-			else {
-				printf("[network] Connected new client: %s\n", inet_ntoa(new_client_addr.sin_addr));
+			else{
+				printf("[network] New client connected: %s\n", inet_ntoa(new_client_addr.sin_addr));
 				j = 0;
 				while((active_connection_socket[j] != 0) && (j < MAX_ACTIVE_CONNECTION))
 					j++;
 				active_connection_socket[j] = new_client;
 				connections_count++;
+				current_fd = new_client;
 			}
 			current_fd = new_client;
 		}
-		for (i = 0; i < connections_count; i++) {
-			if (FD_ISSET(active_connection_socket[i], &fd_read_set)) {
 
-				printf("FD_ISSET_cl\n");
+		for(i = 0; i < MAX_ACTIVE_CONNECTION; i++){
+			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
 				memset(buf, 0, MSG_BUF_LEN);
 				bytes_recv = 0;
 				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
-				if (bytes_recv < 0) {
-					perror("read");
-					break;
+				
+				if(bytes_recv < 0){
+                	perror("[network] read()");
+                	j = 0;
+                	while(active_connection_socket[j] != active_connection_socket[i])
+                		j++;
+                	close(active_connection_socket[j]);
+                	active_connection_socket[j] = 0;
+					connections_count--;
+                }
+                else if(bytes_recv == 0){
+                	printf("[network] read() returned 0, closing connection\n");
+                	j = 0;
+                	while(active_connection_socket[j] != active_connection_socket[i])
+                		j++;
+                	close(active_connection_socket[j]);
+                	active_connection_socket[j] = 0;
+					connections_count--;
+                }
+				else{
+					current_fd = active_connection_socket[i];
+					/* получить сообщение в соответствии с его длиной */
+				
+					/* вызвать events(), передать параметры и сообщение */
+					buf_hdr = (struct msg_hdr_t *) buf;
+					events(0, 0, buf_hdr->type, (void *) (buf + 8));
 				}
-				current_fd = active_connection_socket[i];
-				/* получить сообщение в соответствии с его длиной */
-
-				/* вызвать events() */
-				buf_hdr = (struct msg_hdr_t *) buf;
-
-				events(CLIENT, 0, buf_hdr->type, (void *) (buf + 8));
 			}
 		}
 	}
@@ -152,34 +163,50 @@ void send_message(int destination_type, int destination_id,
 {
 	struct msg_hdr_t *buf_hdr;
 	char buf[MSG_BUF_LEN];
+	int i = 0;
+	int return_val = 0;
 
-	switch (destination_type) {
-	case SERVER:
-		/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(pipe) */
-		break;
-	case CLIENT:
-		/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(tcp) */
-		break;
-	case CURRENT:
-		/* добавить заголовок msg_hdr_t, отправить сообщение через current_fd*/
-		memset(buf, 0 , MSG_BUF_LEN);
-		buf_hdr = (struct msg_hdr_t *) buf;
-		buf_hdr->type = message_type;
-		buf_hdr->len = message_len;
-		memcpy(buf + sizeof(struct msg_hdr_t), message, message_len);
-
-		if (write(current_fd, buf, MSG_BUF_LEN) < 0 ) {
-			perror("write");
-		}
-		printf("Send\n");
-
-		break;
-	case ALL_CLIENTS:
-		/* отпрвить сообщение всем ФД из players_fd */
-		break;
-	default:
-		printf("[network] Send_message(): wrong destination argument\n");
-		break;
+	switch(destination_type){
+		case SERVER:
+			/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(pipe) */
+			break;
+		case CLIENT:
+			/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(tcp) */
+			break;
+		case CURRENT:
+			/* добавить заголовок msg_hdr_t, отправить сообщение через current_fd*/
+			memset(buf, 0 , MSG_BUF_LEN);
+			buf_hdr = (struct msg_hdr_t *) buf;
+			buf_hdr->type = message_type;
+			buf_hdr->len = message_len;
+			memcpy(buf + sizeof(struct msg_hdr_t), message, message_len);
+			
+			return_val = write(current_fd, buf, MSG_BUF_LEN);
+			if(return_val < 0){
+                perror("[network] write()");
+                i = 0;
+                while(active_connection_socket[i] != current_fd)
+                	i++;
+                close(active_connection_socket[i]);
+                active_connection_socket[i] = 0;
+				connections_count--;
+            }
+            if(return_val == 0){
+               	printf("[network] write() returned 0, closing connection\n");
+               	i = 0;
+                while(active_connection_socket[i] != current_fd)
+                	i++;
+                close(active_connection_socket[i]);
+                active_connection_socket[i] = 0;
+				connections_count--;
+            }            
+			break;
+		case ALL_CLIENTS:
+			/* отпрвить сообщение всем ФД из players_fd */
+			break;
+		default:
+			printf("[network] Send_message(): wrong destination argument\n");
+			break;
 	}
 }
 
