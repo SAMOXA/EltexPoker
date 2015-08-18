@@ -90,7 +90,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_pokerClient_OBJECTS = main.$(OBJEXT)
+am_pokerClient_OBJECTS = main.$(OBJEXT) logic.$(OBJEXT) \
+	net_connect.$(OBJEXT) net_create_connect_server.$(OBJEXT) \
+	net_disconnect.$(OBJEXT) net_fill_socket_addr.$(OBJEXT) \
+	net_create_socket.$(OBJEXT) net_send.$(OBJEXT) \
+	net_receive.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
 pokerClient_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -148,12 +152,12 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/tima/sysprog/EltexPoker/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing autoconf
-AUTOHEADER = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing autoheader
-AUTOMAKE = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing automake-1.14
+AUTOCONF = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoconf
+AUTOHEADER = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoheader
+AUTOMAKE = ${SHELL} /home/tima/sysprog/EltexPoker/missing automake-1.14
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -176,7 +180,7 @@ LIBOBJS =
 LIBS = 
 LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing makeinfo
+MAKEINFO = ${SHELL} /home/tima/sysprog/EltexPoker/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = poker
@@ -191,10 +195,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 0.1
-abs_builddir = /home/nik/Teaching/project/EltexPoker/src/client
-abs_srcdir = /home/nik/Teaching/project/EltexPoker/src/client
-abs_top_builddir = /home/nik/Teaching/project/EltexPoker
-abs_top_srcdir = /home/nik/Teaching/project/EltexPoker
+abs_builddir = /home/tima/sysprog/EltexPoker/src/client
+abs_srcdir = /home/tima/sysprog/EltexPoker/src/client
+abs_top_builddir = /home/tima/sysprog/EltexPoker
+abs_top_srcdir = /home/tima/sysprog/EltexPoker
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -213,7 +217,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/nik/Teaching/project/EltexPoker/install-sh
+install_sh = ${SHELL} /home/tima/sysprog/EltexPoker/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -233,7 +237,10 @@ target_alias =
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
-pokerClient_SOURCES = main.c ../global.h
+pokerClient_SOURCES = main.c ../global.h logic.c logic.h net_header.h \
+	net_connect.c net_create_connect_server.c net_disconnect.c \
+	net_fill_socket_addr.c net_create_socket.c net_send.c \
+	net_receive.c
 all: all-am
 
 .SUFFIXES:
@@ -321,7 +328,15 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/logic.Po
 include ./$(DEPDIR)/main.Po
+include ./$(DEPDIR)/net_connect.Po
+include ./$(DEPDIR)/net_create_connect_server.Po
+include ./$(DEPDIR)/net_create_socket.Po
+include ./$(DEPDIR)/net_disconnect.Po
+include ./$(DEPDIR)/net_fill_socket_addr.Po
+include ./$(DEPDIR)/net_receive.Po
+include ./$(DEPDIR)/net_send.Po
 
 .c.o:
 	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

@@ -9,10 +9,7 @@
 #define MAX_ERROR_MSG_LEN 24
 #define STATUS_OK 1
 #define STATUS_BAD 0
-<<<<<<< HEAD
-=======
 
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
 #define FALSE_CARD 60
 
 enum lears{

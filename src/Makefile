@@ -166,21 +166,12 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-<<<<<<< HEAD
 ACLOCAL = ${SHELL} /home/tima/sysprog/EltexPoker/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AUTOCONF = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoconf
 AUTOHEADER = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoheader
 AUTOMAKE = ${SHELL} /home/tima/sysprog/EltexPoker/missing automake-1.14
-=======
-ACLOCAL = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing aclocal-1.14
-AMTAR = $${TAR-tar}
-AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing autoconf
-AUTOHEADER = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing autoheader
-AUTOMAKE = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing automake-1.14
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -203,11 +194,7 @@ LIBOBJS =
 LIBS = 
 LTLIBOBJS = 
 MAINT = #
-<<<<<<< HEAD
 MAKEINFO = ${SHELL} /home/tima/sysprog/EltexPoker/missing makeinfo
-=======
-MAKEINFO = ${SHELL} /home/nik/Teaching/project/EltexPoker/missing makeinfo
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = poker
@@ -222,17 +209,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 0.1
-<<<<<<< HEAD
 abs_builddir = /home/tima/sysprog/EltexPoker/src
 abs_srcdir = /home/tima/sysprog/EltexPoker/src
 abs_top_builddir = /home/tima/sysprog/EltexPoker
 abs_top_srcdir = /home/tima/sysprog/EltexPoker
-=======
-abs_builddir = /home/nik/Teaching/project/EltexPoker/src
-abs_srcdir = /home/nik/Teaching/project/EltexPoker/src
-abs_top_builddir = /home/nik/Teaching/project/EltexPoker
-abs_top_srcdir = /home/nik/Teaching/project/EltexPoker
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -251,11 +231,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-<<<<<<< HEAD
 install_sh = ${SHELL} /home/tima/sysprog/EltexPoker/install-sh
-=======
-install_sh = ${SHELL} /home/nik/Teaching/project/EltexPoker/install-sh
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -275,11 +251,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-<<<<<<< HEAD
 SUBDIRS = client
-=======
-SUBDIRS = server client
->>>>>>> 21565b6479cc55fb970b3b08830d183a29c593ea
 all: all-recursive
 
 .SUFFIXES:

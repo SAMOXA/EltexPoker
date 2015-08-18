@@ -1,5 +1,6 @@
-main.o: main.c /usr/include/stdc-predef.h /usr/include/stdio.h \
- /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+net_connect.o: net_connect.c /usr/include/stdc-predef.h net_header.h \
+ /usr/include/stdio.h /usr/include/features.h \
+ /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
@@ -11,8 +12,7 @@ main.o: main.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h ../global.h \
- net_implementation.h /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endian.h \
@@ -53,9 +53,13 @@ main.o: main.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
  /usr/include/x86_64-linux-gnu/bits/socket2.h \
- /usr/include/x86_64-linux-gnu/bits/in.h logic.h
+ /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/setjmp.h
 
 /usr/include/stdc-predef.h:
+
+net_header.h:
 
 /usr/include/stdio.h:
 
@@ -90,10 +94,6 @@ main.o: main.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /usr/include/x86_64-linux-gnu/bits/stdio.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdio2.h:
-
-../global.h:
-
-net_implementation.h:
 
 /usr/include/stdlib.h:
 
@@ -195,4 +195,10 @@ net_implementation.h:
 
 /usr/include/x86_64-linux-gnu/bits/in.h:
 
-logic.h:
+/usr/include/pthread.h:
+
+/usr/include/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/setjmp.h:

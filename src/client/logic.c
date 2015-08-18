@@ -17,9 +17,8 @@ void create_msg(int type, int len, void *data, unsigned char *buf) {
 }
 
 
-void logicHandlerLogin(void *buf, int type) {
-	printf("logicHandlerLogin()\n");
-	printf("type = %d\n", type);
+void logicHandlerLogin(int type) {
+	unsigned char buf[MAX_LEN_MSG];
 	switch(type) {
 		case LOG_IN:
 			type = REGISTRATION;
@@ -30,6 +29,7 @@ void logicHandlerLogin(void *buf, int type) {
 
 			if (logResp->status == STATUS_OK) {
 				printf("Авторизация прошла успешна\n");
+				cur_status = SEL_TABLES;
 			} else {
 				printf("%s\n", logResp->errorBuf);
 			}
@@ -40,7 +40,7 @@ void logicHandlerLogin(void *buf, int type) {
 
 int logicEventLogin(char *login, char *pass, int type) {
 	int flg;
-	unsigned char buf[MAX_LEN_MSG] ="a";
+	unsigned char buf[MAX_LEN_MSG];
 	struct loginRequest_t logReq;
 	if (strlen(login) >= MAX_NAME_LENGTH || strlen(pass) >= MAX_NAME_LENGTH) {
 		//grafDrawText("Превышена длина имени или пароля\n");
@@ -66,6 +66,21 @@ int logicEventLogin(char *login, char *pass, int type) {
 	return 0;
 }
 
+void logicHandlerSelTables(char *name, int type)
+{
+	unsigned char buf[MAX_LEN_MSG];
+	switch(type) {
+		case CREATE_TABLE:
+		{
+
+		}
+	}
+}
+
+void logicSelTable() {
+	//get_tables()
+
+}
 
 
 void run(char *ip, char *namePort) {
@@ -96,8 +111,7 @@ void run(char *ip, char *namePort) {
 				printf("Input pass:\n");
 				scanf("%s", pass);
 				logicEventLogin(login, pass, registerFlag);
-				printf("dddd\n");
-				cur_status = DEAD;
+				cur_status =DEAD;
 			}	
 			case SEL_TABLES:
 			{
