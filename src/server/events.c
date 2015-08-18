@@ -13,13 +13,14 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 		case REGISTRATION: /*Регистрация*/
 			registration(buf);
 			printf("[logic] registration\n");
+
 			break;
 		case LOG_IN: /*Авторизация*/
 			login(buf);
 			printf("[logic] login\n");
 			break;
 		case CREATE_TABLE: /*Создание стола*/
-
+			createTable(buf);
 			break;
 
 		case CONNECT_OF_TABLE: /*Подключение к столу*/
