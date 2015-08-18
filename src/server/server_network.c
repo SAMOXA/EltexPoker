@@ -26,7 +26,7 @@ static int listen_socket;	/* Файловый дескриптор слушаю�
 static int pipe_fd;			/* Для общения между игровым и слушающим серверами */
 static int active_connection_socket[MAX_ACTIVE_CONNECTION] = {0};	/* массив ФД активных соединений */
 static int connections_count = 0;	/* количество активных соединений */
-static int fd_table[MAX_TABLES][2] = {0};	/* Для хранения ИД и ФД игровых столов */
+static int fd_table[MAX_TABLES][2] = {{0}};	/* Для хранения ИД и ФД игровых столов */
 
 static int current_fd = 0;
 
@@ -39,7 +39,7 @@ static int get_index_by_id(int id){
 	
 	/* table_socket[x][0] - id*/
 	while((fd_table[i][0] != id) && (i < MAX_TABLES))
-		i++
+		i++;
 	if(i == MAX_TABLES)
 		return -1;
 	return i;	/* Возврат индекс переданного ИД */
@@ -55,7 +55,7 @@ void init_listen_server_network(void)
 	}
 	printf("[network] Listen socket created successfully\n");
 
-	memset(listen_server_addr, 0, sizeof(struct sockaddr_in));
+	memset((void *) &listen_server_addr, 0, sizeof(struct sockaddr_in));
 	listen_server_addr.sin_family = AF_INET;
 	listen_server_addr.sin_port = htons(LISTEN_SERVER_PORT);
 	inet_aton(LISTEN_SERVER_IP, &listen_server_addr.sin_addr);
@@ -166,7 +166,7 @@ void init_game_server_network(int game_server_port, int listen_server_fd)
 	}
 	printf("[game_server_network] Listen socket created successfully\n");
 
-	memset(game_server_addr, 0, sizeof(struct sockaddr_in));
+	memset((void *) &game_server_addr, 0, sizeof(struct sockaddr_in));
 	game_server_addr.sin_family = AF_INET;
 	game_server_addr.sin_port = htons(game_server_port);
 	inet_aton(LISTEN_SERVER_IP, &game_server_addr.sin_addr);
@@ -262,7 +262,6 @@ void send_message(int destination_type, int destination_id,
 {
 	struct msg_hdr_t *buf_hdr;
 	char buf[MSG_BUF_LEN];
-	int i = 0;
 	int return_val = 0;
 
 	switch(destination_type){
