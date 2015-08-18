@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "../global.h"
+#include "internalIPC.h"
 #include "events.h"
 #include "server_network.h"
 
@@ -29,12 +31,11 @@ static int connections_count = 0;	/* количество активных со�
 static int current_fd = 0;
 static fd_set fd_read_set;
 
-
 /* Создание слушающего сокета */
 void init_listen_server_network(void)
 {
 	listen_socket = socket (AF_INET, SOCK_STREAM, 0);
-	if(listen_socket < 0){
+	if (listen_socket < 0) {
 		perror("[network] Creating listen socket, socket(): ");
 		exit(1);
 	}
@@ -44,7 +45,7 @@ void init_listen_server_network(void)
 	listen_server_addr.sin_port = htons(LISTEN_SERVER_PORT);
 	inet_aton(LISTEN_SERVER_IP, &listen_server_addr.sin_addr);
 
-	if(bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))){
+	if (bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))) {
 		perror("[network] Binding port error, bind(): ");
 		exit(1);
 	}
@@ -58,15 +59,18 @@ void listen_server_loop(void)
 	int new_client = 0;
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
-		
+
+	fd_set fd_read_set;
+
 	struct timeval select_interval;
 	struct msg_hdr_t *buf_hdr;
 	struct sockaddr_in new_client_addr;
 	size_t new_client_addr_len = sizeof(struct sockaddr_in);
 
+
 	listen(listen_socket, 5);
 
-	while(1){
+	while (1) {
 		FD_ZERO (&fd_read_set);
 		FD_SET (listen_socket, &fd_read_set);
 		max_fd = listen_socket;
@@ -82,7 +86,7 @@ void listen_server_loop(void)
 		select_interval.tv_sec = 0;
 		select_interval.tv_usec = 100000UL;
 
-		if(select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
+		if (select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[network] Listen server, select(): ");
 
 		if(FD_ISSET(listen_socket, &fd_read_set)){	/* обрабюотка нового подключения */
@@ -99,7 +103,9 @@ void listen_server_loop(void)
 				connections_count++;
 				current_fd = new_client;
 			}
+			current_fd = new_client;
 		}
+
 		for(i = 0; i < MAX_ACTIVE_CONNECTION; i++){
 			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
 				memset(buf, 0, MSG_BUF_LEN);
@@ -137,7 +143,7 @@ void listen_server_loop(void)
 	}
 }
 
-/* 
+/*
  * Создание сокета, добавление
  * файлового дескриптора слушающего сервера
  */
@@ -150,7 +156,7 @@ void game_server_loop()
 }
 /* Функция передачи сообщений */
 void send_message(int destination_type, int destination_id,
-		int message_type, int message_len, void *message)
+                  int message_type, int message_len, void *message)
 {
 	struct msg_hdr_t *buf_hdr;
 	char buf[MSG_BUF_LEN];
@@ -200,7 +206,7 @@ void send_message(int destination_type, int destination_id,
 			break;
 	}
 }
-		
+
 /* Закрытие текущего соединения с клиентом */
 void close_current_connection(void)
 {
@@ -208,7 +214,7 @@ void close_current_connection(void)
 
 /*
  * Добавление и удаление записи
- * соответствия между id и текущим 
+ * соответствия между id и текущим
  * файловым дескриптором
  */
 void add_id_to_table(int table_id, int id)
