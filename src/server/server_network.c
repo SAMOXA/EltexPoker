@@ -140,7 +140,7 @@ void listen_server_loop(void)
 					/* вызвать events(), передать параметры и сообщение */
 					buf_hdr = (struct msg_hdr_t *) buf;
 					printf("[Logic]Events\n");
-					events(0, 0, buf_hdr->type, (void *) (buf + 8));
+					events(CLIENT, 0, buf_hdr->type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -166,7 +166,7 @@ void send_message(int destination_type, int destination_id,
 	char buf[MSG_BUF_LEN];
 	int i = 0;
 	int return_val = 0;
-
+	printf("[network] send\n");
 	switch(destination_type){
 		case SERVER:
 			/* выбрать адрес по dest_id, добавить заголовок msg_hdr_t, отправить сообщение(pipe) */

@@ -60,7 +60,7 @@ enum initAction {
 	REGISTRATION,
 	LOG_IN,
 	CREATE_TABLE,
-	CONNECT_OF_TABLE,
+	CONNECT_TO_TABLE,
 	LIST_TABLE
 };
 //////////////////////////////////////////////////////////////

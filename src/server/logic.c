@@ -8,7 +8,7 @@ unsigned int tableID = 0;
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
 
 enum statusTable {EMPTY, SLEEP, FULL, PLAY};
-
+int flg = 0;
 struct infoOfTable {
 	int countPlayer;
 	int status;
@@ -19,7 +19,9 @@ int readFile() {
 	FILE * fp;
 	bzero(&data, sizeof(struct dataPlayers) * SIZE_DATA);
 	if ((fp = fopen("data.txt", "rb")) == NULL) {
-		system("touch data.txt");
+		if(system("touch data.txt") < 0 ) {
+			perror("system");
+		}
 		return -1;
 	}
 
@@ -51,8 +53,15 @@ void saveFile() {
 	fclose(fp);
 }
 
+void initInfo() {
+	bzero(&inofList, sizeof(struct infoOfTable)*MAX_TABLES_COUNT);
+}
 void registration(void * buf) {
 
+	if (flg == 0) {
+		initInfo();
+		flg = 1;
+	}
 	struct loginRequest_t *loginReq = (struct loginRequest_t *)buf;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
 	bzero(loginRes, sizeof(struct loginResponce_t));
@@ -80,6 +89,10 @@ int checkPasswd(int numCheck, char *pswd) {
 }
 
 void login(void *buf) {
+	if (flg == 0) {
+		initInfo();
+		flg = 1;
+	}
 	int checkNum;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
 	struct loginRequest_t *loginReq = (struct loginRequest_t *) buf;
@@ -88,7 +101,6 @@ void login(void *buf) {
 		strcpy(loginRes->errorBuf, "User not found");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректное имя*/
 		free(loginRes);
-
 		return;
 	}
 	if ((checkNum = checkName(loginReq->name)) == -1) {
@@ -96,7 +108,6 @@ void login(void *buf) {
 		strcpy(loginRes->errorBuf, "User not found");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Пользаватель с таким именем уже есть*/
 		free(loginRes);
-
 		return;
 	}
 	if (checkPasswd(checkNum, loginReq->pass) == -1 ) {
@@ -104,7 +115,6 @@ void login(void *buf) {
 		strcpy(loginRes->errorBuf, "Incorrectly password");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректный пароль*/
 		free(loginRes);
-
 		return;
 	} else {
 		loginRes->status = STATUS_OK;
@@ -116,16 +126,16 @@ void login(void *buf) {
 
 void tableList() {
 	if (!countCurrentTables) {
-		// send(); /*Нет столов :(*/
+		lists[0].id = -1;
+		send_message(CURRENT, 0, LIST_TABLE, sizeof(struct table_t)*MAX_TABLES_COUNT, (void*) &lists);
 		return;
 	} else {
-		void * buf = lists; /*Указатель на список столов*/
-		// send( buf); /*отправляем список*/
+		send_message(CURRENT, 0, LIST_TABLE, sizeof(struct table_t)*MAX_TABLES_COUNT, (void*) &lists);
 	}
 }
 int getNewPort () {
 
-	return 0;
+	return 100;
 }
 
 int getSession() {
@@ -153,7 +163,8 @@ void createTable(void *buf) {
 	int empt = findEmptyTable();
 	if (empt == -1) {
 		responce.status = STATUS_BAD;
-		strcat(responce.error, "Невозможно создать стол!");
+		strcpy(responce.error, "Can not create table");
+		printf("[logic]create table error\n");
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
 		return;
 	}
@@ -165,29 +176,48 @@ void createTable(void *buf) {
 	strcpy(newPlayer.name, request->name);
 
 	lists[empt].id = tableID++;
-	// lists[countCurrentTables].tables[] /*add name*/
 	strcpy(lists[empt].tables[inofList[empt].countPlayer], request->name);
 
-	pipe(pipedes);
-	write(pipedes[0], (void *)&newPlayer, sizeof(struct newPlayer_t));
+	if (pipe(pipedes) < 0 ) {
+		perror("pipe");
+	}
 	pid = fork();
 	if (pid == 0) { /*Дочерний*/
-		close(pipedes[0]);
-		startGameServer(pipedes[1], tableID);
+		close(pipedes[1]);
+		// startGameServer(pipedes[0], tableID);
 		exit(0);
 	} else {
-		close(pipedes[1]);
+		close(pipedes[0]);
+		if ( write(pipedes[1], (void *)&newPlayer, sizeof(struct newPlayer_t)) < 0) {
+			perror("write");
+		}
 		responce.port = getNewPort();
 		responce.status = STATUS_OK;
-		add_id_to_table(tableID, pipedes[0]);
+		// add_id_to_table(tableID, pipedes[1]);
+		printf("create table\n");
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), (void *)&responce);
 	}
 }
 
-void connectTable(void *buf) {
-	struct selectRequest_t *request = (struct selectRequest_t *) buf;
-	struct selectResponce_t responce;
-}
+
+// void connectTable(void *buf) {
+// 	struct newPlayer_t newPlayer;
+// 	struct selectRequest_t *request = (struct selectRequest_t *) buf;
+// 	struct selectResponce_t responce;
+
+// 	for(i = 0; i < tableID; i++) {
+
+// 	}
+// 	tableID++;
+// 	request->tableID
+
+// 	++countCurrentTables;
+// 	newPlayer.session = getSession();
+// 	newPlayer.id = playersID++;
+// 	newPlayer.money = 1000;
+
+// 	// send() /*серверу*/
+// }
 
 // int main() {
 
