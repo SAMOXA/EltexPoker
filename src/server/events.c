@@ -11,13 +11,12 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 		/*Клиентская логика*/
 		switch (msg_type) {
 		case REGISTRATION: /*Регистрация*/
-
 			registration(buf);
-
+			printf("[logic] registration\n");
 			break;
 		case LOG_IN: /*Авторизация*/
 			login(buf);
-			printf("log\n");
+			printf("[logic] login\n");
 			break;
 		case CREATE_TABLE: /*Создание стола*/
 
