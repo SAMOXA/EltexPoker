@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include "../global.h"
-#include "net_implementation.h"
 #include "logic.h"
 
 /*struct in_thread {

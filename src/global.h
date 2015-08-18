@@ -12,7 +12,7 @@
 
 #define FALSE_CARD 60
 
-enum lears{
+enum lears {
 	HEARTS,
 	DIAMONDS,
 	CLUBS,
@@ -28,8 +28,8 @@ struct loginRequest_t {
 };
 
 struct table_t {
-	char id;
-	unsigned char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
+	int id;
+	char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
 };
 
 struct loginResponce_t {
@@ -38,12 +38,19 @@ struct loginResponce_t {
 };
 
 struct selectRequest_t {
-	char token; //MD5(pass+login+counter)
-	char selectedId;
+	char name[MAX_NAME_LENGTH];
+	int tableID;
 };
 
+// struct selectRequest_t {
+// 	char token; //MD5(pass+login+counter)
+// 	char selectedId;
+// };
+
 struct selectResponce_t {
+	int status;
 	int port;
+	char error[MAX_ERROR_MSG_LEN];
 };
 
 
@@ -52,7 +59,7 @@ enum initAction {
 	REGISTRATION,
 	LOG_IN,
 	CREATE_TABLE,
-	CONNECT_OF_TABLE,
+	CONNECT_TO_TABLE,
 	LIST_TABLE
 };
 //////////////////////////////////////////////////////////////
