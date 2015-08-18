@@ -8,6 +8,10 @@
 #define MAX_ACTIVE_CONNECTION 30
 #define MAX TABLES 10
 
+
+/* Получение индекса записи в таблицe по ИД */
+static int get_index_by_id(int id);
+
 /* Создание слушающего сокета */
 void init_listen_server_network(void);
 /* Цикл приема сообщений */
@@ -17,7 +21,7 @@ void listen_server_loop(void);
  * Создание сокета, добавление
  * файлового дескриптора слушающего сервера
  */
-void init_game_server_network(int listen_server_fd);
+void init_game_server_network(int game_server_port, int listen_server_fd);
 /* Цикл приема сообщений */
 void game_server_loop(void);
 
@@ -30,8 +34,8 @@ void close_current_connection(void);
 
 /*
  * Добавление и удаление записи
- * соответствия между id и текущим 
- * файловым дескриптором
+ * в таблицу соответствия между id
+ * и текущим файловым дескриптором
  */
 void add_id_to_table(int table_id, int id);
 void del_id_from_table(int table_id, int id);
