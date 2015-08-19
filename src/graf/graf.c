@@ -135,8 +135,20 @@ void grafInit(struct graf_table_t* tbl)
 
 void grafDrawAll()
 {
+    int index=0;
+
     ncsShow(main_tbl);
-    getch();
+    wrefresh(main_tbl->exit_btn.wnd);
+    wrefresh(main_tbl->pass_btn.wnd);
+
+    wrefresh(main_tbl->bank.wnd);
+    for(index=0;index<GRAF_MAX_PLAYERS;index++){
+	if(main_tbl->players[index]!=NULL){
+	    wrefresh(main_tbl->players[index]->wnd);
+	}
+    }
+    refresh();
+//    getch();
 }
 void grafDrawUserMsg(const char* msg)
 {
@@ -147,12 +159,14 @@ void grafDrawPlayer(int pos){};
 void grafDrawBank(struct graf_bank_t* t)
 {
     ncsShowBank(main_tbl);
+    wrefresh(main_tbl->bank.wnd);
     refresh();
 }
 void grafDrawTimer(const char* timer)
 {
     strcpy(main_tbl->bank.timer_text,timer);
     ncsShowBank(main_tbl);
+    wrefresh(main_tbl->bank.wnd);
     refresh();
 }
 
@@ -169,13 +183,26 @@ void grafShowInput(const char *title,const char *default_text)
     strcpy(main_tbl->input.buffer,default_text);
     main_tbl->input.enabled=1;
     ncsShowInput(main_tbl);
+    wrefresh(main_tbl->input.wnd);
+    refresh();
 }
 
 void grafHideInput()
 {
+    int index=0;
+
     main_tbl->input.enabled=0;
     clear();
     ncsShow(main_tbl);
+    wrefresh(main_tbl->exit_btn.wnd);
+    wrefresh(main_tbl->pass_btn.wnd);
+
+    wrefresh(main_tbl->bank.wnd);
+    for(index=0;index<GRAF_MAX_PLAYERS;index++){
+	if(main_tbl->players[index]!=NULL){
+	    wrefresh(main_tbl->players[index]->wnd);
+	}
+    }
     refresh();
 }
 
@@ -431,6 +458,7 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 
     initscr();
     start_color();
+    refresh();
 
     cbreak();
     noecho();
@@ -548,9 +576,9 @@ void ncsShowBank(const struct ncs_graf_table_t* tbl)
 		tbl->bank.timer_text);
     box(tbl->bank.wnd,0,0);
     
-    wrefresh(tbl->bank.wnd);
+//    wrefresh(tbl->bank.wnd);
     for(index_card=0;index_card<tbl->bank.card_num;index_card++){
-	wrefresh(tbl->bank.cards[index_card].wnd);
+//	wrefresh(tbl->bank.cards[index_card].wnd);
 	ncsSetWndColor(tbl->bank.cards[index_card].wnd,\
 		    tbl->bank.cards[index_card].color,\
 		    COLOR_WHITE);
@@ -574,7 +602,7 @@ void ncsShowBank(const struct ncs_graf_table_t* tbl)
 		}
 	    }
 	}
-	wrefresh(tbl->bank.cards[index_card].wnd);
+	//wrefresh(tbl->bank.cards[index_card].wnd);
     }
     refresh();
 }
@@ -594,7 +622,7 @@ void ncsShowInput(const struct ncs_graf_table_t* tbl)
     }
     
     wrefresh(tbl->input.wnd);
-    refresh();
+//    refresh();
 }
 
 void ncsShowBtn(const struct ncs_graf_button_t* btn)
@@ -609,7 +637,7 @@ void ncsShowBtn(const struct ncs_graf_button_t* btn)
     }
     
     wrefresh(btn->wnd);
-    refresh();
+//    refresh();
 }
 
 
@@ -627,7 +655,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
     move(0,0);
     clear();
 
-    refresh();
+//    refresh();
 
     for(index_player=0;index_player<GRAF_MAX_PLAYERS;index_player++){
 	if(tbl->players[index_player]!=NULL){
@@ -646,9 +674,9 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 			tbl->players[index_player]->status_text);
 	    box(tbl->players[index_player]->wnd,0,0);
 	    
-	    wrefresh(tbl->players[index_player]->wnd);
+//	    wrefresh(tbl->players[index_player]->wnd);
 	    for(index_card=0;index_card<tbl->players[index_player]->card_num;index_card++){
-		wrefresh(tbl->players[index_player]->cards[index_card].wnd);
+//		wrefresh(tbl->players[index_player]->cards[index_card].wnd);
 		ncsSetWndColor(tbl->players[index_player]->cards[index_card].wnd,\
 			    tbl->players[index_player]->cards[index_card].color,\
 			    COLOR_WHITE);
@@ -672,7 +700,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 			}
 		    }
 		}
-		wrefresh(tbl->players[index_player]->cards[index_card].wnd);
+//		wrefresh(tbl->players[index_player]->cards[index_card].wnd);
 	    }
 //	    wrefresh(tbl->players[index_player]->wnd);
 	}
@@ -749,6 +777,12 @@ void ncsChElem(int _step)
 		    }
 		    break;
 	};
+	if(main_tbl->input.enabled){
+	    wrefresh(main_tbl->input.wnd);
+	}
+	wrefresh(main_tbl->exit_btn.wnd);
+	wrefresh(main_tbl->pass_btn.wnd);
+	refresh();
     }
 }
 
@@ -778,16 +812,27 @@ void* ncsControlsFunc(void* data)
 	        ncsShowInput(main_tbl);
 	    }
 	}
+	refresh();
 	if(c==27){
 	    graf_exit_event();
-	    break;
 	}
 	if(c==10){
-	    len=strlen(main_tbl->input.buffer);
-	    res=0;
-	    for(index=0;index<len;index++){
-		res=res*10+main_tbl->input.buffer[index]-'0';
-		graf_bet_event(res);			
+	    if(	main_tbl->input.enabled==1 && \
+		main_tbl->input.selected==1){
+		len=strlen(main_tbl->input.buffer);
+		res=0;
+		for(index=0;index<len;index++){
+		    res=res*10+main_tbl->input.buffer[index]-'0';	
+		}
+		graf_bet_event(res);
+	    }
+	    if(	main_tbl->exit_btn.enabled==1 &&\
+		main_tbl->exit_btn.selected==1){
+		graf_exit_event();
+	    }
+	    if(	main_tbl->pass_btn.enabled==1 &&\
+		main_tbl->pass_btn.selected==1){
+		graf_pass_event();
 	    }
 	}
 	if(	main_tbl->input.enabled==1 && \
@@ -797,8 +842,8 @@ void* ncsControlsFunc(void* data)
 	    main_tbl->input.buffer[len]=c;
 	    main_tbl->input.buffer[len+1]='\0';
 	    ncsShowInput(main_tbl);
-//	    refresh();
 	}
+	refresh();
     }
 
     return NULL;
@@ -808,7 +853,6 @@ void ncsTempExit()
 {
     ncsEndGraf();
     exit(0);
-
 }
 
 void ncsTempBet(int sum)
