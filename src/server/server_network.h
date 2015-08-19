@@ -6,7 +6,7 @@
 
 #define MSG_BUF_LEN 1024
 #define MAX_ACTIVE_CONNECTION 30
-#define MAX TABLES 10
+#define MAX_TABLES 10
 
 
 /* Получение индекса записи в таблицe по ИД */
