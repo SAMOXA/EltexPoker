@@ -179,5 +179,10 @@ struct errorMsg_t {
 	int type;
 	char msg[100];
 };
+/* Header for network layer */
+struct network_msg_hdr_t {
+	int payload_type;
+	int payload_len;
+};
 //////////////////////////////////////////////////////
 #endif //GLOBAL_H
