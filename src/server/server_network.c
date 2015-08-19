@@ -34,7 +34,6 @@ static int current_fd = 0;
 
 static fd_set fd_read_set;
 
-
 /* Получение индекса записи в таблицe по ИД */
 static int get_index_by_id(int id){
 	int i = 0;
@@ -46,6 +45,7 @@ static int get_index_by_id(int id){
 		return -1;
 	return i;	/* Возврат индекс переданного ИД */
 }
+
 
 /* Создание слушающего сокета */
 void init_listen_server_network(void)
