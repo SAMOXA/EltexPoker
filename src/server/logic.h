@@ -12,7 +12,7 @@
 #include "internalIPC.h"
 
 
-#define SIZE_DATA MAX_TABLES_COUNT * 4
+#define SIZE_DATA (MAX_TABLES_COUNT * 4)
 
 struct dataPlayers {
 	char name[MAX_NAME_LENGTH];
@@ -27,5 +27,5 @@ void registration(void * buf);
 void login(void *buf);
 void tableList();
 void createTable(void *buf);
-
+void connectTable(void *buf);
 #endif //LOGIC_H
