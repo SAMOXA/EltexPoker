@@ -14,12 +14,6 @@
 #include "server_network.h"
 
 
-struct msg_hdr_t
-{
-	int type;
-	int len;
-};
-
 static struct sockaddr_in listen_server_addr;
 static struct sockaddr_in game_server_addr;
 
@@ -108,7 +102,7 @@ void listen_server_loop(void)
 	int return_val;
 		
 	struct timeval select_interval;
-	struct msg_hdr_t *buf_hdr;
+	struct network_msg_hdr_t *net_header;
 	struct sockaddr_in new_client_addr;
 	size_t new_client_addr_len = sizeof(struct sockaddr_in);
 
@@ -184,8 +178,8 @@ void listen_server_loop(void)
 					/* получить сообщение в соответствии с его длиной */
 				
 					/* вызвать events(), передать параметры и сообщение */
-					buf_hdr = (struct msg_hdr_t *) buf;
-					events(CURRENT, 0, buf_hdr->type, (void *) (buf + 8));
+					net_header = (struct network_msg_hdr_t *) buf;
+					events(CURRENT, 0, net_header->type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -211,11 +205,11 @@ void listen_server_loop(void)
 					/* получить сообщение в соответствии с его длиной */
 				
 					/* вызвать events(), передать параметры и сообщение */
-					buf_hdr = (struct msg_hdr_t *) buf;
+					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
 					return_val = get_index_by_fd(fd_table[i][1]);
 					
-					events(GAME_SERVER, return_val, buf_hdr->type, (void *) (buf + 8));
+					events(GAME_SERVER, return_val, net_header->type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -272,7 +266,7 @@ void game_server_loop()
 	int return_val;
 		
 	struct timeval select_interval;
-	struct msg_hdr_t *buf_hdr;
+	struct network_msg_hdr_t *net_header;
 	struct sockaddr_in new_client_addr;
 	size_t new_client_addr_len = sizeof(struct sockaddr_in);
 
@@ -351,9 +345,9 @@ void game_server_loop()
 				/* получить сообщение в соответствии с его длиной */
 			
 				/* вызвать events(), передать параметры и сообщение */
-				buf_hdr = (struct msg_hdr_t *) buf;
+				net_header = (struct network_msg_hdr_t *) buf;
 				
-				events(LOBBY_SERVER, 0, buf_hdr->type, (void *) (buf + 8));
+				events(LOBBY_SERVER, 0, net_header->payload_type, (void *) (buf + 8));
 			}
 		}
 		
@@ -378,11 +372,11 @@ void game_server_loop()
 					/* получить сообщение в соответствии с его длиной */
 				
 					/* вызвать events(), передать параметры и сообщение */
-					buf_hdr = (struct msg_hdr_t *) buf;
+					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
 					return_val = get_index_by_fd(fd_table[i][1]);
 					
-					events(CLIENT, return_val, buf_hdr->type, (void *) (buf + 8));
+					events(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -392,7 +386,7 @@ void game_server_loop()
 void send_message(int destination_type, int destination_id,
 		int message_type, int message_len, void *message)
 {
-	struct msg_hdr_t *buf_hdr;
+	struct network_msg_hdr_t *net_header;
 	char buf[MSG_BUF_LEN];
 	int return_val = 0;
 	int i;
@@ -402,10 +396,10 @@ void send_message(int destination_type, int destination_id,
  * заголовка сетевого модуля.
  */
 	memset(buf, 0 , MSG_BUF_LEN);
-	buf_hdr = (struct msg_hdr_t *) buf;
-	buf_hdr->type = message_type;
-	buf_hdr->len = message_len;
-	memcpy(buf + sizeof(struct msg_hdr_t), message, message_len);
+	net_header = (struct network_msg_hdr_t *) buf;
+	net_header->payload_type = message_type;
+	net_header->payload_len = message_len;
+	memcpy(buf + sizeof(struct network_msg_hdr_t), message, message_len);
 
 /*
  * Отправка сообщения в соответствии с
