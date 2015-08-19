@@ -3,10 +3,13 @@
 
 #include "../global.h"
 
-enum sourceType_e {
-	SERVER,
-	CLIENT,
+enum destinationType_e {
+/* For listen server */
+	GAME_SERVER,
 	CURRENT,
+/* For game server */
+	LOBBY_SERVER,
+	CLIENT,
 	ALL_CLIENTS
 };
 
