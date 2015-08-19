@@ -14,6 +14,8 @@ struct gameState_t game;
 
 unsigned char takedCard[MAX_TAKED_CARDS];
 
+struct errorMsg_t lastError;
+
 char checkTakedCard(unsigned char card){
 	int i;
 	for(i=0;i<MAX_TAKED_CARDS;i++){
@@ -88,19 +90,27 @@ char checkActionPermission(int playerId, char actionType, void *data){
 	int index = getPlayerIndex(playerId);
 	int riseCount = *((int *)data);
 	if(game.state == GAME_START || game.state == GAME_FINAL){
+		lastError.type = ERROR_PERMISSION;
+		strcpy(lastError.msg, "You can not do this now");
 		return 0;
 	}
 	if(game.activePlayerId != playerId){
+		lastError.type = ERROR_PERMISSION;
+		strcpy(lastError.msg, "You can not do this now");
 		return 0;
 	}
 	switch(actionType){
 		case(PERM_CHECK):
 			if(game.state == GAME_PRE_FLOP_ROUND){
 				if(game.lastRisePlayerId != playerId){
+					lastError.type = ERROR_RISE;
+					strcpy(lastError.msg, "You can not pass in pre flop");
 					return 0;
 				}
 			}else{
 				if(game.lastRisePlayerId != -1 && game.lastRisePlayerId != playerId){
+					lastError.type = ERROR_RISE;
+					strcpy(lastError.msg, "You can not pass after rise");
 					return 0;
 				}
 			}
@@ -110,11 +120,15 @@ char checkActionPermission(int playerId, char actionType, void *data){
 			break;
 		case(PERM_RISE):
 			if(game.players[index].money - (game.bet + riseCount) < 0){
+				lastError.type = ERROR_MONEY;
+				strcpy(lastError.msg, "You have insufficient funds");
 				return 0;
 			}
 			break;
 		case(PERM_CALL):
 			if(game.players[index].money - game.bet < 0){
+				lastError.type = ERROR_MONEY;
+				strcpy(lastError.msg, "You have insufficient funds");
 				return 0;
 			}
 			break;
@@ -162,9 +176,11 @@ void startNewGame(){
 		game.players[i].cards[1] = getCard();
 		//memset(game.players[i].cards, FALSE_CARD, sizeof(unsigned char)*2);
 		game.players[i].bet = 0;
-		//send cards
+		send_message(CLIENT, game.players[i].id, STATE_NEW_CARD_PALAYER,
+				sizeof(unsigned char)*2, &game.players[i].cards);
 	}
 	//Blinds
+	//TODO check money
 	game.players[game.smallBlindPlayerId].money -= game.bet/2;
 	game.players[game.smallBlindPlayerId].bet = game.bet/2;
 	game.players[game.bigBlindPlayerId].money -= game.bet;
@@ -176,6 +192,7 @@ void startNewGame(){
 void updateTurn() {
 	int winIndex = -1;
 	int i;
+	int index;
 	if(game.state == GAME_INSTANT_WIN){
 		game.state = GAME_FINAL;
 	}else{
@@ -194,7 +211,7 @@ void updateTurn() {
 			game.cards[4] = getCard();
 			break;
 		case(GAME_FINAL):
-			//winIndex = getWinIndex()
+			winIndex = getPlayerIndex(getWinIndex());
 			game.players[winIndex].money += game.bank;
 			startNewGame();
 	}
@@ -220,7 +237,8 @@ void updateState() {
 	}
 	if(game.playersCount < 2){
 		game.state = GAME_START;
-		//maybe send
+		send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
+				sizeof(struct gameState_t), &game);
 		return;
 	}
 	if(checkWin() || checkNextTurn()){
@@ -305,6 +323,8 @@ char actionConnectRequest(unsigned int session) {
 			id = game.players[i].id;
 			game.playersCount++;
 			updateState();
+			send_message(ALL_CLIENTS, 0, STATE_NEW_PLAYER, sizeof(struct player_t),
+					&(game.players[i]));
 			break;
 		}
 	}
@@ -335,10 +355,12 @@ void newEvent(unsigned int id, unsigned char type, char sourceType, void *data){
 	if(sourceType == CLIENT){ //Клиент
 		switch(type) {
 			case(ACTION_EXIT):
-				//send player diconected to server
-				//network delete player
-				removePlayer(*((int *)data));
-				//send PLAYER_DISCONNECTED to clients
+				removePlayer(id);
+				updateState();
+				del_id_from_table(0, id);
+				send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_LEFT, sizeof(int), &id);
+				send_message(ALL_CLIENTS, 0, STATE_PLAYER_DISCONECTED,
+						sizeof(int), &id);
 				break;
 			case(ACTION_CALL):
 				if(actionCall(id) == 0){
@@ -375,16 +397,20 @@ void newEvent(unsigned int id, unsigned char type, char sourceType, void *data){
 				break;
 		}
 		if(errorFlag == 0){
-			//send all new state
+			send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
+					sizeof(struct gameState_t), &game);
 		}else{
-			//send error to one
+			send_message(CLIENT, id, STATE_ERROR,
+					sizeof(struct errorMsg_t), &lastError);
 		}
 	}
-	if(sourceType == SERVER){
+	if(sourceType == LOBBY_SERVER){
 		switch(type) {
 			case (INTERNAL_NEW_PLAYER):
 				addNewPlayer((struct newPlayer_t *)data);
-				//send PLAYER_NEW_PLAYER to clients
+				add_id_to_table(0, id);
+				send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
+						sizeof(int), &id);
 				break;
 			default:
 				//ERROR

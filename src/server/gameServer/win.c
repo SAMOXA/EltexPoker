@@ -238,6 +238,7 @@ char getWinIndex() {
 	preparePlayersCards();
 	prepareToWinCount = 0;
 	checkFlush();
+	return combos[rand()%activePlayersCount].playerId;
 }
 
 /*

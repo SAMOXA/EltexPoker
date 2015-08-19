@@ -91,7 +91,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_pokerServer_OBJECTS = main.$(OBJEXT) gameServer/gameLogic.$(OBJEXT)
+am_pokerServer_OBJECTS = main.$(OBJEXT) gameServer/gameLogic.$(OBJEXT) \
+	server_network.$(OBJEXT)
 pokerServer_OBJECTS = $(am_pokerServer_OBJECTS)
 pokerServer_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -235,7 +236,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pokerServer_SOURCES = main.c ../global.h gameServer/gameLogic.c \
-	gameServer/gameLogic.h
+	gameServer/gameLogic.h server_network.c server_network.h
 all: all-am
 
 .SUFFIXES:
@@ -333,6 +334,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server_network.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/gameLogic.Po@am__quote@
 
 .c.o:

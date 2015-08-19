@@ -8,6 +8,7 @@
 #include "../../global.h"
 #include "../internalIPC.h"
 #include "win.h"
+#include "../server_network.h"
 
 extern struct gameState_t game;
 

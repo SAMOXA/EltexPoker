@@ -144,5 +144,17 @@ struct changePlayerCards_t {
 struct changePlayerState_t {
 	unsigned char state;
 };
+
+enum errorTypes_e {
+	ERROR_PERMISSION,
+	ERROR_AUTH,
+	ERROR_RISE,
+	ERROR_MONEY
+};
+
+struct errorMsg_t {
+	int type;
+	char msg[100];
+};
 //////////////////////////////////////////////////////
 #endif //GLOBAL_H
