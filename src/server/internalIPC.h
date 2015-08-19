@@ -4,11 +4,13 @@
 #include "../global.h"
 
 enum destinationType_e {
+/* For listen server */
 	GAME_SERVER,
-	LOBBI_SERVER,
-	ALL_CLIENTS
+	CURRENT,
+/* For game server */
+	LOBBY_SERVER,
 	CLIENT,
-	CURRENT
+	ALL_CLIENTS
 };
 
 enum messagesType {
