@@ -179,7 +179,7 @@ void listen_server_loop(void)
 				
 					/* вызвать events(), передать параметры и сообщение */
 					net_header = (struct network_msg_hdr_t *) buf;
-					events(CURRENT, 0, net_header->type, (void *) (buf + 8));
+					events(CURRENT, 0, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -209,7 +209,7 @@ void listen_server_loop(void)
 					/* Получение индекса записи с ИД игрового сервера */
 					return_val = get_index_by_fd(fd_table[i][1]);
 					
-					events(GAME_SERVER, return_val, net_header->type, (void *) (buf + 8));
+					events(GAME_SERVER, return_val, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
