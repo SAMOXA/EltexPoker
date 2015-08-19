@@ -90,9 +90,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__dirstamp = $(am__leading_dot)dirstamp
-am_pokerServer_OBJECTS = main.$(OBJEXT) gameServer/gameLogic.$(OBJEXT) \
-	server_network.$(OBJEXT)
+am_pokerServer_OBJECTS = main.$(OBJEXT) server_network.$(OBJEXT) \
+	events.$(OBJEXT) logic.$(OBJEXT)
 pokerServer_OBJECTS = $(am_pokerServer_OBJECTS)
 pokerServer_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -235,8 +234,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pokerServer_SOURCES = main.c ../global.h gameServer/gameLogic.c \
-	gameServer/gameLogic.h server_network.c server_network.h
+# pokerServer_SOURCES += gameServer/gameLogic.c gameServer/gameLogic.h
+pokerServer_SOURCES = main.c ../global.h server_network.c \
+	server_network.h events.c events.h logic.c logic.h
 all: all-am
 
 .SUFFIXES:
@@ -313,14 +313,6 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-gameServer/$(am__dirstamp):
-	@$(MKDIR_P) gameServer
-	@: > gameServer/$(am__dirstamp)
-gameServer/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) gameServer/$(DEPDIR)
-	@: > gameServer/$(DEPDIR)/$(am__dirstamp)
-gameServer/gameLogic.$(OBJEXT): gameServer/$(am__dirstamp) \
-	gameServer/$(DEPDIR)/$(am__dirstamp)
 
 pokerServer$(EXEEXT): $(pokerServer_OBJECTS) $(pokerServer_DEPENDENCIES) $(EXTRA_pokerServer_DEPENDENCIES) 
 	@rm -f pokerServer$(EXEEXT)
@@ -328,14 +320,14 @@ pokerServer$(EXEEXT): $(pokerServer_OBJECTS) $(pokerServer_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f gameServer/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/events.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server_network.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/gameLogic.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -468,8 +460,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f gameServer/$(DEPDIR)/$(am__dirstamp)
-	-rm -f gameServer/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -479,7 +469,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -525,7 +515,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

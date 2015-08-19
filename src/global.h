@@ -6,9 +6,13 @@
 #define MAX_PLAYERS_PER_TABLE 4
 #define MAX_TABLES_COUNT 5
 #define SESSION_TOKEN_LENGTH 16
+#define MAX_ERROR_MSG_LEN 24
+#define STATUS_OK 1
+#define STATUS_BAD 0
+
 #define FALSE_CARD 60
 
-enum lears{
+enum lears {
 	HEARTS,
 	DIAMONDS,
 	CLUBS,
@@ -38,28 +42,47 @@ enum values{
 struct loginRequest_t {
 	char name[MAX_NAME_LENGTH];
 	char pass[MAX_PASS_LENGTH];
-	char registerFlag;
+
 };
 
 struct table_t {
-	char id;
-	unsigned char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
+	int id;
+	char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
 };
 
 struct loginResponce_t {
-	char status;
-	int startCounter;
-	struct table_t tables[MAX_TABLES_COUNT];
+	int status;
+	char errorBuf[MAX_ERROR_MSG_LEN];
 };
 
 struct selectRequest_t {
-	char token; //MD5(pass+login+counter)
-	char selectedId;
+	char name[MAX_NAME_LENGTH];
+	int tableID;
 };
 
+// struct selectRequest_t {
+// 	char token; //MD5(pass+login+counter)
+// 	char selectedId;
+// };
+
 struct selectResponce_t {
+	int status;
 	int port;
+	int session;
+	char error[MAX_ERROR_MSG_LEN];
 };
+
+
+////////////////////From lobbi server logic structures////////
+enum initAction {
+	REGISTRATION,
+	LOG_IN,
+	CREATE_TABLE,
+	CONNECT_TO_TABLE,
+	LIST_TABLE
+};
+//////////////////////////////////////////////////////////////
+
 
 ////////////////////From game server logic structures/////////
 enum gameStates {

@@ -22,7 +22,7 @@ enum messagesType {
 
 struct newPlayer_t {
 	unsigned int id;
-	unsigned int name[MAX_NAME_LENGTH];
+	char name[MAX_NAME_LENGTH];
 	unsigned int money;
 	unsigned int session;
 };
@@ -37,5 +37,6 @@ struct updatePlayers_t {
 	struct updatePlayer_t updates[MAX_PLAYERS_PER_TABLE];
 };
 
+void startGameServer(int fd, int tableID, int port);
 
 #endif //INTERNAL_IPC_H
