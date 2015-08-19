@@ -51,6 +51,7 @@ struct selectRequest_t {
 struct selectResponce_t {
 	int status;
 	int port;
+	int session;
 	char error[MAX_ERROR_MSG_LEN];
 };
 

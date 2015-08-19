@@ -24,6 +24,6 @@ struct newPlayer_t {
 	unsigned int session;
 };
 
-void startGameServer(int fd, int tableID);
+void startGameServer(int fd, int tableID, int port);
 
 #endif //INTERNAL_IPC_H

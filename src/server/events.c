@@ -7,7 +7,7 @@
 void events(int dest_type, int id, int msg_type, void *buf) { 
 
 	switch (dest_type) {
-	case CLIENT:
+	case CLIENT: /*CURRENT*/
 		/*Клиентская логика*/
 		switch (msg_type) {
 		case REGISTRATION: /*Регистрация*/
@@ -32,7 +32,7 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 			break;
 		}
 		break;
-	case SERVER:
+	case SERVER: /*GAME_SERVER*/
 		switch (msg_type) {
 		/*Внутресерверная логика*/
 		case 1: /*Подтверждение подключения*/
