@@ -282,9 +282,9 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
     strcpy(tbl->exit_btn.title,"EXIT");
 
     tbl->exit_btn.size[0]=1+2;
-    tbl->exit_btn.size[1]=20+2;
+    tbl->exit_btn.size[1]=4+2;
     tbl->exit_btn.pos[0]=NCS_GRAF_TABLE_SIZE_Y-1-2;
-    tbl->exit_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-20-2;
+    tbl->exit_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-4-2;
     tbl->exit_btn.title_pos[0]=1;
     tbl->exit_btn.title_pos[1]=1;
 
@@ -293,9 +293,9 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
     strcpy(tbl->pass_btn.title,"PASS");
 
     tbl->pass_btn.size[0]=1+2;
-    tbl->pass_btn.size[1]=20+2;
+    tbl->pass_btn.size[1]=4+2;
     tbl->pass_btn.pos[0]=NCS_GRAF_TABLE_SIZE_Y-1-2-3;
-    tbl->pass_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-20-2;
+    tbl->pass_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-4-2;
     tbl->pass_btn.title_pos[0]=1;
     tbl->pass_btn.title_pos[1]=1;
 
@@ -458,7 +458,7 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 
     initscr();
     start_color();
-    refresh();
+
 
     cbreak();
     noecho();
@@ -468,38 +468,10 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 
     ncsInitColorPairs();
 
+
+
     CUR_TEXT_COLOR=COLOR_WHITE;
     CUR_BACK_COLOR=COLOR_BLACK;
-
-    tbl->bank.wnd=newwin(tbl->bank.size[0],\
-			tbl->bank.size[1],\
-			tbl->bank.pos[0],\
-			tbl->bank.pos[1]);
-    for(index_card=0;\
-	index_card<tbl->bank.card_num;\
-	index_card++){
-	tbl->bank.cards[index_card].wnd=derwin(	tbl->bank.wnd,\
-						tbl->card_size[0],\
-						tbl->card_size[1],\
-						tbl->bank.cards_pos[0],\
-						tbl->bank.cards_pos[1]+tbl->card_size[1]*index_card
-					      );
-    }
-
-    tbl->input.wnd=newwin(tbl->input.size[0],\
-			tbl->input.size[1],\
-			tbl->input.pos[0],\
-			tbl->input.pos[1]);
-
-    tbl->exit_btn.wnd=newwin(tbl->exit_btn.size[0],\
-			tbl->exit_btn.size[1],\
-			tbl->exit_btn.pos[0],\
-			tbl->exit_btn.pos[1]);
-
-    tbl->pass_btn.wnd=newwin(tbl->pass_btn.size[0],\
-			tbl->pass_btn.size[1],\
-			tbl->pass_btn.pos[0],\
-			tbl->pass_btn.pos[1]);
 
     ncsSetWndColor(stdscr,CUR_TEXT_COLOR,CUR_BACK_COLOR);
     for(index_player=0;index_player<GRAF_MAX_PLAYERS;index_player++){
@@ -525,6 +497,46 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
     }
 
     clear();
+
+    CUR_TEXT_COLOR=COLOR_WHITE;
+    CUR_BACK_COLOR=COLOR_GREEN;
+
+    tbl->bank.wnd=newwin(tbl->bank.size[0],\
+			tbl->bank.size[1],\
+			tbl->bank.pos[0],\
+			tbl->bank.pos[1]);
+    for(index_card=0;\
+	index_card<tbl->bank.card_num;\
+	index_card++){
+	tbl->bank.cards[index_card].wnd=derwin(	tbl->bank.wnd,\
+						tbl->card_size[0],\
+						tbl->card_size[1],\
+						tbl->bank.cards_pos[0],\
+						tbl->bank.cards_pos[1]+tbl->card_size[1]*index_card
+					      );
+    }
+
+    tbl->input.wnd=newwin(tbl->input.size[0],\
+			tbl->input.size[1],\
+			tbl->input.pos[0],\
+			tbl->input.pos[1]);
+    wclear(tbl->input.wnd);
+
+    ncsSetWndColor(tbl->exit_btn.wnd,COLOR_WHITE,COLOR_BLUE);
+    tbl->exit_btn.wnd=newwin(tbl->exit_btn.size[0],\
+			tbl->exit_btn.size[1],\
+			tbl->exit_btn.pos[0],\
+			tbl->exit_btn.pos[1]);
+    wclear(tbl->exit_btn.wnd);
+    wrefresh(tbl->exit_btn.wnd);
+
+    tbl->pass_btn.wnd=newwin(tbl->pass_btn.size[0],\
+			tbl->pass_btn.size[1],\
+			tbl->pass_btn.pos[0],\
+			tbl->pass_btn.pos[1]);
+    wclear(tbl->pass_btn.wnd);
+    wrefresh(tbl->pass_btn.wnd);
+
     return;
 }
 
@@ -609,8 +621,11 @@ void ncsShowBank(const struct ncs_graf_table_t* tbl)
 
 void ncsShowInput(const struct ncs_graf_table_t* tbl)
 {
+    ncsSetWndColor(tbl->input.wnd,COLOR_BLACK,COLOR_BLACK);
+    box(tbl->input.wnd,0,0);
+
     ncsSetWndColor(tbl->input.wnd,COLOR_GREEN,COLOR_BLACK);
-    wclear(tbl->input.wnd);
+//    wclear(tbl->input.wnd);
     ncsPrintInWnd(tbl->input.wnd,\
 		tbl->input.title_pos,\
 		tbl->input.title);
@@ -627,8 +642,11 @@ void ncsShowInput(const struct ncs_graf_table_t* tbl)
 
 void ncsShowBtn(const struct ncs_graf_button_t* btn)
 {
+    ncsSetWndColor(btn->wnd,COLOR_BLUE,COLOR_BLUE);
+    box(btn->wnd,0,0);
+
     ncsSetWndColor(btn->wnd,COLOR_WHITE,COLOR_BLUE);
-    wclear(btn->wnd);
+//    wclear(btn->wnd);
     ncsPrintInWnd(btn->wnd,\
 		btn->title_pos,\
 		btn->title);
@@ -812,7 +830,7 @@ void* ncsControlsFunc(void* data)
 	        ncsShowInput(main_tbl);
 	    }
 	}
-	refresh();
+//	refresh();
 	if(c==27){
 	    graf_exit_event();
 	}
@@ -836,12 +854,23 @@ void* ncsControlsFunc(void* data)
 	    }
 	}
 	if(	main_tbl->input.enabled==1 && \
-		main_tbl->input.selected==1 &&\
-		 isdigit(c)){
-	    len=strlen(main_tbl->input.buffer);
-	    main_tbl->input.buffer[len]=c;
-	    main_tbl->input.buffer[len+1]='\0';
-	    ncsShowInput(main_tbl);
+		main_tbl->input.selected==1){
+	    if(c == KEY_BACKSPACE){
+		len=strlen(main_tbl->input.buffer);
+		if(len>0){
+		    main_tbl->input.buffer[len-1]='\0';
+		    wmove(main_tbl->input.wnd,2,len);
+		    wprintw(main_tbl->input.wnd," ");
+		}
+		ncsShowInput(main_tbl);
+	    }
+	    if(isdigit(c)){
+		len=strlen(main_tbl->input.buffer);
+		main_tbl->input.buffer[len]=c;
+		main_tbl->input.buffer[len+1]='\0';
+
+		ncsShowInput(main_tbl);
+	    }
 	}
 	refresh();
     }
