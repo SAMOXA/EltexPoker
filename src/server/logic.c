@@ -252,7 +252,7 @@ void createTable(void *buf) {
 		// send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), (void *)&responce);
 		/*Close connect*/
-		close_current_connection();
+		close_current_client_connection();
 	}
 }
 
@@ -309,7 +309,7 @@ void connectTable(void *buf) {
 	responce.port = inofList[check].port;
 
 	send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), (void *) &responce);
-	close_current_connection();
+	close_current_client_connection();
 
 }
 

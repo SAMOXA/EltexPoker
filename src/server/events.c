@@ -22,18 +22,20 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 			break;
 		case CREATE_TABLE: /*Создание стола*/
 			createTable(buf);
-			printf("[logic]create table\n");
+			printf("[logic] create table\n");
 			break;
 
 		case CONNECT_TO_TABLE: /*Подключение к столу*/
 			connectTable(buf);
+			printf("[logic] connect to table\n");
 			break;
 		case LIST_TABLE: /*Список столов*/
 			tableList();
+			printf("[logic] table list\n");
 			break;
 		}
 		break;
-	case SERVER: /*GAME_SERVER*/
+	case GAME_SERVER: /*GAME_SERVER*/
 		switch (msg_type) {
 		/*Внутресерверная логика*/
 		case 1: /*Подтверждение подключения*/
