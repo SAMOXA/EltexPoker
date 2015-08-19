@@ -3,18 +3,19 @@
 
 #include "../global.h"
 
-enum sourceType_e {
-	SERVER,
-	CLIENT,
-	CURRENT,
+enum destinationType_e {
+	GAME_SERVER,
+	LOBBI_SERVER,
 	ALL_CLIENTS
+	CLIENT,
+	CURRENT
 };
 
 enum messagesType {
 	INTERNAL_NEW_PLAYER,
 	INTERNAL_PLAYER_CONFIRMED,
 	INTERNAL_PLAYER_LEFT,
-	INTERNAL_PLAYERS_UPDATE,
+	INTERNAL_PLAYERS_UPDATE
 };
 
 struct newPlayer_t {
