@@ -153,7 +153,6 @@ int getNewPort () {
 	for (i = 0; i < MAX_TABLES_COUNT; i++) {
 		if (gPorts.statusListPort[i] == EMPTY) {
 			gPorts.statusListPort[i] = PLAY;
-			printf("----port - %d\n", gPorts.listPort[i]);
 			return gPorts.listPort[i];
 		}
 	}
