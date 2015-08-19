@@ -3,8 +3,9 @@
 int flgReadFile = 0;
 int countAllPlayers = 0;
 int countCurrentTables = 0;
-unsigned int playersID = 0;
+ int playersID = 0;
 unsigned int tableID = 0;
+int currentPlayer = 0;
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
 
 enum statusTable {EMPTY, SLEEP, FULL, PLAY};
@@ -15,6 +16,11 @@ struct infoOfTable {
 	int status;
 	int port;
 } inofList[MAX_TABLES_COUNT];
+
+struct listNameId {
+	char name[MAX_NAME_LENGTH];
+	int id;
+} IdName[MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE];
 
 struct gamePort {
 	int listPort[MAX_TABLES_COUNT];
@@ -30,7 +36,6 @@ int readFile() {
 		}
 		return -1;
 	}
-
 	while (fscanf(fp, "%s%s", (data[countAllPlayers].name), (data[countAllPlayers].pswd)) != EOF) {
 		countAllPlayers++;
 	}
@@ -62,6 +67,7 @@ void saveFile() {
 void init() {
 	int i;
 	bzero(&inofList, sizeof(struct infoOfTable) * MAX_TABLES_COUNT);
+	bzero(&IdName, (sizeof(struct listNameId) * MAX_PLAYERS_PER_TABLE * MAX_TABLES_COUNT));
 	gPorts.listPort[0] = LISTEN_SERVER_PORT + 1;
 	gPorts.statusListPort[0] = EMPTY;
 	for (i = 1; i < MAX_TABLES_COUNT; i++) {
@@ -71,14 +77,9 @@ void init() {
 }
 void registration(void * buf) {
 
-	if (flg == 0) {
-		init();
-		flg = 1;
-	}
 	struct loginRequest_t *loginReq = (struct loginRequest_t *)buf;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
 	bzero(loginRes, sizeof(struct loginResponce_t));
-
 	readFile();
 	if (checkName(loginReq->name) == -1) {
 		strcpy(data[countAllPlayers].name, loginReq->name);
@@ -88,7 +89,8 @@ void registration(void * buf) {
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	} else {
 		loginRes->status = STATUS_BAD;
-		strcpy(loginRes->errorBuf, "Error\0");
+		strcpy(loginRes->errorBuf, "Bad Tima");
+		saveFile();
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	}
 	free(loginRes);
@@ -102,10 +104,7 @@ int checkPasswd(int numCheck, char *pswd) {
 }
 
 void login(void *buf) {
-	if (flg == 0) {
-		init();
-		flg = 1;
-	}
+
 	int checkNum;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
 	struct loginRequest_t *loginReq = (struct loginRequest_t *) buf;
@@ -131,6 +130,9 @@ void login(void *buf) {
 		return;
 	} else {
 		loginRes->status = STATUS_OK;
+		IdName[currentPlayer].id = playersID++;
+		strcpy(IdName[currentPlayer].name, loginReq->name);
+		currentPlayer++;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 		free(loginRes);
 
@@ -140,7 +142,7 @@ void login(void *buf) {
 void tableList() {
 	if (!countCurrentTables) {
 		lists[0].id = -1;
-		send_message(CURRENT, 0, LIST_TABLE, sizeof(struct table_t)*MAX_TABLES_COUNT, (void*) &lists);
+		send_message(CURRENT, 0, LIST_TABLE, 0, (void*) &lists);
 		return;
 	} else {
 		send_message(CURRENT, 0, LIST_TABLE, sizeof(struct table_t)*MAX_TABLES_COUNT, (void*) &lists);
@@ -192,7 +194,7 @@ void createTable(void *buf) {
 	++countCurrentTables;
 	newSessison = getSession();
 	newPlayer.session = newSessison;
-	newPlayer.id = playersID++;
+	// newPlayer.id = playersID++; /*брать из таблице*/
 	newPlayer.money = 1000;
 	strcpy(newPlayer.name, request->name);
 
@@ -229,6 +231,7 @@ void createTable(void *buf) {
 		// send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), (void *)&responce);
 		/*Close connect*/
+		close_current_connection();
 	}
 }
 
@@ -279,6 +282,8 @@ void connectTable(void *buf) {
 	responce.port = inofList[check].port;
 
 	send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), (void *) &responce);
+	close_current_connection();
+
 }
 
 // int main() {

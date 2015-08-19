@@ -26,9 +26,10 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 			break;
 
 		case CONNECT_TO_TABLE: /*Подключение к столу*/
-
+			connectTable(buf);
 			break;
 		case LIST_TABLE: /*Список столов*/
+			tableList();
 			break;
 		}
 		break;
