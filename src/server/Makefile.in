@@ -76,7 +76,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = pokerServer$(EXEEXT) testCoreLogic$(EXEEXT)
+bin_PROGRAMS = pokerServer$(EXEEXT)
 subdir = src/server
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -95,10 +95,6 @@ am_pokerServer_OBJECTS = main.$(OBJEXT) gameServer/gameLogic.$(OBJEXT) \
 	gameServer/win.$(OBJEXT)
 pokerServer_OBJECTS = $(am_pokerServer_OBJECTS)
 pokerServer_LDADD = $(LDADD)
-am_testCoreLogic_OBJECTS = gameServer/tests/test.$(OBJEXT) \
-	gameServer/gameLogic.$(OBJEXT) gameServer/win.$(OBJEXT)
-testCoreLogic_OBJECTS = $(am_testCoreLogic_OBJECTS)
-testCoreLogic_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -127,8 +123,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(pokerServer_SOURCES) $(testCoreLogic_SOURCES)
-DIST_SOURCES = $(pokerServer_SOURCES) $(testCoreLogic_SOURCES)
+SOURCES = $(pokerServer_SOURCES)
+DIST_SOURCES = $(pokerServer_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -164,6 +160,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
@@ -171,7 +168,9 @@ DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
+EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -240,9 +239,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pokerServer_SOURCES = main.c ../global.h gameServer/gameLogic.c \
-	gameServer/gameLogic.h gameServer/win.c gameServer/win.h
-testCoreLogic_SOURCES = gameServer/tests/test.c \
-	gameServer/tests/test.h gameServer/gameLogic.c \
 	gameServer/gameLogic.h gameServer/win.c gameServer/win.h
 all: all-am
 
@@ -334,23 +330,10 @@ gameServer/win.$(OBJEXT): gameServer/$(am__dirstamp) \
 pokerServer$(EXEEXT): $(pokerServer_OBJECTS) $(pokerServer_DEPENDENCIES) $(EXTRA_pokerServer_DEPENDENCIES) 
 	@rm -f pokerServer$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(pokerServer_OBJECTS) $(pokerServer_LDADD) $(LIBS)
-gameServer/tests/$(am__dirstamp):
-	@$(MKDIR_P) gameServer/tests
-	@: > gameServer/tests/$(am__dirstamp)
-gameServer/tests/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) gameServer/tests/$(DEPDIR)
-	@: > gameServer/tests/$(DEPDIR)/$(am__dirstamp)
-gameServer/tests/test.$(OBJEXT): gameServer/tests/$(am__dirstamp) \
-	gameServer/tests/$(DEPDIR)/$(am__dirstamp)
-
-testCoreLogic$(EXEEXT): $(testCoreLogic_OBJECTS) $(testCoreLogic_DEPENDENCIES) $(EXTRA_testCoreLogic_DEPENDENCIES) 
-	@rm -f testCoreLogic$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(testCoreLogic_OBJECTS) $(testCoreLogic_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f gameServer/*.$(OBJEXT)
-	-rm -f gameServer/tests/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -358,7 +341,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/gameLogic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/win.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gameServer/tests/$(DEPDIR)/test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -493,8 +475,6 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f gameServer/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gameServer/$(am__dirstamp)
-	-rm -f gameServer/tests/$(DEPDIR)/$(am__dirstamp)
-	-rm -f gameServer/tests/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -504,7 +484,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR) gameServer/tests/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -550,7 +530,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR) gameServer/tests/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

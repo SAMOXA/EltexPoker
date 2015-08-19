@@ -393,7 +393,7 @@ on `(hostname || uname -n) 2>/dev/null | sed 1q`
 "
 
 # Files that config.status was made for.
-config_files=" Makefile src/Makefile src/client/Makefile src/server/Makefile"
+config_files=" Makefile src/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
 config_headers=" config.h"
 config_commands=" depfiles"
 
@@ -552,6 +552,8 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/client/Makefile") CONFIG_FILES="$CONFIG_FILES src/client/Makefile" ;;
     "src/server/Makefile") CONFIG_FILES="$CONFIG_FILES src/server/Makefile" ;;
+    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "tests/coreLogic/Makefile") CONFIG_FILES="$CONFIG_FILES tests/coreLogic/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -621,6 +623,9 @@ S["am__EXEEXT_FALSE"]=""
 S["am__EXEEXT_TRUE"]="#"
 S["LTLIBOBJS"]=""
 S["LIBOBJS"]=""
+S["EGREP"]="/bin/grep -E"
+S["GREP"]="/bin/grep"
+S["CPP"]="gcc -E"
 S["am__fastdepCC_FALSE"]="#"
 S["am__fastdepCC_TRUE"]=""
 S["CCDEPMODE"]="depmode=gcc3"
@@ -755,6 +760,25 @@ D["PACKAGE_BUGREPORT"]=" \"amdsamoxa@gmail.com\""
 D["PACKAGE_URL"]=" \"\""
 D["PACKAGE"]=" \"poker\""
 D["VERSION"]=" \"0.1\""
+D["STDC_HEADERS"]=" 1"
+D["HAVE_SYS_TYPES_H"]=" 1"
+D["HAVE_SYS_STAT_H"]=" 1"
+D["HAVE_STDLIB_H"]=" 1"
+D["HAVE_STRING_H"]=" 1"
+D["HAVE_MEMORY_H"]=" 1"
+D["HAVE_STRINGS_H"]=" 1"
+D["HAVE_INTTYPES_H"]=" 1"
+D["HAVE_STDINT_H"]=" 1"
+D["HAVE_UNISTD_H"]=" 1"
+D["HAVE_ARPA_INET_H"]=" 1"
+D["HAVE_NETINET_IN_H"]=" 1"
+D["HAVE_STDLIB_H"]=" 1"
+D["HAVE_STRING_H"]=" 1"
+D["HAVE_SYS_SOCKET_H"]=" 1"
+D["HAVE_UNISTD_H"]=" 1"
+D["HAVE_MEMSET"]=" 1"
+D["HAVE_SELECT"]=" 1"
+D["HAVE_SOCKET"]=" 1"
   for (key in D) D_is_set[key] = 1
   FS = ""
 }
