@@ -33,7 +33,7 @@ void close_current_connection(void);
  * соответствия между id и текущим 
  * файловым дескриптором
  */
-void add_id_to_table(int table_id, int id);
-void del_id_from_table(int table_id, int id);
+void add_id_to_table(int fd, int id);
+void del_id_from_table(int table_id);
 
 #endif /* SERVER_NETWORK_H */

@@ -4,27 +4,21 @@
 #include "logic.h"
 
 
-void events(int dest_type, int id, int msg_type, void *buf) { 
+void events(int dest_type, int id, int msg_type, void *buf) {
 
 	switch (dest_type) {
-	case CLIENT: /*CURRENT*/
+	case CURRENT: /*CURRENT*/
 		/*Клиентская логика*/
 		switch (msg_type) {
 		case REGISTRATION: /*Регистрация*/
-			printf("[logic] registration\n");
 			registration(buf);
-			printf("[logic] registration\n");
-
 			break;
 		case LOG_IN: /*Авторизация*/
 			login(buf);
-			printf("[logic] login\n");
 			break;
 		case CREATE_TABLE: /*Создание стола*/
 			createTable(buf);
-			printf("[logic]create table\n");
 			break;
-
 		case CONNECT_TO_TABLE: /*Подключение к столу*/
 			connectTable(buf);
 			break;
@@ -33,14 +27,18 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 			break;
 		}
 		break;
-	case SERVER: /*GAME_SERVER*/
+
+	case GAME_SERVER: /*GAME_SERVER*/
 		switch (msg_type) {
 		/*Внутресерверная логика*/
-		case 1: /*Подтверждение подключения*/
-
+		case INTERNAL_PLAYER_CONFIRMED: /*Подтверждение подключения*/
+			confirmedConnect(buf, id);
 			break;
-		case 2: /*Удаление игроков*/
-
+		case INTERNAL_PLAYER_LEFT: /*Удаление игроков*/
+			removePlayer(buf);
+			break;
+		case INTERNAL_TABLE_DELETE: /*Удаление стола*/
+			removeTable(id);
 			break;
 		}
 		break;

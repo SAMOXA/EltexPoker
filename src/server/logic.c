@@ -1,33 +1,19 @@
 #include "logic.h"
 
-int flgReadFile = 0;
-int countAllPlayers = 0;
-int countCurrentTables = 0;
-int playersID = 0;
-unsigned int tableID = 0;
-int currentPlayer = 0;
+int countAllPlayers = 0; /*Кол-во всех игроков*/
+int countCurrentTables = 0; /*Текущее кол-во столов*/
+int playersID = 0; /*Последний id игрока*/
+unsigned int tableID = 0;/*id таблицы*/
+int currentPlayer = 0; /*текущий игрок*/
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
+struct dataPlayers data[SIZE_DATA]; /*Информация по игрокам*/
+struct infoOfTable inofList[MAX_TABLES_COUNT]; /*Информация по столам*/
+struct listNameId IdName[MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE]; /*Таблица хранит Name - ID*/
+struct gamePort gPorts; /*Ифформация по портам*/
 
-enum statusTable {EMPTY, SLEEP, FULL, PLAY};
-int flg = 0;
-
-struct infoOfTable {
-	int countPlayer;
-	int status;
-	int port;
-} inofList[MAX_TABLES_COUNT];
-
-struct listNameId {
-	char name[MAX_NAME_LENGTH];
-	int id;
-} IdName[MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE];
-
-struct gamePort {
-	int listPort[MAX_TABLES_COUNT];
-	int statusListPort[MAX_TABLES_COUNT];
-} gPorts;
-
-int readFile() {
+/*Чтение из файла*/
+int readFile() 
+{
 	FILE * fp;
 	bzero(&data, sizeof(struct dataPlayers) * SIZE_DATA);
 	if ((fp = fopen("data.txt", "rb")) == NULL) {
@@ -43,7 +29,9 @@ int readFile() {
 	return 0;
 }
 
-int checkName(char *name) {
+/*Проверка имени*/
+int checkName(char *name)
+{
 	int i;
 	for (i = 0; i <= countAllPlayers; i++) {
 		if (strcmp(name, data[i].name) == 0) {
@@ -53,10 +41,13 @@ int checkName(char *name) {
 	return -1;
 }
 
-void saveFile() {
+/*Сохранение в файл имени и пароля*/
+void saveFile()
+{
 	FILE *fp;
 	int i;
 	if ((fp = fopen("data.txt", "w+")) == NULL) {
+		perror("[logic]Error - open file in saveFile():");
 	}
 	for (i = 0; i <= countAllPlayers; i++) {
 		fprintf(fp, "%s %s\n", data[i].name, data[i].pswd);
@@ -75,12 +66,16 @@ void init() {
 		gPorts.statusListPort[i] = PLAY;
 	}
 }
-void registration(void * buf) {
 
+/*Регистрация*/
+void registration(void * buf)
+{
 	struct loginRequest_t *loginReq = (struct loginRequest_t *)buf;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
+
 	bzero(loginRes, sizeof(struct loginResponce_t));
 	readFile();
+	/*Проверяем имя*/
 	if (checkName(loginReq->name) == -1) {
 		strcpy(data[countAllPlayers].name, loginReq->name);
 		strcpy(data[countAllPlayers].pswd, loginReq->pass);
@@ -89,66 +84,79 @@ void registration(void * buf) {
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	} else {
 		loginRes->status = STATUS_BAD;
-		strcpy(loginRes->errorBuf, "Bad Tima");
-		saveFile();
+		strcpy(loginRes->errorBuf, "Bad name");
+		printf("[logic]User input bad name\n");
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
 	}
 	free(loginRes);
 }
 
-int checkPasswd(int numCheck, char *pswd) {
-	if (strcmp(pswd, data[numCheck].pswd) == 0) {
+/*Проверка пароля*/
+int checkPasswd(int numInDataPlayers, char *pswd)
+{
+	if (strcmp(pswd, data[numInDataPlayers].pswd) == 0) {
 		return 1;
 	}
 	return -1;
 }
 
-void login(void *buf) {
-
+/*Вход*/
+void login(void *buf)
+{
 	int checkNum;
-	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
 	struct loginRequest_t *loginReq = (struct loginRequest_t *) buf;
+	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
+
+	bzero(loginRes, sizeof(struct loginResponce_t));
 	if (readFile() == -1) {
+		/*Некоректное имя*/
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "User not found");
-		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректное имя*/
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 		free(loginRes);
 		return;
 	}
 	if ((checkNum = checkName(loginReq->name)) == -1) {
+		/*Пользаватель с таким именем уже есть*/
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "User not found");
-		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Пользаватель с таким именем уже есть*/
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 		free(loginRes);
 		return;
 	}
 	if (checkPasswd(checkNum, loginReq->pass) == -1 ) {
+		/*Некоректный пароль*/
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "Incorrectly password");
-		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректный пароль*/
-		free(loginRes);
-		return;
-	} else {
-		loginRes->status = STATUS_OK;
-		IdName[currentPlayer].id = playersID++;
-		strcpy(IdName[currentPlayer].name, loginReq->name);
-		currentPlayer++;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 		free(loginRes);
-
+		return;
 	}
+	loginRes->status = STATUS_OK;
+	IdName[currentPlayer].id = playersID++;
+	strcpy(IdName[currentPlayer].name, loginReq->name);
+	currentPlayer++;
+
+	send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
+	free(loginRes);
 }
 
-void tableList() {
+/*Получение списка столов*/
+void tableList()
+{
 	if (!countCurrentTables) {
 		lists[0].id = -1;
+		/*В случае ошибки посылаем пустой буфер*/
 		send_message(CURRENT, 0, LIST_TABLE, 0, (void*) &lists);
-		return;
+		printf("[logic]Players get empty table list\n");
 	} else {
 		send_message(CURRENT, 0, LIST_TABLE, sizeof(struct table_t)*MAX_TABLES_COUNT, (void*) &lists);
+		printf("[logic]Players get table list\n");
 	}
 }
-int getNewPort () {
+/*Получение порта*/
+int getNewPort()
+{
 	int i;
 	for (i = 0; i < MAX_TABLES_COUNT; i++) {
 		if (gPorts.statusListPort[i] == EMPTY) {
@@ -159,12 +167,16 @@ int getNewPort () {
 	return -1;
 }
 
-int getSession() {
+/*Создание ключа сессии*/
+int getSession()
+{
 	srand(time(NULL));
 	return rand() / 10000;
 }
 
-int findEmptyTable() {
+/*Поиск пустого стола*/
+int findEmptyTable()
+{
 	int i;
 	for ( i = 0; i < MAX_TABLES_COUNT; i++) {
 		if (inofList[i].status == EMPTY) {
@@ -174,8 +186,9 @@ int findEmptyTable() {
 	return -1;
 }
 
-
-int getIDtoName(char *name) {
+/*Получение ID по имени из таблицы*/
+int getIDtoName(char *name)
+{
 	int i;
 	for (i = 0; i < currentPlayer; i++) {
 		if (strcmp(name, IdName[i].name)) {
@@ -185,40 +198,42 @@ int getIDtoName(char *name) {
 	return -1;
 }
 
-void createTable(void *buf) {
+/*Создание стола*/
+void createTable(void *buf)
+{
 	int pipedes[2];
 	int newSessison;
 	pid_t pid;
 	struct newPlayer_t newPlayer;
 	struct selectRequest_t *request = (struct selectRequest_t *) buf;
 	struct selectResponce_t responce;
-
 	int empt = findEmptyTable();
+	/*Поиск пустого стола*/
 	if (empt == -1) {
 		responce.status = STATUS_BAD;
-		strcpy(responce.error, "Can not create table");
-		printf("[logic]create table error\n");
+		strcpy(responce.error, "No empty tables");
+		printf("[logic]We not have empty tables\n");
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
 		return;
 	}
 
+	int id = getIDtoName(request->name);
+	/*Проверяем если ли такой пользователь в системе*/
+	if (id == -1) {
+		responce.status = STATUS_BAD;
+		strcpy(responce.error, "You not login");
+		printf("[logic]No login user try create table\n");
+		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
+		return;
+	}
 	++countCurrentTables;
 	newSessison = getSession();
 	newPlayer.session = newSessison;
-	int id = getIDtoName(request->name);
-	if (id == -1) {
-		responce.status = STATUS_BAD;
-		strcpy(responce.error, "Can not create table");
-		printf("[logic]create table error\n");
-		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
-		return;
-	}
-	newPlayer.id = id; /*брать из таблице*/
+	newPlayer.id = id;
+	/*Money*/
 	newPlayer.money = 1000;
 	strcpy(newPlayer.name, request->name);
-
 	lists[empt].id = tableID++;
-	// strcpy(lists[empt].tables[inofList[empt].countPlayer], request->name);
 
 	if (pipe(pipedes) < 0 ) {
 		perror("pipe");
@@ -230,31 +245,31 @@ void createTable(void *buf) {
 		exit(0);
 	} else {
 		close(pipedes[0]);
-		// if ( write(pipedes[1], (void *)&newPlayer, sizeof(struct newPlayer_t)) < 0) {
-		// 	perror("write");
-		// }
+		/*Получаем новый порт*/
 		responce.port = getNewPort();
-
 		if (responce.port == -1) {
 			responce.status = STATUS_BAD;
-			strcpy(responce.error, "Can not create table");
-			printf("[logic]create table error\n");
+			strcpy(responce.error, "Not have port");
+			printf("[logic]We have not new port\n");
 			send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
 			return;
 		}
 		inofList[empt].port = responce.port;
 		responce.status = STATUS_OK;
 		responce.session = newSessison;
-		// add_id_to_table(tableID, pipedes[1]);
-		printf("create table\n");
-		// send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
+		add_id_to_table(pipedes[1], tableID);
+
+		send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), (void *)&responce);
 		/*Close connect*/
 		close_current_connection();
+		printf("[logic]Success create table and disconnect client\n");
 	}
 }
 
-int checkTable(int id) {
+/*Проверка наличия id в таблице*/
+int checkTable(int id)
+{
 	int i;
 	for (i = 0; i < MAX_TABLES_COUNT; i++) {
 		if (lists[i].id == id) {
@@ -264,55 +279,139 @@ int checkTable(int id) {
 	return -1;
 }
 
-int checkFull(int num) {
+/*Проверка на полнотау сервера*/
+int checkFull(int num)
+{
 	if ((inofList[num].countPlayer == MAX_PLAYERS_PER_TABLE) || (inofList[num].status == PLAY)) {
 		return -1;
 	}
 	return 1;
 }
 
-void connectTable(void *buf) {
+/*Соединение к столу*/
+void connectTable(void *buf)
+{
 	struct newPlayer_t newPlayer;
 	struct selectRequest_t *request = (struct selectRequest_t *) buf;
 	struct selectResponce_t responce;
-	int check;
-	if ( (check = checkTable(request->tableID)) == -1) {
+	int check, id;
+	/*Проверка id стола*/
+	if ((check = checkTable(request->tableID)) == -1) {
 		responce.status = STATUS_BAD;
 		strcpy(responce.error, "Incorrectly table id");
-		printf("[logic]Error:Incorrectly table id\n");
+		printf("[logic]User send incorrectly table id\n");
 		send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), &responce);
 		return;
 	}
+	/*Проверка колличества игроков на столе*/
 	if (checkFull(check) == -1) {
 		responce.status = STATUS_BAD;
 		strcpy(responce.error, "Table full");
-		printf("[logic]Error: table fuul\n");
+		printf("[logic]User try connect to full table\n");
 		send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), &responce);
+		return;
+	}
+
+	id = getIDtoName(request->name);
+	/*Нет id*/
+	if (id == -1) {
+		responce.status = STATUS_BAD;
+		strcpy(responce.error, "Incorrectly id");
+		printf("[logic]User with incorrectly id\n");
+		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
 		return;
 	}
 	++countCurrentTables;
 	int newSessison = getSession();
 	newPlayer.session = newSessison;
-	int id = getIDtoName(request->name);
-	if (id == -1) {
-		responce.status = STATUS_BAD;
-		strcpy(responce.error, "Incorrectly id");
-		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), &responce);
-		return;
-	}
 	newPlayer.money = 1000;
+
 	strcpy(newPlayer.name, request->name);
 	responce.status = STATUS_OK;
 	responce.session = newSessison;
 	responce.port = inofList[check].port;
 
+	send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 	send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), (void *) &responce);
 	close_current_connection();
-
+	printf("[Logic]User connect o table\n");
+}
+/*Получение имени по id из таблицы*/
+int getNameToID(int id)
+{
+	int i;
+	for (i = 0; i < currentPlayer; i++) {
+		if (IdName[i].id == id) {
+			return i;
+		}
+	}
+	return -1;
 }
 
-// int main() {
+/*Подтверждение коннекта*/
+void confirmedConnect(void *buf, int serverID)
+{
+	int *clID = (int *)buf;
+	int IDforName = getNameToID(*clID);
+	int num = checkTable(*clID);
+	inofList[num].countPlayer++;
+	(inofList[num].countPlayer == 4) ? (inofList[num].status = FULL) : (inofList[num].status = SLEEP);
+	strcpy(lists[num].tables[inofList[num].countPlayer], IdName[IDforName].name);
+}
 
-// 	printf("%d\n", getSession());
-// 	return 0;
-// }
+/*Удаление игрока*/
+void removePlayer(void *buf)
+{
+	int id = *((int *)buf);
+	int i, index;
+	int max_players = MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE;
+	char remove_name[256];
+
+	/* 1) Searching player's name by id */
+	for (index = 0; index < max_players; index++) {
+		if (IdName[index].id == id) {
+			/* If name found */
+			strcpy(remove_name, IdName[index].name);
+			break;
+		}
+	}
+
+	/* 2) Searching requested player by name */
+	for (index = 0; index < MAX_TABLES_COUNT; index++) {
+		for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++) {
+			if ((strcmp(lists[index].tables[i], remove_name)) == 0) {
+				/* If name found */
+				bzero(lists[index].tables[i], MAX_NAME_LENGTH);
+				/* 3) Decrement structure "information of table" */
+				inofList[index].countPlayer -= 1;
+				if (inofList[index].countPlayer == 0) {
+					removeTable(lists[index].id);
+				}
+				return;
+			}
+		}
+	}
+}
+/*Удаление стола*/
+void removeTable(int id)
+{
+	int i, index;
+
+	/* Searching requested table by id */
+	for (index = 0; index < MAX_TABLES_COUNT; index++) {
+		if (id == lists[index].id) {
+			break;
+		}
+	}
+	/* If table found */
+
+	/* 1) Clean up structure "table" */
+	for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++) {
+		bzero(lists[index].tables[i], MAX_NAME_LENGTH);
+	}
+
+	/* 2) Clean up structure "information of table" */
+	inofList[index].status 	= EMPTY;
+	inofList[index].countPlayer = 0;
+	del_id_from_table(id);
+}
