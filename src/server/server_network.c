@@ -67,7 +67,14 @@ void init_listen_server_network(unsigned int listen_server_port, char *listen_se
 
 	memset((void *) &listen_server_addr, 0, sizeof(struct sockaddr_in));
 	listen_server_addr.sin_family = AF_INET;
-	listen_server_addr.sin_port = listen_server_port == 0 ? htons(DEFAULT_LISTEN_SERVER_PORT) : htons(listen_server_port);
+	
+	if((listen_server_port < 1024) || (listen_server_port > 65000)){
+		printf("[listen_server_network] Invalid PORT: %d\n", listen_server_port);
+		listen_server_addr.sin_port = htons(DEFAULT_LISTEN_SERVER_PORT);
+	}
+	else
+		listen_server_addr.sin_port = htons(listen_server_port);
+
 	if(listen_server_ip != 0)
 		if(inet_aton(listen_server_ip, &listen_server_addr.sin_addr) != 0){
 			memset(defined_ip, 0, 24);
