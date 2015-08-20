@@ -78,7 +78,7 @@ int logicHandlerBegin(int type) {
 
 			}
 			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
-			grafInitList();
+//			grafInitList();
 			grafDrawTableList(&graf_list);
 
 /*			for(i = 0; i < n; i++) {
@@ -197,7 +197,7 @@ void logicInitGrafList() {
 
 int logicSelTable() {
 	logicInitGrafList();
-//	grafInitList();
+	grafInitList();
 	if( logicGetTableList() == -1 ) {
 		printf("Error: logicGetTableList()\n");
 		grafExitList();

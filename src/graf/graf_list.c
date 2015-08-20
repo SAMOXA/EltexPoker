@@ -200,7 +200,7 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 		list->tables[indexA].players_count);
 //	printw("table ");
     }
-    ncsSetWndColor(list->wnd,COLOR_WHITE,COLOR_WHITE);	
+    ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_BLACK);	
     box(list->wnd,0,0);
     ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_WHITE);	
     if(list->selected==1){
@@ -278,6 +278,8 @@ void ncsListChElem(int _step)
 		    }
 		    break;
 	};
+
+	ncsListShow(&main_list);
 
 	wrefresh(main_list.exit_btn.wnd);
 	wrefresh(main_list.create_btn.wnd);
