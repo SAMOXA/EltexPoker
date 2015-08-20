@@ -17,7 +17,7 @@ void (*graf_list_refresh_event)(void)=ncsTempListRefresh;
 //-------------------------------------API connect block
 
 //------------------------------------API block
-void grafInitList(struct graf_list_t* tbl)
+void grafInitList()
 {
     int index=0;
     pthread_t thread;
@@ -27,9 +27,11 @@ void grafInitList(struct graf_list_t* tbl)
     ncsListStartGraf(&main_list);
 }
 
-void grafDrawTableList()
+void grafDrawTableList(graf_list_t* list)
 {
     int index=0;
+
+    main_list=(*list);
 
     ncsListShow(&main_list);
     wrefresh(main_list.exit_btn.wnd);
@@ -311,6 +313,7 @@ void* ncsListControlsFunc(void* data)
 //	refresh();
 	if(c==27){
 	    graf_exit_event();
+	    return NULL;
 	}
 	if(c==10){
 	    if(	main_list.enabled==1 && \
@@ -320,6 +323,7 @@ void* ncsListControlsFunc(void* data)
 	    if(	main_list.exit_btn.enabled==1 &&\
 		main_list.exit_btn.selected==1){
 		graf_list_exit_event();
+		return NULL;
 	    }
 	    if(	main_list.refresh_btn.enabled==1 &&\
 		main_list.refresh_btn.selected==1){
