@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include "../global.h"
-#include "internalIPC.h"
-#include "logic.h"
-
+#include "events.h"
 
 void events(int dest_type, int id, int msg_type, void *buf) {
 
