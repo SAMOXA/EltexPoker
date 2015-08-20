@@ -42,7 +42,6 @@ enum values{
 struct loginRequest_t {
 	char name[MAX_NAME_LENGTH];
 	char pass[MAX_PASS_LENGTH];
-
 };
 
 struct table_t {
