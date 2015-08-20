@@ -77,7 +77,6 @@ int logicHandlerBegin(int type) {
 			}
 			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
 			grafDrawTableList(&graf_list);
-		
 
 /*			for(i = 0; i < n; i++) {
 				if (table->id == -1) continue;
