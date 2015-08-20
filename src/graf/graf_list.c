@@ -27,11 +27,15 @@ void grafInitList()
     ncsListStartGraf(&main_list);
 }
 
-void grafDrawTableList(graf_list_t* list)
+void grafDrawTableList(struct graf_list_t* list)
 {
     int index=0;
+    clear();
 
-    main_list=(*list);
+    strcpy(main_list.title,list->title);
+    for(index=0;index<MAX_TABLES_COUNT;index++){
+        main_list.tables[index]=list->tables[index];
+    }
 
     ncsListShow(&main_list);
     wrefresh(main_list.exit_btn.wnd);

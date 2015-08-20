@@ -29,8 +29,8 @@ AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([select])
 AC_CHECK_FUNCS([socket])
 
-AC_CHECK_LIB (lpthread, pthread_create)
-AC_CHECK_LIB (lncursesw, clear)
+#AC_CHECK_LIB ([lpthread], [pthread_create])
+#AC_CHECK_LIB ([lncursesw], [clear])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile

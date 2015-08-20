@@ -16,6 +16,7 @@ void create_msg(int type, int len, void *data, unsigned char *buf) {
 
 void logicExitMenu() {
 	net_disconnect_server(fd);
+	grafExitList();
 	exit(1);
 }
 
@@ -63,18 +64,21 @@ int logicHandlerBegin(int type) {
 		case LIST_TABLE: 
 		{
 			if (len == 0 ) {
-				printf("List table is empty");
-				return 0;
+				//printf("List table is empty");
+				grafDrawMsgList("List tables is empty");
+				break;
 			}
-			int n = len / sizeof(struct table_t), i, j;
+			//int n = len / sizeof(struct table_t), i, j;
 			//struct table_t *table = (struct table_t *) buf;
 			strcpy(graf_list.title, "Hello");
 			if (sizeof(graf_list.tables) < len){
 				printf("Не хватает памяти под  столы\n");
-				exit(1);
+				logicExitMenu();
 			}
 			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
-			grafDrawList(&graf_list);
+			grafDrawTableList(&graf_list);
+		
+
 /*			for(i = 0; i < n; i++) {
 				if (table->id == -1) continue;
 				printf("\nid = %d\n", table->id);
@@ -93,17 +97,19 @@ int logicHandlerBegin(int type) {
 			struct selectResponce_t *selResp = (struct selectResponce_t *) buf;
 			if( selResp->status == STATUS_OK ) {
 				if (type == CREATE_TABLE) 
-					printf("Table is created\n");
+					//printf("Table is created\n");
+					grafDrawMsgList("Table is created");
 				else
-					printf("Succesfull connection to table\n");
+					grafDrawMsgList("Succesfull connection to table\n");
 				cur_status = GAME;
-				printf("port = %d\n", selResp->port);
-				printf("session = %d\n", selResp->session);
+				/*grafDrawMsgList("port = %d\n", selResp->port);
+				grafDrawMsgList("session = %d\n", selResp->session);*/
+
 				/* Нужно потом это заменить */
 				port = selResp->port;
 				session = selResp->session;
 			} else {
-				printf("%s\n", selResp->error);
+				grafDrawMsgList(selResp->error);
 			}
 			break;
 		}	
@@ -116,11 +122,7 @@ int logicHandlerBegin(int type) {
 int logicEventLogin(char *login, char *pass, int type) {
 	int flg;
 	struct loginRequest_t logReq;
-	/*
-	if (strlen(login) >= MAX_NAME_LENGTH || strlen(pass) >= MAX_NAME_LENGTH) {
-		//grafDrawText("Превышена длина имени или пароля\n");
-		logicExitMenu();
-	}*/
+
 	strcpy(user_name, login);
 
 	strcpy(logReq.name, login);
@@ -194,6 +196,11 @@ void logicInitGrafList() {
 int logicSelTable() {
 	logicInitGrafList();
 	grafInitList();
+	if( logicGetTableList() == -1 ) {
+		printf("Error: logicGetTableList()\n");
+		exit(1);
+	}
+
 	//get_tables()
 	/*int tmp, ret = 0;
 	if( logicGetTableList() == -1 )
@@ -213,7 +220,7 @@ int logicSelTable() {
 			break;
 		}
 	}*/
-	return ret;
+	return 0;
 	
 }
 
@@ -256,13 +263,15 @@ void run(char *ip, char *namePort) {
 			{
 				if (logicSelTable() == -1) 
 					cur_status = DEAD;
+				cur_status = DEAD;
+
 				break;
 			}	
 			/* Стадия игры
 			*/
 			case GAME:
 			{
-				run_game(ip, port, session);
+				//run_game(ip, port, session);
 				break;
 			}
 			/* Конец

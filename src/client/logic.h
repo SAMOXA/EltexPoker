@@ -8,6 +8,7 @@
 #include <string.h>
 #include "net_header.h"
 #include "../global.h"
+#include <unistd.h>
 
 
 /* Потом сделать (port, session) не глобальными 
