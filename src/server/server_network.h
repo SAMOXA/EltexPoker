@@ -47,9 +47,10 @@ void close_current_client_connection(void);
  * в таблицу соответствия между id
  * и текущим файловым дескриптором.
  * При удалении записи закрывается
- * соединение.
+ * соединение. Если fd не известен
+ * передавать 0.
  */
-void add_id_to_table(int table_id, int id);
-void del_id_from_table(int table_id, int id);
+void add_id_to_table(int fd, int id);
+void del_id_from_table(int fd, int id);
 
 #endif /* SERVER_NETWORK_H */

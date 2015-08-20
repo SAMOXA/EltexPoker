@@ -132,6 +132,6 @@ struct changePlayerState_t {
 struct network_msg_hdr_t {
 	int payload_type;
 	int payload_len;
-}
+};
 //////////////////////////////////////////////////////
 #endif //GLOBAL_H
