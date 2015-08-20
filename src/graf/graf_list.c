@@ -1,6 +1,6 @@
 #include "graf_list.h"
 
-static struct termios stored_settings;
+static struct termios stored_list_settings;
 
 static unsigned int CUR_TEXT_COLOR=COLOR_BLACK;
 static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
@@ -17,20 +17,24 @@ void (*graf_list_refresh_event)(void)=ncsTempListRefresh;
 //-------------------------------------API connect block
 
 //------------------------------------API block
-void grafInitList()
+void grafInitList(void)
 {
     int index=0;
     pthread_t thread;
+    
+    struct graf_list_t api_list;
+
+    ncsListGrafInit(&main_list,&api_list);
+    ncsListStartGraf(&main_list);
 
     pthread_create(&thread,NULL,ncsListControlsFunc,NULL);
     pthread_detach(thread);
-    ncsListStartGraf(&main_list);
 }
 
 void grafDrawTableList(struct graf_list_t* list)
 {
     int index=0;
-    clear();
+//    clear();
 
     strcpy(main_list.title,list->title);
     for(index=0;index<MAX_TABLES_COUNT;index++){
@@ -49,8 +53,9 @@ void grafDrawTableList(struct graf_list_t* list)
 void grafDrawMsgList(const char* msg)
 {
     int pos[2]={0,0};
-    clear();
+//    clear();
     ncsPrintInWnd(stdscr,pos,msg);
+    refresh();
 }
 
 void grafExitList()
@@ -81,13 +86,14 @@ void ncsListGrafInit(	struct ncs_graf_list_t* list,\
     list->refresh_btn.enabled=1;
     list->refresh_btn.selected=0;
     strcpy(list->refresh_btn.title,"REFRESH");
+//    printw("pos: %d %d ",list->refresh_btn.pos[0],list->refresh_btn.pos[1]);
 
-    list->create_btn.size[0]=1+2;
-    list->create_btn.size[1]=7+2;
-    list->create_btn.pos[0]=NCS_GRAF_TABLE_SIZE_Y-7-2;
-    list->create_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-7-2;
-    list->create_btn.title_pos[0]=1;
-    list->create_btn.title_pos[1]=1;
+    list->refresh_btn.size[0]=1+2;
+    list->refresh_btn.size[1]=7+2;
+    list->refresh_btn.pos[0]=NCS_GRAF_TABLE_SIZE_Y-7-2;
+    list->refresh_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-7-2;
+    list->refresh_btn.title_pos[0]=1;
+    list->refresh_btn.title_pos[1]=1;
 
     list->create_btn.enabled=1;
     list->create_btn.selected=0;
@@ -111,12 +117,14 @@ void ncsListGrafInit(	struct ncs_graf_list_t* list,\
     list->exit_btn.title_pos[0]=1;
     list->exit_btn.title_pos[1]=1;
 
+//    ncsListStartGraf(list);
+
     return;
 }
 
 void ncsListStartGraf(struct ncs_graf_list_t *list)
 {
-    tcgetattr(0,&stored_settings);
+    tcgetattr(0,&stored_list_settings);
     setlocale(LC_ALL, "");
 
     initscr();
@@ -133,38 +141,38 @@ void ncsListStartGraf(struct ncs_graf_list_t *list)
     CUR_TEXT_COLOR=COLOR_WHITE;
     CUR_BACK_COLOR=COLOR_BLACK;
 
-    ncsSetWndColor(stdscr,CUR_TEXT_COLOR,CUR_BACK_COLOR);
-    clear();
+//    ncsSetWndColor(stdscr,CUR_TEXT_COLOR,CUR_BACK_COLOR);
+//    clear();
+    refresh();
 
-    CUR_TEXT_COLOR=COLOR_WHITE;
-    CUR_BACK_COLOR=COLOR_BLACK;
+//    printw("pos: %d %d ",list->pos[0],list->pos[1]);
 
     list->wnd=newwin(	list->size[0],\
 			list->size[1],\
 			list->pos[0],\
 			list->pos[1]);
 
-    ncsSetWndColor(list->exit_btn.wnd,COLOR_WHITE,COLOR_BLUE);
+//    ncsSetWndColor(list->exit_btn.wnd,COLOR_WHITE,COLOR_BLUE);
     list->exit_btn.wnd=newwin(list->exit_btn.size[0],\
 			list->exit_btn.size[1],\
 			list->exit_btn.pos[0],\
 			list->exit_btn.pos[1]);
-    wclear(list->exit_btn.wnd);
-    wrefresh(list->exit_btn.wnd);
+//    wclear(list->exit_btn.wnd);
+//    wrefresh(list->exit_btn.wnd);
 
     list->create_btn.wnd=newwin(list->create_btn.size[0],\
 			list->create_btn.size[1],\
 			list->create_btn.pos[0],\
 			list->create_btn.pos[1]);
-    wclear(list->create_btn.wnd);
-    wrefresh(list->create_btn.wnd);
+//    wclear(list->create_btn.wnd);
+//    wrefresh(list->create_btn.wnd);
 
     list->refresh_btn.wnd=newwin(list->refresh_btn.size[0],\
 			list->refresh_btn.size[1],\
 			list->refresh_btn.pos[0],\
 			list->refresh_btn.pos[1]);
-    wclear(list->refresh_btn.wnd);
-    wrefresh(list->refresh_btn.wnd);
+//    wclear(list->refresh_btn.wnd);
+//    wrefresh(list->refresh_btn.wnd);
 
     return;
 }
@@ -173,12 +181,11 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 {
     int indexA=0,indexB=0;
 
-    move(0,0);
-    clear();
-
+//    clear();
+//    printw("pos: %d %d ",list->pos[0],list->pos[1]);
     ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_WHITE);	
     wmove(list->wnd,1,1);
-    wprintw(list->wnd,list->title);
+    wprintw(list->wnd,"%s",list->title);
     for(indexA=0;indexA<MAX_TABLES_COUNT;indexA++){
 	ncsSetWndColor(list->wnd,COLOR_WHITE,COLOR_BLACK);	
 	if(list->selected_index==indexA){
@@ -191,6 +198,7 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 	wprintw(list->wnd,"%d - %d players",\
 		list->tables[indexA].id,\
 		list->tables[indexA].players_count);
+//	printw("table ");
     }
     ncsSetWndColor(list->wnd,COLOR_WHITE,COLOR_WHITE);	
     box(list->wnd,0,0);
@@ -221,7 +229,7 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 void ncsListEndGraf()
 {
     endwin();
-    tcsetattr(0,TCSANOW,&stored_settings);
+    tcsetattr(0,TCSANOW,&stored_list_settings);
     return;
 }
 
@@ -264,7 +272,7 @@ void ncsListChElem(int _step)
 			main_list.exit_btn.selected=1;
 		    }
 		    break;
-	    case 4: if(main_list.enabled){
+	    case 3: if(main_list.enabled){
 			ok=1;
 			main_list.selected=1;
 		    }
@@ -294,12 +302,16 @@ void* ncsListControlsFunc(void* data)
 	    if(main_list.selected_index<0){
 		main_list.selected_index=0;
 	    }
+	    ncsListShow(&main_list);
+	    refresh();
 	}
 	if(c==KEY_DOWN && main_list.selected==1){
 	    main_list.selected_index++;
 	    if(main_list.selected_index>=MAX_TABLES_COUNT){
 		main_list.selected_index=MAX_TABLES_COUNT-1;
 	    }
+	    ncsListShow(&main_list);
+	    refresh();
 	}
 	if(c==KEY_LEFT){
 	    ncsListChElem(-1);

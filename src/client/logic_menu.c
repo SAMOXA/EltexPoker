@@ -16,6 +16,7 @@ void create_msg(int type, int len, void *data, unsigned char *buf) {
 
 void logicExitMenu() {
 	net_disconnect_server(fd);
+	grafExitList();
 	exit(1);
 }
 
@@ -71,9 +72,11 @@ int logicHandlerBegin(int type) {
 			strcpy(graf_list.title, "Hello");
 			if (sizeof(graf_list.tables) < len){
 				printf("Не хватает памяти под  столы\n");
+				grafExitList();
 				exit(1);
 			}
 			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
+			grafInitList();
 			grafDrawTableList(&graf_list);
 			sleep(30);
 			grafExitList();
@@ -198,9 +201,10 @@ void logicInitGrafList() {
 
 int logicSelTable() {
 	logicInitGrafList();
-	grafInitList();
+//	grafInitList();
 	if( logicGetTableList() == -1 ) {
 		printf("Error: logicGetTableList()\n");
+		grafExitList();
 		exit(1);
 	}
 

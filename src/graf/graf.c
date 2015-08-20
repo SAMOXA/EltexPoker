@@ -670,7 +670,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 //    SetWndColor(stdscr,COLOR_WHITE,CUR_BACK_COLOR);
 //    SetWndColor(stdscr,COLOR_WHITE,COLOR_GREEN);
 
-    move(0,0);
+//    move(0,0);
     clear();
 
 //    refresh();
