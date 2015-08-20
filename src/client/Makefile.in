@@ -101,10 +101,6 @@ am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
 	net_receive.$(OBJEXT) ../graf/graf.$(OBJEXT) \
 	../graf/graf_list.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
-<<<<<<< HEAD
-pokerClient_LDADD = $(LDADD)
-=======
->>>>>>> 6ed1549956dc87c1ccd70bd80e561a2a93908823
 pokerClient_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -263,7 +259,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-<<<<<<< HEAD
 pathgraf = ../graf
 LDADD = -lpthread -lncursesw
 pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
@@ -271,11 +266,8 @@ pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
 	net_disconnect.c net_fill_socket_addr.c net_create_socket.c \
 	net_send.c net_receive.c ../graf/graf.c ../graf/graf.h \
 	../graf/graf_api.h ../graf/graf_list.c ../graf/graf_list.h
-=======
-pokerClient_SOURCES = main.c ../global.h
 pokerClient_LDADD = @CURSES_LIB@
 AM_CFLAGS = $(PTHREAD_CFLAGS)
->>>>>>> 6ed1549956dc87c1ccd70bd80e561a2a93908823
 all: all-am
 
 .SUFFIXES:

@@ -374,8 +374,9 @@ to "yes", and re-run configure.
 END
     AC_MSG_ERROR([Your 'rm' program is bad, sorry.])
   fi
-fi])
-m4trace:/usr/share/aclocal-1.14/init.m4:182: -1- AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK], [# Compute $1's index in $config_headers.
+fi
+])
+m4trace:/usr/share/aclocal-1.14/init.m4:183: -1- AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK], [# Compute $1's index in $config_headers.
 _am_arg=$1
 _am_stamp_count=1
 for _am_header in $config_headers :; do
@@ -944,37 +945,6 @@ m4trace:configure.ac:13: -1- m4_pattern_allow([^CCDEPMODE$])
 m4trace:configure.ac:13: -1- AM_CONDITIONAL([am__fastdepCC], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CC_dependencies_compiler_type" = gcc3])
-<<<<<<< HEAD
-m4trace:configure.ac:12: -1- m4_pattern_allow([^am__fastdepCC_TRUE$])
-m4trace:configure.ac:12: -1- m4_pattern_allow([^am__fastdepCC_FALSE$])
-m4trace:configure.ac:12: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_TRUE])
-m4trace:configure.ac:12: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^RANLIB$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^GREP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^EGREP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^STDC_HEADERS$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^HAVE_ARPA_INET_H$])
-m4trace:configure.ac:19: -1- m4_pattern_allow([^HAVE_NETINET_IN_H$])
-m4trace:configure.ac:20: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^HAVE_STRING_H$])
-m4trace:configure.ac:22: -1- m4_pattern_allow([^HAVE_SYS_SOCKET_H$])
-m4trace:configure.ac:23: -1- m4_pattern_allow([^HAVE_UNISTD_H$])
-m4trace:configure.ac:28: -1- m4_pattern_allow([^HAVE_MEMSET$])
-m4trace:configure.ac:29: -1- m4_pattern_allow([^HAVE_SELECT$])
-m4trace:configure.ac:30: -1- m4_pattern_allow([^HAVE_SOCKET$])
-m4trace:configure.ac:39: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:39: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:39: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:39: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:39: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:39: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:39: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:39: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:39: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-=======
 m4trace:configure.ac:13: -1- m4_pattern_allow([^am__fastdepCC_TRUE$])
 m4trace:configure.ac:13: -1- m4_pattern_allow([^am__fastdepCC_FALSE$])
 m4trace:configure.ac:13: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_TRUE])
@@ -1001,13 +971,12 @@ m4trace:configure.ac:37: -1- m4_pattern_allow([^size_t$])
 m4trace:configure.ac:40: -1- m4_pattern_allow([^HAVE_MEMSET$])
 m4trace:configure.ac:41: -1- m4_pattern_allow([^HAVE_SELECT$])
 m4trace:configure.ac:42: -1- m4_pattern_allow([^HAVE_SOCKET$])
-m4trace:configure.ac:50: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:50: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:50: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:50: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:50: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:50: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:50: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:50: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:50: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
->>>>>>> 6ed1549956dc87c1ccd70bd80e561a2a93908823
+m4trace:configure.ac:51: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:51: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:51: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:51: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:51: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:51: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:51: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:51: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:51: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
