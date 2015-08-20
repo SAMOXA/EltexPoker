@@ -32,7 +32,7 @@ void events(int dest_type, int id, int msg_type, void *buf) {
 			confirmedConnect(buf, id);
 			break;
 		case INTERNAL_PLAYER_LEFT: /*Удаление игроков*/
-			removePlayer(buf);
+			removePlayerFromTable(buf);
 			break;
 		case INTERNAL_TABLE_DELETE: /*Удаление стола*/
 			removeTable(id);

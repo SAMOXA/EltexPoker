@@ -253,7 +253,7 @@ void createTable(void *buf)
 	pid = fork();
 	if (pid == 0) { /*Дочерний*/
 		close(pipedes[1]);
-		// startGameServer(pipedes[0], tableID, port);
+		startGameServer(pipedes[0], tableID, getNewPort());
 		exit(0);
 	} else {
 		close(pipedes[0]);
@@ -372,7 +372,7 @@ void confirmedConnect(void *buf, int serverID)
 }
 
 /*Удаление игрока*/
-void removePlayer(void *buf)
+void removePlayerFromTable(void *buf)
 {
 	int id = *((int *)buf);
 	int i, index;

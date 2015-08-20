@@ -7,11 +7,15 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
-#include "../global.h"
-#include "server_network.h"
-#include "internalIPC.h"
 
 #define SIZE_DATA (MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE) /*Максимально кол-во данных по игрокам*/ 
+
+
+#include "global.h"
+#include "server_network.h"
+#include "internalIPC.h"
+#include "start.h"
+
 
 
 enum statusTable {EMPTY, SLEEP, FULL, PLAY}; /*Состояние для столов и портов*/
@@ -59,6 +63,6 @@ void confirmedConnect(void *buf, int serverID);
 /*Удаление стола, на вход ID стола*/
 void removeTable(int id);
 /*Удаление игрока*/
-void removePlayer(void *buf);
+void removePlayerFromTable(void *buf);
 #endif //LOGIC_H
 
