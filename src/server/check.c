@@ -1,5 +1,7 @@
+#include <stdio.h>
+#include <regex.h>
+#include <sys/types.h>
 
-#include "check.h"
 
 #define PATTERN "^[0-9]{0,3}.[0-9]{0,3}.[0-9]{0,3}.[0-9]{0,3}$"
 
@@ -11,7 +13,7 @@ int checkIP(char *ip) {
 		char buff[512];
 		regerror(err, &preg, buff, sizeof(buff));
 		printf("buff - %s\n", buff)	;
-		return 0;
+		retu
 	}
 
 	regmatch_t pm;
@@ -21,11 +23,10 @@ int checkIP(char *ip) {
 		return 1;
 	}
 	else {
-		printf("IP false\n");
+		printf("False\n");
 		char errbuf[512];
 		regerror(regerr, &preg, errbuf, sizeof(errbuf));
 		printf("%s\n", errbuf);
-		return 0;
 	}
 	return 0;
 }

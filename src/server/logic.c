@@ -59,7 +59,7 @@ void init() {
 	int i;
 	bzero(&inofList, sizeof(struct infoOfTable) * MAX_TABLES_COUNT);
 	bzero(&IdName, (sizeof(struct listNameId) * MAX_PLAYERS_PER_TABLE * MAX_TABLES_COUNT));
-	gPorts.listPort[0] = LISTEN_SERVER_PORT + 1;
+	gPorts.listPort[0] = DEFAULT_LISTEN_SERVER_PORT + 1;
 	gPorts.statusListPort[0] = EMPTY;
 	for (i = 1; i < MAX_TABLES_COUNT; i++) {
 		gPorts.listPort[i] = ++gPorts.listPort[i - 1];
@@ -250,15 +250,15 @@ void createTable(void *buf)
 	if (pipe(pipedes) < 0 ) {
 		perror("pipe");
 	}
+	responce.port = getNewPort();
 	pid = fork();
 	if (pid == 0) { /*Дочерний*/
 		close(pipedes[1]);
-		startGameServer(pipedes[0], tableID, getNewPort());
+		startGameServer(pipedes[0], tableID, responce.port);
 		exit(0);
 	} else {
 		close(pipedes[0]);
 		/*Получаем новый порт*/
-		responce.port = getNewPort();
 		if (responce.port == -1) {
 			responce.status = STATUS_BAD;
 			strcpy(responce.error, "Not have port");
