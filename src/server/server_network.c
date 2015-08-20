@@ -10,9 +10,9 @@
 #include <errno.h>
 #include <signal.h>
 
-//#include "global.h"
-//#include "internalIPC.h"
-//#include "events.h"
+#include "global.h"
+#include "internalIPC.h"
+#include "events.h"
 #include "server_network.h"
 
 

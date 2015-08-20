@@ -8,12 +8,6 @@
 #define MAX_ACTIVE_CONNECTIONS 30
 #define MAX_TABLE_LEN 10
 
-
-/* Получение индекса записи в таблицe по ИД */
-static int get_index_by_id(int id);
-/* Получение индекса записи в таблицe по ФД */
-static int get_index_by_fd(int fd);
-
 /* Создание слушающего сокета */
 void init_listen_server_network(void);
 /* Цикл приема сообщений */
