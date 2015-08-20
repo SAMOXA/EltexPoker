@@ -41,33 +41,33 @@ PATH: /usr/local/games
 ## Core tests. ##
 ## ----------- ##
 
-configure:1839: checking for a BSD-compatible install
-configure:1907: result: /usr/bin/install -c
-configure:1918: checking whether build environment is sane
-configure:1973: result: yes
-configure:2124: checking for a thread-safe mkdir -p
-configure:2163: result: /bin/mkdir -p
-configure:2170: checking for gawk
-configure:2186: found /usr/bin/gawk
-configure:2197: result: gawk
-configure:2208: checking whether make sets $(MAKE)
-configure:2230: result: yes
-configure:2259: checking whether make supports nested variables
-configure:2276: result: yes
-configure:2402: checking whether to enable maintainer-specific portions of Makefiles
-configure:2411: result: no
-configure:2477: checking for gcc
-configure:2493: found /usr/bin/gcc
-configure:2504: result: gcc
-configure:2733: checking for C compiler version
-configure:2742: gcc --version >&5
+configure:2196: checking for a BSD-compatible install
+configure:2264: result: /usr/bin/install -c
+configure:2275: checking whether build environment is sane
+configure:2330: result: yes
+configure:2481: checking for a thread-safe mkdir -p
+configure:2520: result: /bin/mkdir -p
+configure:2527: checking for gawk
+configure:2543: found /usr/bin/gawk
+configure:2554: result: gawk
+configure:2565: checking whether make sets $(MAKE)
+configure:2587: result: yes
+configure:2616: checking whether make supports nested variables
+configure:2633: result: yes
+configure:2759: checking whether to enable maintainer-specific portions of Makefiles
+configure:2768: result: no
+configure:2834: checking for gcc
+configure:2850: found /usr/bin/gcc
+configure:2861: result: gcc
+configure:3090: checking for C compiler version
+configure:3099: gcc --version >&5
 gcc (Ubuntu 4.9.2-0ubuntu1~14.04) 4.9.2
 Copyright (C) 2014 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-configure:2753: $? = 0
-configure:2742: gcc -v >&5
+configure:3110: $? = 0
+configure:3099: gcc -v >&5
 Using built-in specs.
 COLLECT_GCC=gcc
 COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/4.9/lto-wrapper
@@ -75,62 +75,206 @@ Target: x86_64-linux-gnu
 Configured with: ../src/configure -v --with-pkgversion='Ubuntu 4.9.2-0ubuntu1~14.04' --with-bugurl=file:///usr/share/doc/gcc-4.9/README.Bugs --enable-languages=c,c++,java,go,d,fortran,objc,obj-c++ --prefix=/usr --program-suffix=-4.9 --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --with-gxx-include-dir=/usr/include/c++/4.9 --libdir=/usr/lib --enable-nls --with-sysroot=/ --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --with-system-zlib --disable-browser-plugin --enable-java-awt=gtk --enable-gtk-cairo --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-4.9-amd64/jre --enable-java-home --with-jvm-root-dir=/usr/lib/jvm/java-1.5.0-gcj-4.9-amd64 --with-jvm-jar-dir=/usr/lib/jvm-exports/java-1.5.0-gcj-4.9-amd64 --with-arch-directory=amd64 --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --enable-objc-gc --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
 Thread model: posix
 gcc version 4.9.2 (Ubuntu 4.9.2-0ubuntu1~14.04) 
-configure:2753: $? = 0
-configure:2742: gcc -V >&5
+configure:3110: $? = 0
+configure:3099: gcc -V >&5
 gcc: error: unrecognized command line option '-V'
 gcc: fatal error: no input files
 compilation terminated.
-configure:2753: $? = 4
-configure:2742: gcc -qversion >&5
+configure:3110: $? = 4
+configure:3099: gcc -qversion >&5
 gcc: error: unrecognized command line option '-qversion'
 gcc: fatal error: no input files
 compilation terminated.
-configure:2753: $? = 4
-configure:2773: checking whether the C compiler works
-configure:2795: gcc    conftest.c  >&5
-configure:2799: $? = 0
-configure:2847: result: yes
-configure:2850: checking for C compiler default output file name
-configure:2852: result: a.out
-configure:2858: checking for suffix of executables
-configure:2865: gcc -o conftest    conftest.c  >&5
-configure:2869: $? = 0
-configure:2891: result: 
-configure:2913: checking whether we are cross compiling
-configure:2921: gcc -o conftest    conftest.c  >&5
-configure:2925: $? = 0
-configure:2932: ./conftest
-configure:2936: $? = 0
-configure:2951: result: no
-configure:2956: checking for suffix of object files
-configure:2978: gcc -c   conftest.c >&5
-configure:2982: $? = 0
-configure:3003: result: o
-configure:3007: checking whether we are using the GNU C compiler
-configure:3026: gcc -c   conftest.c >&5
-configure:3026: $? = 0
-configure:3035: result: yes
-configure:3044: checking whether gcc accepts -g
-configure:3064: gcc -c -g  conftest.c >&5
-configure:3064: $? = 0
-configure:3105: result: yes
-configure:3122: checking for gcc option to accept ISO C89
-configure:3185: gcc  -c -g -O2  conftest.c >&5
-configure:3185: $? = 0
-configure:3198: result: none needed
-configure:3223: checking whether gcc understands -c and -o together
-configure:3245: gcc -c conftest.c -o conftest2.o
-configure:3248: $? = 0
-configure:3245: gcc -c conftest.c -o conftest2.o
-configure:3248: $? = 0
-configure:3260: result: yes
-configure:3288: checking for style of include used by make
-configure:3316: result: GNU
-configure:3342: checking dependency style of gcc
-configure:3453: result: gcc3
-configure:3588: checking that generated files are newer than configure
-configure:3594: result: done
-configure:3621: creating ./config.status
+configure:3110: $? = 4
+configure:3130: checking whether the C compiler works
+configure:3152: gcc    conftest.c  >&5
+configure:3156: $? = 0
+configure:3204: result: yes
+configure:3207: checking for C compiler default output file name
+configure:3209: result: a.out
+configure:3215: checking for suffix of executables
+configure:3222: gcc -o conftest    conftest.c  >&5
+configure:3226: $? = 0
+configure:3248: result: 
+configure:3270: checking whether we are cross compiling
+configure:3278: gcc -o conftest    conftest.c  >&5
+configure:3282: $? = 0
+configure:3289: ./conftest
+configure:3293: $? = 0
+configure:3308: result: no
+configure:3313: checking for suffix of object files
+configure:3335: gcc -c   conftest.c >&5
+configure:3339: $? = 0
+configure:3360: result: o
+configure:3364: checking whether we are using the GNU C compiler
+configure:3383: gcc -c   conftest.c >&5
+configure:3383: $? = 0
+configure:3392: result: yes
+configure:3401: checking whether gcc accepts -g
+configure:3421: gcc -c -g  conftest.c >&5
+configure:3421: $? = 0
+configure:3462: result: yes
+configure:3479: checking for gcc option to accept ISO C89
+configure:3542: gcc  -c -g -O2  conftest.c >&5
+configure:3542: $? = 0
+configure:3555: result: none needed
+configure:3580: checking whether gcc understands -c and -o together
+configure:3602: gcc -c conftest.c -o conftest2.o
+configure:3605: $? = 0
+configure:3602: gcc -c conftest.c -o conftest2.o
+configure:3605: $? = 0
+configure:3617: result: yes
+configure:3645: checking for style of include used by make
+configure:3673: result: GNU
+configure:3699: checking dependency style of gcc
+configure:3810: result: gcc3
+configure:3868: checking for ranlib
+configure:3884: found /usr/bin/ranlib
+configure:3895: result: ranlib
+configure:3927: checking how to run the C preprocessor
+configure:3958: gcc -E  conftest.c
+configure:3958: $? = 0
+configure:3972: gcc -E  conftest.c
+conftest.c:11:28: fatal error: ac_nonexistent.h: No such file or directory
+ #include <ac_nonexistent.h>
+                            ^
+compilation terminated.
+configure:3972: $? = 1
+configure: failed program was:
+| /* confdefs.h */
+| #define PACKAGE_NAME "Poker"
+| #define PACKAGE_TARNAME "poker"
+| #define PACKAGE_VERSION "0.1"
+| #define PACKAGE_STRING "Poker 0.1"
+| #define PACKAGE_BUGREPORT "amdsamoxa@gmail.com"
+| #define PACKAGE_URL ""
+| #define PACKAGE "poker"
+| #define VERSION "0.1"
+| /* end confdefs.h.  */
+| #include <ac_nonexistent.h>
+configure:3997: result: gcc -E
+configure:4017: gcc -E  conftest.c
+configure:4017: $? = 0
+configure:4031: gcc -E  conftest.c
+conftest.c:11:28: fatal error: ac_nonexistent.h: No such file or directory
+ #include <ac_nonexistent.h>
+                            ^
+compilation terminated.
+configure:4031: $? = 1
+configure: failed program was:
+| /* confdefs.h */
+| #define PACKAGE_NAME "Poker"
+| #define PACKAGE_TARNAME "poker"
+| #define PACKAGE_VERSION "0.1"
+| #define PACKAGE_STRING "Poker 0.1"
+| #define PACKAGE_BUGREPORT "amdsamoxa@gmail.com"
+| #define PACKAGE_URL ""
+| #define PACKAGE "poker"
+| #define VERSION "0.1"
+| /* end confdefs.h.  */
+| #include <ac_nonexistent.h>
+configure:4060: checking for grep that handles long lines and -e
+configure:4118: result: /bin/grep
+configure:4123: checking for egrep
+configure:4185: result: /bin/grep -E
+configure:4190: checking for ANSI C header files
+configure:4210: gcc -c -g -O2  conftest.c >&5
+configure:4210: $? = 0
+configure:4283: gcc -o conftest -g -O2   conftest.c  >&5
+configure:4283: $? = 0
+configure:4283: ./conftest
+configure:4283: $? = 0
+configure:4294: result: yes
+configure:4307: checking for sys/types.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for sys/stat.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for stdlib.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for string.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for memory.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for strings.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for inttypes.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for stdint.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4307: checking for unistd.h
+configure:4307: gcc -c -g -O2  conftest.c >&5
+configure:4307: $? = 0
+configure:4307: result: yes
+configure:4321: checking arpa/inet.h usability
+configure:4321: gcc -c -g -O2  conftest.c >&5
+configure:4321: $? = 0
+configure:4321: result: yes
+configure:4321: checking arpa/inet.h presence
+configure:4321: gcc -E  conftest.c
+configure:4321: $? = 0
+configure:4321: result: yes
+configure:4321: checking for arpa/inet.h
+configure:4321: result: yes
+configure:4333: checking netinet/in.h usability
+configure:4333: gcc -c -g -O2  conftest.c >&5
+configure:4333: $? = 0
+configure:4333: result: yes
+configure:4333: checking netinet/in.h presence
+configure:4333: gcc -E  conftest.c
+configure:4333: $? = 0
+configure:4333: result: yes
+configure:4333: checking for netinet/in.h
+configure:4333: result: yes
+configure:4345: checking for stdlib.h
+configure:4345: result: yes
+configure:4357: checking for string.h
+configure:4357: result: yes
+configure:4369: checking sys/socket.h usability
+configure:4369: gcc -c -g -O2  conftest.c >&5
+configure:4369: $? = 0
+configure:4369: result: yes
+configure:4369: checking sys/socket.h presence
+configure:4369: gcc -E  conftest.c
+configure:4369: $? = 0
+configure:4369: result: yes
+configure:4369: checking for sys/socket.h
+configure:4369: result: yes
+configure:4381: checking for unistd.h
+configure:4381: result: yes
+configure:4397: checking for memset
+configure:4397: gcc -o conftest -g -O2   conftest.c  >&5
+conftest.c:50:6: warning: conflicting types for built-in function 'memset'
+ char memset ();
+      ^
+configure:4397: $? = 0
+configure:4397: result: yes
+configure:4408: checking for select
+configure:4408: gcc -o conftest -g -O2   conftest.c  >&5
+configure:4408: $? = 0
+configure:4408: result: yes
+configure:4419: checking for socket
+configure:4419: gcc -o conftest -g -O2   conftest.c  >&5
+configure:4419: $? = 0
+configure:4419: result: yes
+configure:4544: checking that generated files are newer than configure
+configure:4550: result: done
+configure:4577: creating ./config.status
 
 ## ---------------------- ##
 ## Running config.status. ##
@@ -147,12 +291,11 @@ generated by GNU Autoconf 2.69.  Invocation command line was
 
 on tima-GE60-2OC-2OD-2OE
 
-config.status:844: creating Makefile
-config.status:844: creating src/Makefile
-config.status:844: creating src/client/Makefile
-config.status:844: creating config.h
-config.status:1025: config.h is unchanged
-config.status:1073: executing depfiles commands
+config.status:867: creating Makefile
+config.status:867: creating src/Makefile
+config.status:867: creating src/client/Makefile
+config.status:867: creating config.h
+config.status:1096: executing depfiles commands
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -165,6 +308,8 @@ ac_cv_env_CFLAGS_set=
 ac_cv_env_CFLAGS_value=
 ac_cv_env_CPPFLAGS_set=
 ac_cv_env_CPPFLAGS_value=
+ac_cv_env_CPP_set=
+ac_cv_env_CPP_value=
 ac_cv_env_LDFLAGS_set=
 ac_cv_env_LDFLAGS_value=
 ac_cv_env_LIBS_set=
@@ -175,11 +320,31 @@ ac_cv_env_host_alias_set=
 ac_cv_env_host_alias_value=
 ac_cv_env_target_alias_set=
 ac_cv_env_target_alias_value=
+ac_cv_func_memset=yes
+ac_cv_func_select=yes
+ac_cv_func_socket=yes
+ac_cv_header_arpa_inet_h=yes
+ac_cv_header_inttypes_h=yes
+ac_cv_header_memory_h=yes
+ac_cv_header_netinet_in_h=yes
+ac_cv_header_stdc=yes
+ac_cv_header_stdint_h=yes
+ac_cv_header_stdlib_h=yes
+ac_cv_header_string_h=yes
+ac_cv_header_strings_h=yes
+ac_cv_header_sys_socket_h=yes
+ac_cv_header_sys_stat_h=yes
+ac_cv_header_sys_types_h=yes
+ac_cv_header_unistd_h=yes
 ac_cv_objext=o
+ac_cv_path_EGREP='/bin/grep -E'
+ac_cv_path_GREP=/bin/grep
 ac_cv_path_install='/usr/bin/install -c'
 ac_cv_path_mkdir=/bin/mkdir
 ac_cv_prog_AWK=gawk
+ac_cv_prog_CPP='gcc -E'
 ac_cv_prog_ac_ct_CC=gcc
+ac_cv_prog_ac_ct_RANLIB=ranlib
 ac_cv_prog_cc_c89=
 ac_cv_prog_cc_g=yes
 ac_cv_prog_make_make_set=yes
@@ -207,6 +372,7 @@ AWK='gawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
 CFLAGS='-g -O2'
+CPP='gcc -E'
 CPPFLAGS=''
 CYGPATH_W='echo'
 DEFS='-DHAVE_CONFIG_H'
@@ -214,7 +380,9 @@ DEPDIR='.deps'
 ECHO_C=''
 ECHO_N='-n'
 ECHO_T=''
+EGREP='/bin/grep -E'
 EXEEXT=''
+GREP='/bin/grep'
 INSTALL_DATA='${INSTALL} -m 644'
 INSTALL_PROGRAM='${INSTALL}'
 INSTALL_SCRIPT='${INSTALL}'
@@ -237,6 +405,7 @@ PACKAGE_TARNAME='poker'
 PACKAGE_URL=''
 PACKAGE_VERSION='0.1'
 PATH_SEPARATOR=':'
+RANLIB='ranlib'
 SET_MAKE=''
 SHELL='/bin/bash'
 STRIP=''
@@ -294,5 +463,24 @@ target_alias=''
 #define PACKAGE_URL ""
 #define PACKAGE "poker"
 #define VERSION "0.1"
+#define STDC_HEADERS 1
+#define HAVE_SYS_TYPES_H 1
+#define HAVE_SYS_STAT_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_STRING_H 1
+#define HAVE_MEMORY_H 1
+#define HAVE_STRINGS_H 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_STDINT_H 1
+#define HAVE_UNISTD_H 1
+#define HAVE_ARPA_INET_H 1
+#define HAVE_NETINET_IN_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_STRING_H 1
+#define HAVE_SYS_SOCKET_H 1
+#define HAVE_UNISTD_H 1
+#define HAVE_MEMSET 1
+#define HAVE_SELECT 1
+#define HAVE_SOCKET 1
 
 configure: exit 0
