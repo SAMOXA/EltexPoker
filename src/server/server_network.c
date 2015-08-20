@@ -5,7 +5,7 @@ static struct sockaddr_in game_server_addr;
 
 static int listen_socket;	/* Файловый дескриптор слушающего сокета */
 static int pipe_fd = 0;		/* Для общения между игровым и слушающим серверами */
-
+static char defined_ip[24] = {0};
 /*
  * Массив ФД активных соединений.
  * Хранит незарегистрированных клиентов
@@ -56,7 +56,7 @@ static int get_index_by_fd(int fd){
 }
 
 /* Создание слушающего сокета */
-void init_listen_server_network(void)
+void init_listen_server_network(int listen_server_port, char *listen_server_ip)
 {
 	listen_socket = socket (AF_INET, SOCK_STREAM, 0);
 	if (listen_socket < 0) {
@@ -67,14 +67,20 @@ void init_listen_server_network(void)
 
 	memset((void *) &listen_server_addr, 0, sizeof(struct sockaddr_in));
 	listen_server_addr.sin_family = AF_INET;
-	listen_server_addr.sin_port = htons(LISTEN_SERVER_PORT);
-	inet_aton(LISTEN_SERVER_IP, &listen_server_addr.sin_addr);
+	listen_server_addr.sin_port = listen_server_port == 0 ? htons(DEFAULT_LISTEN_SERVER_PORT) : htons(listen_server_port);
+	if(listen_server_ip == 0)
+		inet_aton(DEFAULT_LISTEN_SERVER_IP, &listen_server_addr.sin_addr);
+	else{
+		inet_aton(listen_server_ip, &listen_server_addr.sin_addr);
+		memset(defined_ip, 0, 24);
+		memcpy(defined_ip, listen_server_ip, strlen(listen_server_ip));
+	}
 
 	if (bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))) {
 		perror("[network] Binding port error, bind(): ");
 		exit(1);
 	}
-	printf("[listen_server_network] Port binded successfully\n");
+	printf("[listen_server_network] Port binded successfully. PORT: %d, IP: %s\n", DEFAULT_LISTEN_SERVER_PORT, DEFAULT_LISTEN_SERVER_IP);
 }
 
 /* Цикл приема сообщений слушающего сервера */
@@ -235,13 +241,16 @@ void init_game_server_network(int game_server_port, int listen_server_fd)
 	memset((void *) &game_server_addr, 0, sizeof(struct sockaddr_in));
 	game_server_addr.sin_family = AF_INET;
 	game_server_addr.sin_port = htons(game_server_port);
-	inet_aton(LISTEN_SERVER_IP, &game_server_addr.sin_addr);
-
+	if(!strlen(defined_ip))	/* Если слушающий сервер установил новый IP */
+		inet_aton(defined_ip, &game_server_addr.sin_addr);
+	else
+		inet_aton(DEFAULT_LISTEN_SERVER_IP, &game_server_addr.sin_addr);
+		
 	if(bind(listen_socket, (struct sockaddr *) &game_server_addr, sizeof(game_server_addr))){
 		perror("[game_server_network] Binding port error, bind(): ");
 		exit(1);
 	}
-	printf("[game_server_network] Port binded successfully\n");
+	printf("[game_server_network] Port binded successfully. PORT: %d\n", game_server_port);
 }
 
 /* Цикл приема сообщений игрового сервера */
