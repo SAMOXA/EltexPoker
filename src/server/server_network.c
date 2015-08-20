@@ -1,20 +1,4 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <string.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdlib.h>
-#include <time.h>
-#include <errno.h>
-#include <signal.h>
-
-#include "global.h"
-#include "internalIPC.h"
-#include "events.h"
 #include "server_network.h"
-
 
 static struct sockaddr_in listen_server_addr;
 static struct sockaddr_in game_server_addr;
@@ -102,7 +86,7 @@ void listen_server_loop(void)
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
 	int return_val;
-	
+
 	struct timeval select_interval;
 	struct network_msg_hdr_t *net_header;
 	struct sockaddr_in new_client_addr;
@@ -352,7 +336,7 @@ void game_server_loop()
 				/* вызвать events(), передать параметры и сообщение */
 				net_header = (struct network_msg_hdr_t *) buf;
 
-				events(LOBBY_SERVER, 0, net_header->payload_type, (void *) (buf + 8));
+				gameEvents(LOBBY_SERVER, 0, net_header->payload_type, (void *) (buf + 8));
 			}
 		}
 
@@ -383,10 +367,10 @@ void game_server_loop()
 
 					if(return_val < 0){
 						printf("[game_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][0]);
-						events(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
+						gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 					}
 					else
-						events(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
+						gameEvents(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -394,8 +378,8 @@ void game_server_loop()
 }
 
 /*
- * Функция передачи сообщений. 
- * destination_type: для GAME_SERVER, CLIENT 
+ * Функция передачи сообщений.
+ * destination_type: для GAME_SERVER, CLIENT
  * указать destination_id. В остальных случаях
  * destination_id = 0.
  */
@@ -429,7 +413,7 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] message will not send\n");
 				break;
 			}
-			
+
 			return_val = write(fd_table[index][1], buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
@@ -480,7 +464,7 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] message will not send\n");
 				break;
 			}
-			
+
 			return_val = write(fd_table[index][1], buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
@@ -582,13 +566,13 @@ void add_id_to_table(int fd, int id)
 }
 
 void del_id_from_table(int fd, int id)
-{	
+{
 	int index;
 	if(fd == 0)
 		index = get_index_by_id(id);
 	else
 		index = get_index_by_fd(fd);
-	
+
 	if(index < 0){	/* ошибка */
 		printf("[network] del_id_to_table(): cant find entry with id = %d\n", id);
 	}

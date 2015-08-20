@@ -3,6 +3,7 @@
 
 #include "global.h"
 
+
 enum destinationType_e {
 /* For listen server */
 	GAME_SERVER,
@@ -17,7 +18,8 @@ enum messagesType {
 	INTERNAL_NEW_PLAYER,
 	INTERNAL_PLAYER_CONFIRMED,
 	INTERNAL_PLAYER_LEFT,
-	INTERNAL_PLAYERS_UPDATE
+	INTERNAL_PLAYERS_UPDATE,
+	INTERNAL_TABLE_DELETE
 };
 
 struct newPlayer_t {

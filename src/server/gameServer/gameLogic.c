@@ -14,7 +14,7 @@ unsigned char takedCard[MAX_TAKED_CARDS];
 
 struct errorMsg_t lastError;
 
-char checkTakedCard(unsigned char card){
+static char checkTakedCard(unsigned char card){
 	int i;
 	for(i=0;i<MAX_TAKED_CARDS;i++){
 		if(takedCard[i] == card){
@@ -24,7 +24,7 @@ char checkTakedCard(unsigned char card){
 	return 1;
 }
 
-unsigned char getCard(){
+static unsigned char getCard(){
 	unsigned char card;
 	int i;
 	do{
@@ -39,11 +39,11 @@ unsigned char getCard(){
 	return card;
 }
 
-void resetCards(){
+static void resetCards(){
 	memset(takedCard, FALSE_CARD, sizeof(unsigned char) * MAX_TAKED_CARDS);
 }
 
-int getPlayerIndex(int id) {
+static int getPlayerIndex(int id) {
 	int i;
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		if(game.players[i].id == id){
@@ -53,13 +53,13 @@ int getPlayerIndex(int id) {
 	return -1;
 }
 
-char playerIsActive(int id) {
+static char playerIsActive(int id) {
 	int index = getPlayerIndex(id);
 	return game.players[index].state == PLAYER_ACTIVE;
 }
 
 //TODO pending buffer
-void addNewPlayer(struct newPlayer_t *newPlayer) {
+static void addNewPlayer(struct newPlayer_t *newPlayer) {
 	int i;
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		if(game.players[i].state == PLAYER_FREE){
@@ -74,7 +74,7 @@ void addNewPlayer(struct newPlayer_t *newPlayer) {
 }
 
 
-char getNextPlayer(int oldPlayerId) { //Call only after reset player states
+static char getNextPlayer(int oldPlayerId) { //Call only after reset player states
 	int newIndex = oldPlayerId;
 	while(1){
 		newIndex = (newIndex + 1) % MAX_PLAYERS_PER_TABLE;
@@ -84,7 +84,7 @@ char getNextPlayer(int oldPlayerId) { //Call only after reset player states
 	}
 }
 
-char checkActionPermission(int playerId, char actionType, void *data){
+static char checkActionPermission(int playerId, char actionType, void *data){
 	int index = getPlayerIndex(playerId);
 	int riseCount = *((int *)data);
 	if(game.state == GAME_START || game.state == GAME_FINAL){
@@ -134,7 +134,7 @@ char checkActionPermission(int playerId, char actionType, void *data){
 	return 1;
 }
 
-char checkWin() {
+static char checkWin() {
 	char activePlayersCount = 0;
 	int i;
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++) {
@@ -145,14 +145,14 @@ char checkWin() {
 	return activePlayersCount == 1;
 }
 
-char checkNextTurn() {
+static char checkNextTurn() {
 	if(game.activePlayerId == game.lastRisePlayerId){
 		return 1;
 	}
 	return 0;
 }
 
-void startNewGame(){
+static void startNewGame(){
 	int i;
 	game.bank = 0;
 	for(i=0;i<MAX_PLAYERS_PER_TABLE;i++){
@@ -187,7 +187,7 @@ void startNewGame(){
 	game.state = GAME_PRE_FLOP_ROUND;
 }
 
-void updateTurn() {
+static void updateTurn() {
 	int winIndex = -1;
 	int i;
 	int index;
@@ -223,11 +223,11 @@ void updateTurn() {
 	}
 }
 
-void updateTradeTurn(){
+static void updateTradeTurn(){
 	game.activePlayerId = getNextPlayer(game.activePlayerId);
 }
 
-void updateState() {
+static void updateState() {
 	if(game.state == GAME_START){
 		if(game.playersCount > 1){
 			startNewGame();
@@ -248,7 +248,7 @@ void updateState() {
 	updateTradeTurn();
 }
 
-char actionCall(int id){
+static char actionCall(int id){
 	int index = getPlayerIndex(id);
 	int betCount;
 	if(checkActionPermission(id, PERM_CALL, 0)) {
@@ -262,7 +262,7 @@ char actionCall(int id){
 	return 0;
 }
 
-char actionRise(int id, int riseCount){
+static char actionRise(int id, int riseCount){
 	int index = getPlayerIndex(id);
 	int betCount;
 	if(checkActionPermission(id, PERM_RISE, &riseCount)){
@@ -278,7 +278,7 @@ char actionRise(int id, int riseCount){
 	return 0;
 }
 
-char actionFold(int id){
+static char actionFold(int id){
 	int index = getPlayerIndex(id);
 	if(checkActionPermission(id, PERM_FOLD, 0)){
 		game.players[index].state = PLAYER_PASS;
@@ -288,7 +288,7 @@ char actionFold(int id){
 	return 0;
 }
 
-char actionCheck(int id) {
+static char actionCheck(int id) {
 	int index = getPlayerIndex(id);
 	if(checkActionPermission(id, PERM_CHECK, 0)){
 		updateState();
@@ -297,7 +297,7 @@ char actionCheck(int id) {
 	return 0;
 }
 
-char actionAllIn(int id) {
+static char actionAllIn(int id) {
 	int index = getPlayerIndex(id);
 	if(checkActionPermission(id, PERM_ALL_IN, 0)){
 		game.bank += game.players[index].money;
@@ -310,7 +310,7 @@ char actionAllIn(int id) {
 	return 0;
 }
 
-char actionConnectRequest(unsigned int session) {
+static char actionConnectRequest(unsigned int session) {
 	int i;
 	int id = -1;
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
@@ -329,7 +329,7 @@ char actionConnectRequest(unsigned int session) {
 	return id;
 }
 
-void removePlayer(int id){
+static void removePlayer(int id){
 	int index = getPlayerIndex(id);
 	memset(&game.players[index], 0, sizeof(struct player_t));
 	game.players[index].state = PLAYER_FREE;
@@ -348,7 +348,7 @@ void initGameLogic() {
 	resetCards();
 }
 
-void newEvent(unsigned int id, unsigned char type, char sourceType, void *data){
+void gameEvents(int sourceType, int id, int type, void *data){
 	char errorFlag = 0;
 	if(sourceType == CLIENT){ //Клиент
 		switch(type) {

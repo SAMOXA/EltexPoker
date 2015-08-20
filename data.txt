@@ -1,3 +1,10 @@
  
+<<<<<<< HEAD
+ 
+t t
+ira pass
+user 123
+=======
 t t
  
+>>>>>>> origin/master

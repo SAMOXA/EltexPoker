@@ -7,25 +7,62 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
+
+#define SIZE_DATA (MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE) /*Максимально кол-во данных по игрокам*/ 
+
+
 #include "global.h"
 #include "server_network.h"
 #include "internalIPC.h"
+#include "start.h"
 
 
-#define SIZE_DATA (MAX_TABLES_COUNT * 4)
 
+enum statusTable {EMPTY, SLEEP, FULL, PLAY}; /*Состояние для столов и портов*/
+
+/*Информация о игроках*/
 struct dataPlayers {
 	char name[MAX_NAME_LENGTH];
 	char pswd[MAX_PASS_LENGTH];
-} data[SIZE_DATA];
+};
+/*Информация о столах*/
+struct infoOfTable {
+	int countPlayer;
+	int status;
+	int port;
+};
+/*Таблица Имя - id*/
+struct listNameId {
+	char name[MAX_NAME_LENGTH];
+	int id;
+};
+/*Информация по портам*/
+struct gamePort {
+	int listPort[MAX_TABLES_COUNT];
+	int statusListPort[MAX_TABLES_COUNT];
+};
 
-int readFile();
-int checkName(char *name);
-int checkPasswd(int numCheck, char *pswd);
-void saveFile();
+/*Клиентская часть*/
+
+/*Регистрация*/
 void registration(void * buf);
+/*Вход*/
 void login(void *buf);
+/*Получение списка столов*/
 void tableList();
+/*Создание нового стола*/
 void createTable(void *buf);
+
+/*Подключение к существующему столу*/
 void connectTable(void *buf);
+
+/*Внутресерверная часть*/
+
+/*Подтверждение от игрового серве о подключение игрока, на вход id сервера*/
+void confirmedConnect(void *buf, int serverID);
+/*Удаление стола, на вход ID стола*/
+void removeTable(int id);
+/*Удаление игрока*/
+void removePlayerFromTable(void *buf);
 #endif //LOGIC_H
+
