@@ -3,7 +3,8 @@
 
 #include "../global.h"
 
-enum sourceType_e {
+
+enum destinationType_e {
 /* For listen server */
 	GAME_SERVER,
 	CURRENT,

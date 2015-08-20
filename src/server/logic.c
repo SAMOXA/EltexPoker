@@ -63,7 +63,7 @@ void init() {
 	gPorts.statusListPort[0] = EMPTY;
 	for (i = 1; i < MAX_TABLES_COUNT; i++) {
 		gPorts.listPort[i] = ++gPorts.listPort[i - 1];
-		gPorts.statusListPort[i] = PLAY;
+		gPorts.statusListPort[i] = EMPTY;
 	}
 }
 
@@ -133,7 +133,7 @@ void login(void *buf)
 		return;
 	}
 	loginRes->status = STATUS_OK;
-	IdName[currentPlayer].id = playersID++;
+	IdName[currentPlayer].id = ++playersID;
 	strcpy(IdName[currentPlayer].name, loginReq->name);
 	currentPlayer++;
 
@@ -190,7 +190,7 @@ int findEmptyTable()
 int getIDtoName(char *name)
 {
 	int i;
-	for (i = 0; i < currentPlayer; i++) {
+	for (i = 0; i <= currentPlayer; i++) {
 		if (strcmp(name, IdName[i].name)) {
 			return IdName[i].id;
 		}
@@ -262,7 +262,7 @@ void createTable(void *buf)
 		send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 		send_message(CURRENT, 0, CREATE_TABLE, sizeof(struct selectResponce_t), (void *)&responce);
 		/*Close connect*/
-		close_current_connection();
+		close_current_client_connection();
 		printf("[logic]Success create table and disconnect client\n");
 	}
 }
@@ -333,7 +333,7 @@ void connectTable(void *buf)
 
 	send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 	send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), (void *) &responce);
-	close_current_connection();
+	close_current_client_connection();
 	printf("[Logic]User connect o table\n");
 }
 /*Получение имени по id из таблицы*/
@@ -413,5 +413,11 @@ void removeTable(int id)
 	/* 2) Clean up structure "information of table" */
 	inofList[index].status 	= EMPTY;
 	inofList[index].countPlayer = 0;
-	del_id_from_table(id);
+	inofList[index].port = 0;
+	for (i = 0; i < MAX_TABLES_COUNT; i++) {
+		if(inofList[i].port == gPorts.listPort[i]){
+			gPorts.statusListPort[i] = EMPTY;
+		}
+	}
+	del_id_from_table(0, id);
 }

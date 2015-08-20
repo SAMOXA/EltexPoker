@@ -150,5 +150,11 @@ struct changePlayerCards_t {
 struct changePlayerState_t {
 	unsigned char state;
 };
+
+/* Header for network layer */
+struct network_msg_hdr_t {
+	int payload_type;
+	int payload_len;
+};
 //////////////////////////////////////////////////////
 #endif //GLOBAL_H
