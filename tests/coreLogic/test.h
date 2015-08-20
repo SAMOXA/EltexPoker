@@ -3,9 +3,9 @@
 
 #include <string.h>
 
-#include "../../../global.h"
-#include "../gameLogic.h"
-#include "../win.h"
+#include "global.h"
+#include "gameLogic.h"
+#include "win.h"
 
 #define TEST_PLAYERS_COUNT 3
 

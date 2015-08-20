@@ -6,10 +6,10 @@
 
 #include <stdio.h>
 
-#include "../../global.h"
-#include "gameLogic.h"
+#include "global.h"
+/*#include "gameLogic.h"*/
+#include "shared.h"
 
-extern int winners[MAX_PLAYERS_PER_TABLE];
 char getWinIndex();
 
 #endif //WIN_H

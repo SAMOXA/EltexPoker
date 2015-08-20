@@ -1,7 +1,7 @@
 #ifndef INTERNAL_IPC_H
 #define INTERNAL_IPC_H
 
-#include "../global.h"
+#include "global.h"
 
 enum destinationType_e {
 /* For listen server */

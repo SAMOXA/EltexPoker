@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
-#include "../global.h"
+#include "global.h"
 #include "server_network.h"
 #include "internalIPC.h"
 

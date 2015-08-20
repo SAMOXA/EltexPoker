@@ -10,8 +10,6 @@ enum permissionsTypes_e {
 	PERM_FOLD
 };
 
-struct gameState_t game;
-
 unsigned char takedCard[MAX_TAKED_CARDS];
 
 struct errorMsg_t lastError;

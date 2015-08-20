@@ -3,13 +3,14 @@
 
 AC_PREREQ([2.69])
 AC_INIT([Poker], [0.1], [amdsamoxa@gmail.com])
-AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE([subdir-objects serial-tests])
 AM_MAINTAINER_MODE([disable])
 AC_CONFIG_SRCDIR([src/client/main.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_RANLIB
 
 # Checks for libraries.
 
