@@ -65,14 +65,21 @@ extern void (*graf_pass_event)(void);
 
 //---------------------------Table select API
 
-struct graf_list_t{
-    char title[256];
-    struct table_t tables[MAX_TABLES_COUNT];
+struct graf_list_table_t{
+    int enabled;
+    int id;
+    int players_count;
 };
 
-void grafInitList(struct graf_list_t* list);
-void grafDrawList(struct graf_list_t* list);
-void grafDrawListMsg(const char *msg);
+struct graf_list_t{
+    char title[256];
+    struct graf_list_table_t tables[MAX_TABLES_COUNT];
+};
+
+void grafInitList();
+void grafDrawTableList(struct graf_list_t*);
+void grafDrawMsgList(const char *msg);
+void grafExitList();
 
 extern void (*graf_list_exit_event)(void);
 extern void (*graf_list_select_event)(int id);

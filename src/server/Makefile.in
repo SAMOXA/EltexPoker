@@ -107,7 +107,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_pokerServer_OBJECTS = main.$(OBJEXT) server_network.$(OBJEXT) \
 	events.$(OBJEXT) logic.$(OBJEXT) \
 	gameServer/gameLogic.$(OBJEXT) gameServer/win.$(OBJEXT) \
-	gameServer/shared.$(OBJEXT)
+	gameServer/shared.$(OBJEXT) gameServer/start.$(OBJEXT)
 pokerServer_OBJECTS = $(am_pokerServer_OBJECTS)
 pokerServer_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -257,7 +257,8 @@ top_srcdir = @top_srcdir@
 pokerServer_SOURCES = main.c ../global.h server_network.c \
 	server_network.h events.c events.h logic.c logic.h \
 	gameServer/gameLogic.c gameServer/gameLogic.h gameServer/win.c \
-	gameServer/win.h gameServer/shared.c gameServer/shared.h
+	gameServer/win.h gameServer/shared.c gameServer/shared.h \
+	gameServer/start.c gameServer/start.h
 noinst_LIBRARIES = libtestcorelogic.a
 libtestcorelogic_a_SOURCES = gameServer/shared.c gameServer/shared.h \
 	gameServer/win.c gameServer/win.h
@@ -361,6 +362,8 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 gameServer/gameLogic.$(OBJEXT): gameServer/$(am__dirstamp) \
 	gameServer/$(DEPDIR)/$(am__dirstamp)
+gameServer/start.$(OBJEXT): gameServer/$(am__dirstamp) \
+	gameServer/$(DEPDIR)/$(am__dirstamp)
 
 pokerServer$(EXEEXT): $(pokerServer_OBJECTS) $(pokerServer_DEPENDENCIES) $(EXTRA_pokerServer_DEPENDENCIES) 
 	@rm -f pokerServer$(EXEEXT)
@@ -379,6 +382,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server_network.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/gameLogic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/shared.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/start.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/win.Po@am__quote@
 
 .c.o:

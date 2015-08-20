@@ -833,6 +833,7 @@ void* ncsControlsFunc(void* data)
 //	refresh();
 	if(c==27){
 	    graf_exit_event();
+	    return NULL;
 	}
 	if(c==10){
 	    if(	main_tbl->input.enabled==1 && \
@@ -847,6 +848,7 @@ void* ncsControlsFunc(void* data)
 	    if(	main_tbl->exit_btn.enabled==1 &&\
 		main_tbl->exit_btn.selected==1){
 		graf_exit_event();
+		return NULL;
 	    }
 	    if(	main_tbl->pass_btn.enabled==1 &&\
 		main_tbl->pass_btn.selected==1){

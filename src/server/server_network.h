@@ -1,6 +1,23 @@
 #ifndef SERVER_NETWORK_H
 #define SERVER_NETWORK_H
 
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <time.h>
+#include <errno.h>
+#include <signal.h>
+
+#include "global.h"
+#include "internalIPC.h"
+#include "events.h"
+#include "gameLogic.h"
+
 #define LISTEN_SERVER_IP "192.168.1.24"
 #define LISTEN_SERVER_PORT 1921
 
@@ -8,18 +25,12 @@
 #define MAX_ACTIVE_CONNECTIONS 30
 #define MAX_TABLE_LEN 10
 
-
-/* Получение индекса записи в таблицe по ИД */
-static int get_index_by_id(int id);
-/* Получение индекса записи в таблицe по ФД */
-static int get_index_by_fd(int fd);
-
 /* Создание слушающего сокета */
 void init_listen_server_network(void);
 /* Цикл приема сообщений */
 void listen_server_loop(void);
 
-/* 
+/*
  * Создание сокета, добавление
  * файлового дескриптора слушающего сервера
  */
@@ -28,15 +39,15 @@ void init_game_server_network(int game_server_port, int listen_server_fd);
 void game_server_loop(void);
 
 /*
- * Функция передачи сообщений. 
- * destination_type: для GAME_SERVER, CLIENT 
+ * Функция передачи сообщений.
+ * destination_type: для GAME_SERVER, CLIENT
  * указать destination_id. В остальных случаях
  * destination_id = 0.
  */
 void send_message(int destination_type, int destination_id,
 		int message_type, int message_len, void *message);
 
-/* 
+/*
  * Функция ИКЛЮЧИТЕЛЬНО для СЛУШАЮЩЕГО СЕРВЕРА.
  * Закрытие текущего соединения с клиентом
  */
