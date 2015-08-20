@@ -17,8 +17,6 @@ struct combos_t {
 char prepareToWin[MAX_PLAYERS_PER_TABLE];
 int prepareToWinCount = 0;
 
-int winners[MAX_PLAYERS_PER_TABLE];
-
 unsigned char activePlayersCount = 0;
 
 int compare(const void *elem1, const void *elem2){

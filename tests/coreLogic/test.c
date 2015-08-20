@@ -125,6 +125,9 @@ void printCard(unsigned char card){
 
 int main(){
 	int i, j;
+	for(i=0;i<3;i++){
+		game.players[i].state = PLAYER_ACTIVE;
+	}
 	for(i=0;i<testsCount;i++){
 		for(j=0;j<5;j++){
 			game.cards[j] = tests[i].cards[j];
@@ -150,6 +153,7 @@ int main(){
 		printf("}");
 		if(memcmp(winners, tests[i].expectWinners, sizeof(int)*3) != 0){
 			printf(" \t[FAIL]\n");
+			return -1;
 		}else{
 			printf(" \t[PASS]\n");
 		}
