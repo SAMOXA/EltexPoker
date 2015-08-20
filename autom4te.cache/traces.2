@@ -342,12 +342,16 @@ m4trace:configure.ac:13: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
 m4trace:configure.ac:14: -1- AC_SUBST([RANLIB])
 m4trace:configure.ac:14: -1- AC_SUBST_TRACE([RANLIB])
 m4trace:configure.ac:14: -1- m4_pattern_allow([^RANLIB$])
+<<<<<<< HEAD
 m4trace:configure.ac:18: -1- AC_CANONICAL_HOST
 m4trace:configure.ac:18: -1- AC_CANONICAL_BUILD
 m4trace:configure.ac:18: -1- AC_REQUIRE_AUX_FILE([config.sub])
 m4trace:configure.ac:18: -1- AC_REQUIRE_AUX_FILE([config.guess])
 m4trace:configure.ac:18: -1- AC_SUBST([build], [$ac_cv_build])
 m4trace:configure.ac:18: -1- AC_SUBST_TRACE([build])
+=======
+m4trace:configure.ac:18: -1- AX_PTHREAD([], [AC_MSG_ERROR([requires pthread library])])
+>>>>>>> origin/master
 m4trace:configure.ac:18: -1- m4_pattern_allow([^build$])
 m4trace:configure.ac:18: -1- AC_SUBST([build_cpu], [$[1]])
 m4trace:configure.ac:18: -1- AC_SUBST_TRACE([build_cpu])
