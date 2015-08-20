@@ -1,121 +1,20 @@
-#include "graf.h"
+#include "graf_list.h"
 
 static struct termios stored_settings;
 
 static unsigned int CUR_TEXT_COLOR=COLOR_BLACK;
 static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
 
-static struct ncs_graf_table_t *main_tbl=NULL;
+static struct ncs_graf_list_t *main_list=NULL;
 
-static selected_index=0;
+static button_index=0;
 
-void (*graf_exit_event)(void)=ncsTempExit;
-void (*graf_bet_event)(int sum)=ncsTempBet;
-void (*graf_pass_event)(void)=ncsTempPass;
+void (*graf_list_exit_event)(void)=ncsTempListExit;
+void (*graf_list_select_event)(int id)=ncsTempListSelect;
+void (*graf_list_create_event)(void)=ncsTempListCreate;
+void (*graf_list_refresh_event)(void)=ncsTempListRefresh;
 
 //-------------------------------------API connect block
-void ncsGrafDelPlayer(struct ncs_graf_player_t **player)
-{
-    int index=0;
-
-    if((*player)==NULL){
-	return;
-    }
-
-    for(index=0;index<(*player)->card_num;index++){
-	if((*player)->cards[index].wnd!=NULL){
-	    delwin((*player)->cards[index].wnd);
-	    (*player)->cards[index].wnd=NULL;
-	}
-    }
-    free((*player)->cards);
-
-    if((*player)->wnd!=NULL){
-	delwin((*player)->wnd);
-	(*player)->wnd=NULL;
-    }
-    
-    free((*player));
-    (*player)=NULL;
-}
-
-void ncsGrafDelTable(struct ncs_graf_table_t **tbl)
-{
-    int index=0;
-
-    if((*tbl)==NULL){
-	return;
-    }
-
-//Free players
-    for(index=0;index<GRAF_MAX_PLAYERS;index++){
-	ncsGrafDelPlayer(&((*tbl)->players[index]));
-    }
-
-//Free bank cards
-    for(index=0;index<(*tbl)->bank.card_num;index++){
-	if((*tbl)->bank.cards[index].wnd!=NULL){
-	    delwin((*tbl)->bank.cards[index].wnd);
-	    (*tbl)->bank.cards[index].wnd=NULL;
-	}
-    }
-    free((*tbl)->bank.cards);    
-    delwin((*tbl)->bank.wnd);
-    (*tbl)->bank.wnd=NULL;
-
-    delwin((*tbl)->input.wnd);
-    (*tbl)->input.wnd=NULL;
-
-    delwin((*tbl)->exit_btn.wnd);
-    (*tbl)->exit_btn.wnd=NULL;
-    delwin((*tbl)->pass_btn.wnd);
-    (*tbl)->pass_btn.wnd=NULL;
-
-    free((*tbl));
-    (*tbl)=NULL;
-}
-
-void ncsGrafImportPlayer(const struct graf_player_t* api_player,struct ncs_graf_player_t** player,int index)
-{
-    if((*player)!=NULL){
-	ncsGrafDelPlayer(player);
-    }
-
-    ncsGrafInitPlayer(main_tbl,index,index,\
-		    api_player->name,\
-		    api_player->status_text,\
-		    api_player->money_text,\
-		    api_player->card_num,\
-		    api_player->enabled);
-}
-
-void ncsGrafImportTable(const struct graf_table_t* api_tbl,\
-			struct ncs_graf_table_t** tbl)
-{
-    int index=0;
-
-    if((*tbl)!=NULL){
-	ncsGrafDelTable(tbl);
-    }
-
-    (*tbl)=(struct ncs_graf_table_t*)malloc(sizeof(struct ncs_graf_table_t));
-
-//Pre-initialisation table
-    ncsGrafInitTable((*tbl),&(api_tbl->bank),NCS_GRAF_CARD_SIZE_Y,NCS_GRAF_CARD_SIZE_X);
-
-//Loading players
-    for(index=0;index<GRAF_MAX_PLAYERS;index++){
-	(*tbl)->players[index]=NULL;
-	ncsGrafInitPlayer((*tbl),index,index,\
-		    api_tbl->players[index].name,\
-		    api_tbl->players[index].status_text,\
-		    api_tbl->players[index].money_text,\
-		    api_tbl->players[index].card_num,\
-		    api_tbl->players[index].enabled);
-
-	//ncsGrafImportPlayer(&(api_tbl->players[index]),&((*tbl)->players[index]),index);
-    }
-}
 
 //------------------------------------API block
 void grafInit(struct graf_table_t* tbl)
@@ -123,12 +22,7 @@ void grafInit(struct graf_table_t* tbl)
     int index=0;
     pthread_t thread;
 
-    ncsGrafImportTable(tbl,&main_tbl);
-//    for(index)
-
-//    printf("%s\n",main_tbl->bank.money_text);
-
-    pthread_create(&thread,NULL,ncsControlsFunc,NULL);
+    pthread_create(&thread,NULL,ncsListControlsFunc,NULL);
     pthread_detach(thread);
     ncsStartGraf(main_tbl);
 }

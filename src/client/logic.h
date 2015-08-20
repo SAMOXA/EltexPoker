@@ -24,11 +24,15 @@ struct msg {
 	int len;
 };
 
-void create_msg(int type, int len, void *data, unsigned char *buf);
-void logicHandlerLogin(int type, void *buf);
+/*void create_msg(int type, int len, void *data, unsigned char *buf);
 int logicEventLogin(char *login, char *pass, int registerFlag);
+int logicHandlerBegin(int type);*/
 void run(char *ip, char *namePort);
-void create_msg(int type, int len, void *data, unsigned char *buf);
+
+//..........API
+void loginCreateTable();
+void loginConnectTable(int id);
+void logicRefreshTables();
 
 
 #endif

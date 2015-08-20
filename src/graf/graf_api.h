@@ -1,7 +1,11 @@
 #ifndef GRAF_API_H
 #define GRAF_API_H
 
+#include "../global.h"
+
 #define GRAF_MAX_PLAYERS 4
+
+//------------------------Game API
 
 #define GRAF_MAX_NAME_SIZE 128
 #define GRAF_MAX_MONEY_TEXT_SIZE 128
@@ -58,5 +62,22 @@ void grafHideInput();
 extern void (*graf_exit_event)(void);
 extern void (*graf_bet_event)(int sum);
 extern void (*graf_pass_event)(void);
+
+//---------------------------Table select API
+
+struct graf_list_t{
+    char title[256];
+    struct table_t tables[MAX_TABLES_COUNT];
+};
+
+void grafInitList(struct graf_list_t* list);
+void grafDrawList(struct graf_list_t* list);
+void grafDrawListMsg(const char *msg);
+
+extern void (*graf_list_exit_event)(void);
+extern void (*graf_list_select_event)(int id);
+extern void (*graf_list_create_event)(void);
+extern void (*graf_list_refresh_event)(void);
+
 
 #endif

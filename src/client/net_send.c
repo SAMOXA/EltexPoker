@@ -6,7 +6,6 @@
 */
 int net_send(int fd, void *buffer, int type, int len)
 {
-    printf("net_send()\n");
     int rw_bytes;
 
     /* Send buffer to server */
@@ -16,7 +15,8 @@ int net_send(int fd, void *buffer, int type, int len)
 
     memcpy(msg, &type, 4);
     memcpy(msg + 4, &len, 4);
-    memcpy(msg + 8, (char*)buffer, len);
+    if (buffer != NULL)
+        memcpy(msg + 8, (char*)buffer, len);
 
     rw_bytes = write(fd, msg, 1024);
     if (rw_bytes < 0) {

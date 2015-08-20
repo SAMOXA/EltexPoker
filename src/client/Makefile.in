@@ -90,13 +90,15 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_pokerClient_OBJECTS = main.$(OBJEXT) logic.$(OBJEXT) \
+am__dirstamp = $(am__leading_dot)dirstamp
+am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
 	net_connect.$(OBJEXT) net_create_connect_server.$(OBJEXT) \
 	net_disconnect.$(OBJEXT) net_fill_socket_addr.$(OBJEXT) \
 	net_create_socket.$(OBJEXT) net_send.$(OBJEXT) \
-	net_receive.$(OBJEXT)
+	net_receive.$(OBJEXT) ../graf/graf.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
 pokerClient_LDADD = $(LDADD)
+pokerClient_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -237,10 +239,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pokerClient_SOURCES = main.c ../global.h logic.c logic.h net_header.h \
-	net_connect.c net_create_connect_server.c net_disconnect.c \
-	net_fill_socket_addr.c net_create_socket.c net_send.c \
-	net_receive.c
+pathgraf = ../graf
+LDADD = -lpthread -lncurses
+pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
+	net_header.h net_connect.c net_create_connect_server.c \
+	net_disconnect.c net_fill_socket_addr.c net_create_socket.c \
+	net_send.c net_receive.c ../graf/graf.c ../graf/graf.h \
+	../graf/graf_api.h
 all: all-am
 
 .SUFFIXES:
@@ -254,9 +259,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/client/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/client/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/client/Makefile
+	  $(AUTOMAKE) --foreign src/client/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -317,6 +322,14 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+../graf/$(am__dirstamp):
+	@$(MKDIR_P) ../graf
+	@: > ../graf/$(am__dirstamp)
+../graf/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../graf/$(DEPDIR)
+	@: > ../graf/$(DEPDIR)/$(am__dirstamp)
+../graf/graf.$(OBJEXT): ../graf/$(am__dirstamp) \
+	../graf/$(DEPDIR)/$(am__dirstamp)
 
 pokerClient$(EXEEXT): $(pokerClient_OBJECTS) $(pokerClient_DEPENDENCIES) $(EXTRA_pokerClient_DEPENDENCIES) 
 	@rm -f pokerClient$(EXEEXT)
@@ -324,11 +337,13 @@ pokerClient$(EXEEXT): $(pokerClient_OBJECTS) $(pokerClient_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../graf/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../graf/$(DEPDIR)/graf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic_menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_connect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_create_connect_server.Po@am__quote@
@@ -469,6 +484,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../graf/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../graf/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -478,7 +495,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../graf/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -524,7 +541,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../graf/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
