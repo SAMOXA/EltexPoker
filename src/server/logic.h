@@ -13,6 +13,7 @@
 
 #define SIZE_DATA (MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE) /*Максимально кол-во данных по игрокам*/ 
 
+
 enum statusTable {EMPTY, SLEEP, FULL, PLAY}; /*Состояние для столов и портов*/
 
 /*Информация о игроках*/
@@ -47,6 +48,7 @@ void login(void *buf);
 void tableList();
 /*Создание нового стола*/
 void createTable(void *buf);
+
 /*Подключение к существующему столу*/
 void connectTable(void *buf);
 
@@ -59,3 +61,4 @@ void removeTable(int id);
 /*Удаление игрока*/
 void removePlayer(void *buf);
 #endif //LOGIC_H
+

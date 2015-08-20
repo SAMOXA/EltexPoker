@@ -29,6 +29,16 @@ struct newPlayer_t {
 	unsigned int session;
 };
 
+struct updatePlayer_t {
+	unsigned int id;
+	unsigned int money;
+	char win;
+};
+
+struct updatePlayers_t {
+	struct updatePlayer_t updates[MAX_PLAYERS_PER_TABLE];
+};
+
 void startGameServer(int fd, int tableID, int port);
 
 #endif //INTERNAL_IPC_H

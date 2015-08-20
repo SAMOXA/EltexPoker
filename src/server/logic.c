@@ -5,6 +5,7 @@ int countCurrentTables = 0; /*Текущее кол-во столов*/
 int playersID = 0; /*Последний id игрока*/
 unsigned int tableID = 0;/*id таблицы*/
 int currentPlayer = 0; /*текущий игрок*/
+
 struct table_t lists[MAX_TABLES_COUNT]; /*Список столов*/
 struct dataPlayers data[SIZE_DATA]; /*Информация по игрокам*/
 struct infoOfTable inofList[MAX_TABLES_COUNT]; /*Информация по столам*/
@@ -12,8 +13,7 @@ struct listNameId IdName[MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE]; /*Табли
 struct gamePort gPorts; /*Ифформация по портам*/
 
 /*Чтение из файла*/
-int readFile() 
-{
+int readFile() {
 	FILE * fp;
 	bzero(&data, sizeof(struct dataPlayers) * SIZE_DATA);
 	if ((fp = fopen("data.txt", "rb")) == NULL) {
@@ -72,7 +72,6 @@ void registration(void * buf)
 {
 	struct loginRequest_t *loginReq = (struct loginRequest_t *)buf;
 	struct loginResponce_t *loginRes = malloc(sizeof(struct loginResponce_t));
-
 	bzero(loginRes, sizeof(struct loginResponce_t));
 	readFile();
 	/*Проверяем имя*/
@@ -128,6 +127,15 @@ void login(void *buf)
 		/*Некоректный пароль*/
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "Incorrectly password");
+
+		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректный пароль*/
+		free(loginRes);
+		return;
+	} else {
+		loginRes->status = STATUS_OK;
+		IdName[currentPlayer].id = playersID++;
+		strcpy(IdName[currentPlayer].name, loginReq->name);
+		currentPlayer++;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 		free(loginRes);
 		return;
@@ -146,9 +154,13 @@ void tableList()
 {
 	if (!countCurrentTables) {
 		lists[0].id = -1;
+
 		/*В случае ошибки посылаем пустой буфер*/
 		send_message(CURRENT, 0, LIST_TABLE, 0, (void*) &lists);
 		printf("[logic]Players get empty table list\n");
+
+		return;
+
 	} else {
 		send_message(CURRENT, 0, LIST_TABLE, sizeof(struct table_t)*MAX_TABLES_COUNT, (void*) &lists);
 		printf("[logic]Players get table list\n");
@@ -415,9 +427,10 @@ void removeTable(int id)
 	inofList[index].countPlayer = 0;
 	inofList[index].port = 0;
 	for (i = 0; i < MAX_TABLES_COUNT; i++) {
-		if(inofList[i].port == gPorts.listPort[i]){
+		if (inofList[i].port == gPorts.listPort[i]) {
 			gPorts.statusListPort[i] = EMPTY;
 		}
 	}
 	del_id_from_table(0, id);
 }
+
