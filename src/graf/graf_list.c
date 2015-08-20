@@ -5,7 +5,7 @@ static struct termios stored_settings;
 static unsigned int CUR_TEXT_COLOR=COLOR_BLACK;
 static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
 
-static struct ncs_graf_list_t *main_list=NULL;
+static struct ncs_graf_list_t main_list;
 
 static int btn_index=0;
 
@@ -24,19 +24,19 @@ void grafInitList(struct graf_list_t* tbl)
 
     pthread_create(&thread,NULL,ncsListControlsFunc,NULL);
     pthread_detach(thread);
-    ncsListStartGraf(main_list);
+    ncsListStartGraf(&main_list);
 }
 
-void grafDrawList()
+void grafDrawTableList()
 {
     int index=0;
 
-    ncsListShow(main_list);
-    wrefresh(main_list->exit_btn.wnd);
-    wrefresh(main_list->create_btn.wnd);
-    wrefresh(main_list->refresh_btn.wnd);
+    ncsListShow(&main_list);
+    wrefresh(main_list.exit_btn.wnd);
+    wrefresh(main_list.create_btn.wnd);
+    wrefresh(main_list.refresh_btn.wnd);
 
-    wrefresh(main_list->wnd);
+    wrefresh(main_list.wnd);
     refresh();
 //    getch();
 }
@@ -63,7 +63,7 @@ void ncsListGrafInit(	struct ncs_graf_list_t* list,\
     for(index=0;index<MAX_TABLES_COUNT;index++){
 	list->tables[index]=api_list->tables[index];
     }
-    list->select_index=0;
+    list->selected_index=0;
 
     list->size[0]=22+2;
     list->size[1]=20+2;
@@ -185,7 +185,6 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 	wprintw(list->wnd,"%d - %d players",\
 		list->tables[indexA].id,\
 		list->tables[indexA].players_count);
-	}
     }
     ncsSetWndColor(list->wnd,COLOR_WHITE,COLOR_WHITE);	
     box(list->wnd,0,0);
@@ -213,7 +212,7 @@ void ncsListShow(const struct ncs_graf_list_t *list)
     return;
 }
 
-void ncsEndGraf()
+void ncsListEndGraf()
 {
     endwin();
     tcsetattr(0,TCSANOW,&stored_settings);
@@ -221,7 +220,7 @@ void ncsEndGraf()
 }
 
 //---------------------------Thread funcs
-void ncsChElem(int _step)
+void ncsListChElem(int _step)
 {
     int ok=0;
     int step=1;
@@ -238,38 +237,38 @@ void ncsChElem(int _step)
 	if(btn_index>=4){
     	    btn_index-=4;
 	}
-	main_list->exit_btn.selected=0;
-	main_list->refresh_btn.selected=0;
-	main_tbl->create_btn.selected=0;
-	main_tbl->selected=0;
+	main_list.exit_btn.selected=0;
+	main_list.refresh_btn.selected=0;
+	main_list.create_btn.selected=0;
+	main_list.selected=0;
 
 	switch(btn_index){
-	    case 0: if(main_list->refresh_btn.enabled){
+	    case 0: if(main_list.refresh_btn.enabled){
 			ok=1;
-			main_list->refresh_btn.selected=1;
+			main_list.refresh_btn.selected=1;
 		    }
 		    break;
-	    case 1: if(main_list->create_btn.enabled){
+	    case 1: if(main_list.create_btn.enabled){
 			ok=1;
-			main_list->create_btn.selected=1;
+			main_list.create_btn.selected=1;
 		    }
 		    break;
-	    case 2: if(main_tbl->exit_btn.enabled){
+	    case 2: if(main_list.exit_btn.enabled){
 			ok=1;
-			main_tbl->exit_btn.selected=1;
+			main_list.exit_btn.selected=1;
 		    }
 		    break;
-	    case 4: if(main_list->enabled){
+	    case 4: if(main_list.enabled){
 			ok=1;
-			main_list->selected=1;
+			main_list.selected=1;
 		    }
 		    break;
 	};
 
-	wrefresh(main_list->exit_btn.wnd);
-	wrefresh(main_list->create_btn.wnd);
-	wrefresh(main_list->refresh_btn.wnd);
-	wrefresh(main_list->wnd);
+	wrefresh(main_list.exit_btn.wnd);
+	wrefresh(main_list.create_btn.wnd);
+	wrefresh(main_list.refresh_btn.wnd);
+	wrefresh(main_list.wnd);
 	refresh();
     }
 }
@@ -284,29 +283,29 @@ void* ncsListControlsFunc(void* data)
 
     while(1){
 	c=getch();
-	if(c==KEY_UP && main_list->selected==1){
-	    main_list->selected_index--;
-	    if(main_list->selected_index<0){
-		main_list->selected_index=0;
+	if(c==KEY_UP && main_list.selected==1){
+	    main_list.selected_index--;
+	    if(main_list.selected_index<0){
+		main_list.selected_index=0;
 	    }
 	}
-	if(c==KEY_DOWN && main_list->selected==1){
-	    main_list->selected_index++;
-	    if(main_list->selected_index>=MAX_TABLES_COUNT){
-		main_list->selected_index=MAX_TABLES_COUNT-1;
+	if(c==KEY_DOWN && main_list.selected==1){
+	    main_list.selected_index++;
+	    if(main_list.selected_index>=MAX_TABLES_COUNT){
+		main_list.selected_index=MAX_TABLES_COUNT-1;
 	    }
 	}
 	if(c==KEY_LEFT){
-	    ncsChElem(-1);
-	    ncsShowBtn(&main_list->exit_btn);
-	    ncsShowBtn(&main_list->create_btn);
-	    ncsShowBtn(&main_list->refresh_btn);
+	    ncsListChElem(-1);
+	    ncsShowBtn(&main_list.exit_btn);
+	    ncsShowBtn(&main_list.create_btn);
+	    ncsShowBtn(&main_list.refresh_btn);
 	}
-	if(c==KEY_RIGTH || c=='\t'){
-	    ncsChElem(1);
-	    ncsShowBtn(&main_list->exit_btn);
-	    ncsShowBtn(&main_list->create_btn);
-	    ncsShowBtn(&main_list->refresh_btn);
+	if(c==KEY_RIGHT || c=='\t'){
+	    ncsListChElem(1);
+	    ncsShowBtn(&main_list.exit_btn);
+	    ncsShowBtn(&main_list.create_btn);
+	    ncsShowBtn(&main_list.refresh_btn);
 	}
 
 //	refresh();
@@ -314,20 +313,20 @@ void* ncsListControlsFunc(void* data)
 	    graf_exit_event();
 	}
 	if(c==10){
-	    if(	main_list->enabled==1 && \
-		main_list->selected==1){
-		graf_list_select_event(main_list->selected_index);
+	    if(	main_list.enabled==1 && \
+		main_list.selected==1){
+		graf_list_select_event(main_list.selected_index);
 	    }
-	    if(	main_list->exit_btn.enabled==1 &&\
-		main_list->exit_btn.selected==1){
+	    if(	main_list.exit_btn.enabled==1 &&\
+		main_list.exit_btn.selected==1){
 		graf_list_exit_event();
 	    }
-	    if(	main_list->refresh_btn.enabled==1 &&\
-		main_list->refresh_btn.selected==1){
+	    if(	main_list.refresh_btn.enabled==1 &&\
+		main_list.refresh_btn.selected==1){
 		graf_list_refresh_event();
 	    }
-	    if(	main_list->create_btn.enabled==1 &&\
-		main_list->create_btn.selected==1){
+	    if(	main_list.create_btn.enabled==1 &&\
+		main_list.create_btn.selected==1){
 		graf_list_create_event();
 	    }
 	}

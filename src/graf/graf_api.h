@@ -76,9 +76,9 @@ struct graf_list_t{
     struct graf_list_table_t tables[MAX_TABLES_COUNT];
 };
 
-void grafInitList(struct graf_list_t* list);
-void grafSetList(struct graf_list_t* list);
-void grafDrawList(struct graf_list_t* list);
+void grafInitList(struct graf_list_t*);
+void grafSetList(struct graf_list_t*);
+void grafDrawTableList();
 void grafDrawMsgList(const char *msg);
 void grafExitList();
 
