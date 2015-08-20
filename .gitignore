@@ -34,3 +34,7 @@
 #vim temp files
 *~
 *.swp
+*.swo
+
+#automake bug
+*$(*

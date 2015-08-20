@@ -1,17 +1,25 @@
-#include "net_header.h"
+#include "logic.h"
+
+void run_game(char *ip, int port, int session) {
+    fd = net_create_connect_server(ip, port);
+    if (fd < 0) {
+        printf("Server unavaible\n");
+        exit(1);
+    }
+    //pthread_create()
+
+    /* Отправка сессии серверу 
+    */
+    net_send(fd, &session, ACTION_CONNECT_REQUEST, sizeof(session));
+}
+
+
 
 /*
-* Thread handler for communicate with server (only receive msg)
-*/
-
-struct msg {
-    int type;
-    int lenght;
-};
 
 void *handler_recv(void *args)
 {
-/*
+
     int socket_fd = *((int*)args);
 
     while(1) {
@@ -55,5 +63,6 @@ void *handler_recv(void *args)
 	printf("%s\nChoose: ", ptr);
 	char input[256];
 	scanf("%s", input);
-*/
 }
+
+*/

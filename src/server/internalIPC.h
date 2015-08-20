@@ -1,12 +1,15 @@
 #ifndef INTERNAL_IPC_H
 #define INTERNAL_IPC_H
 
-#include "../global.h"
+#include "global.h"
 
-enum sourceType_e {
-	SERVER,
-	CLIENT,
+enum destinationType_e {
+/* For listen server */
+	GAME_SERVER,
 	CURRENT,
+/* For game server */
+	LOBBY_SERVER,
+	CLIENT,
 	ALL_CLIENTS
 };
 
@@ -14,7 +17,7 @@ enum messagesType {
 	INTERNAL_NEW_PLAYER,
 	INTERNAL_PLAYER_CONFIRMED,
 	INTERNAL_PLAYER_LEFT,
-	INTERNAL_PLAYERS_UPDATE,
+	INTERNAL_PLAYERS_UPDATE
 };
 
 struct newPlayer_t {
@@ -24,6 +27,16 @@ struct newPlayer_t {
 	unsigned int session;
 };
 
-void startGameServer(int fd, int tableID);
+struct updatePlayer_t {
+	unsigned int id;
+	unsigned int money;
+	char win;
+};
+
+struct updatePlayers_t {
+	struct updatePlayer_t updates[MAX_PLAYERS_PER_TABLE];
+};
+
+void startGameServer(int fd, int tableID, int port);
 
 #endif //INTERNAL_IPC_H

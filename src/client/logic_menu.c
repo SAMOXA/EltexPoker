@@ -1,6 +1,7 @@
 #include "logic.h"
 #include "../graf/graf_api.h"
 
+struct graf_list_t graf_list;
 
 void create_msg(int type, int len, void *data, unsigned char *buf) {
 	struct msg *msg;
@@ -66,16 +67,22 @@ int logicHandlerBegin(int type) {
 				return 0;
 			}
 			int n = len / sizeof(struct table_t), i, j;
-			struct table_t *table = (struct table_t *) buf;
-
-			for(i = 0; i < n; i++) {
+			//struct table_t *table = (struct table_t *) buf;
+			strcpy(graf_list.title, "Hello");
+			if (sizeof(graf_list.tables) < len){
+				printf("Не хватает памяти под  столы\n");
+				exit(1);
+			}
+			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
+			grafDrawList(&graf_list);
+/*			for(i = 0; i < n; i++) {
 				if (table->id == -1) continue;
 				printf("\nid = %d\n", table->id);
 				for (j = 0; j < MAX_PLAYERS_PER_TABLE; j++) {
 					printf("%d) %s\n", j + 1, table->tables[j]);
 					table++;
 				}
-			}
+			}*/
 
 			break;
 		} 
@@ -92,6 +99,9 @@ int logicHandlerBegin(int type) {
 				cur_status = GAME;
 				printf("port = %d\n", selResp->port);
 				printf("session = %d\n", selResp->session);
+				/* Нужно потом это заменить */
+				port = selResp->port;
+				session = selResp->session;
 			} else {
 				printf("%s\n", selResp->error);
 			}
@@ -173,10 +183,20 @@ void logicRefreshTables() {
 	logicGetTableList();
 }
 
+void logicInitGrafList() {
+	graf_list_exit_event = logicExitMenu;
+	graf_list_select_event = loginConnectTable;
+	graf_list_create_event = loginCreateTable;
+	graf_list_refresh_event = logicRefreshTables;
+}
+
 
 int logicSelTable() {
+	logicInitGrafList();
+	grafInitList();
 	//get_tables()
-	int tmp, ret = 0;
+	/*int tmp, ret = 0;
+	if( logicGetTableList() == -1 )
 	printf("\n1) CREATE TABLE\n2) CONNECT TO TABLE\n");
 	scanf("%d", &tmp);
 	switch(tmp) {
@@ -192,26 +212,18 @@ int logicSelTable() {
 			loginConnectTable(tmp);
 			break;
 		}
-	}
+	}*/
 	return ret;
 	
 }
 
-/*void logicInitGrafAPI() {
-	graf_list_exit_event = logicExitMenu;
-}*/
-
-
-void logicGame() {
-
-}
 
 
 
 void run(char *ip, char *namePort) {
-	int port = atoi(namePort), stop = 0;
+	int port_ = atoi(namePort), stop = 0;
 
-	fd = net_create_connect_server(ip, port);
+	fd = net_create_connect_server(ip, port_);
 	if (fd < 0) {
 		printf("Server unavaible\n");
 		exit(1);
@@ -242,15 +254,15 @@ void run(char *ip, char *namePort) {
 			*/
 			case SEL_TABLES:
 			{
-				if (logicGetTableList() == -1 || logicSelTable() == -1) 
+				if (logicSelTable() == -1) 
 					cur_status = DEAD;
-				cur_status = DEAD;
 				break;
 			}	
 			/* Стадия игры
 			*/
 			case GAME:
 			{
+				run_game(ip, port, session);
 				break;
 			}
 			/* Конец

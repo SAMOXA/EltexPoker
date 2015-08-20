@@ -9,7 +9,10 @@
 #include "net_header.h"
 #include "../global.h"
 
-int fd, cur_status;
+
+/* Потом сделать (port, session) не глобальными 
+*/ 
+int fd, cur_status, port, session;
 char user_name[MAX_NAME_LENGTH];
 
 enum status {
@@ -28,6 +31,7 @@ struct msg {
 int logicEventLogin(char *login, char *pass, int registerFlag);
 int logicHandlerBegin(int type);*/
 void run(char *ip, char *namePort);
+void run_game(char *ip, int port, int session);
 
 //..........API
 void loginCreateTable();

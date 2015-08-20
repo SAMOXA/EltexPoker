@@ -8,16 +8,9 @@ m4trace:/usr/share/aclocal-1.14/amversion.m4:33: -1- AC_DEFUN([AM_SET_CURRENT_AU
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
-<<<<<<< HEAD
-m4trace:/usr/share/aclocal-1.14/auxdir.m4:47: -1- AC_DEFUN([AM_AUX_DIR_EXPAND], [dnl Rely on autoconf to set up CDPATH properly.
-AC_PREREQ([2.50])dnl
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
-=======
 m4trace:/usr/share/aclocal-1.14/auxdir.m4:47: -1- AC_DEFUN([AM_AUX_DIR_EXPAND], [AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])dnl
 # Expand $ac_aux_dir to an absolute path.
 am_aux_dir=`cd "$ac_aux_dir" && pwd`
->>>>>>> origin/master
 ])
 m4trace:/usr/share/aclocal-1.14/cond.m4:12: -1- AC_DEFUN([AM_CONDITIONAL], [AC_PREREQ([2.52])dnl
  m4_if([$1], [TRUE],  [AC_FATAL([$0: invalid condition: $1])],
@@ -380,14 +373,9 @@ to "yes", and re-run configure.
 END
     AC_MSG_ERROR([Your 'rm' program is bad, sorry.])
   fi
-<<<<<<< HEAD
-fi])
-m4trace:/usr/share/aclocal-1.14/init.m4:182: -1- AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK], [# Compute $1's index in $config_headers.
-=======
 fi
 ])
 m4trace:/usr/share/aclocal-1.14/init.m4:183: -1- AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK], [# Compute $1's index in $config_headers.
->>>>>>> origin/master
 _am_arg=$1
 _am_stamp_count=1
 for _am_header in $config_headers :; do
@@ -829,7 +817,7 @@ m4trace:configure.ac:5: -1- m4_pattern_allow([^LIBS$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^build_alias$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^host_alias$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^target_alias$])
-m4trace:configure.ac:6: -1- AM_INIT_AUTOMAKE([subdir-objects serial-tests])
+m4trace:configure.ac:6: -1- AM_INIT_AUTOMAKE([subdir-objects])
 m4trace:configure.ac:6: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
 m4trace:configure.ac:6: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
 m4trace:configure.ac:6: -1- AM_AUTOMAKE_VERSION([1.14.1])
@@ -840,17 +828,9 @@ m4trace:configure.ac:6: -1- m4_pattern_allow([^INSTALL_DATA$])
 m4trace:configure.ac:6: -1- m4_pattern_allow([^am__isrc$])
 m4trace:configure.ac:6: -1- _AM_SUBST_NOTMAKE([am__isrc])
 m4trace:configure.ac:6: -1- m4_pattern_allow([^CYGPATH_W$])
-<<<<<<< HEAD
 m4trace:configure.ac:6: -1- _AM_SET_OPTIONS([subdir-objects])
 m4trace:configure.ac:6: -1- _AM_SET_OPTION([subdir-objects])
 m4trace:configure.ac:6: -2- _AM_MANGLE_OPTION([subdir-objects])
-=======
-m4trace:configure.ac:6: -1- _AM_SET_OPTIONS([subdir-objects serial-tests])
-m4trace:configure.ac:6: -1- _AM_SET_OPTION([subdir-objects])
-m4trace:configure.ac:6: -2- _AM_MANGLE_OPTION([subdir-objects])
-m4trace:configure.ac:6: -1- _AM_SET_OPTION([serial-tests])
-m4trace:configure.ac:6: -2- _AM_MANGLE_OPTION([serial-tests])
->>>>>>> origin/master
 m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE$])
 m4trace:configure.ac:6: -1- m4_pattern_allow([^VERSION$])
 m4trace:configure.ac:6: -1- _AM_IF_OPTION([no-define], [], [AC_DEFINE_UNQUOTED([PACKAGE], ["$PACKAGE"], [Name of package])
@@ -965,40 +945,27 @@ m4trace:configure.ac:12: -1- m4_pattern_allow([^am__fastdepCC_TRUE$])
 m4trace:configure.ac:12: -1- m4_pattern_allow([^am__fastdepCC_FALSE$])
 m4trace:configure.ac:12: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_TRUE])
 m4trace:configure.ac:12: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
-<<<<<<< HEAD
-m4trace:configure.ac:25: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:25: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:25: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:25: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-=======
-m4trace:configure.ac:13: -1- m4_pattern_allow([^RANLIB$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^GREP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^EGREP$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^STDC_HEADERS$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^HAVE_ARPA_INET_H$])
-m4trace:configure.ac:19: -1- m4_pattern_allow([^HAVE_NETINET_IN_H$])
-m4trace:configure.ac:20: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^HAVE_STRING_H$])
-m4trace:configure.ac:22: -1- m4_pattern_allow([^HAVE_SYS_SOCKET_H$])
-m4trace:configure.ac:23: -1- m4_pattern_allow([^HAVE_UNISTD_H$])
-m4trace:configure.ac:28: -1- m4_pattern_allow([^HAVE_MEMSET$])
-m4trace:configure.ac:29: -1- m4_pattern_allow([^HAVE_SELECT$])
-m4trace:configure.ac:30: -1- m4_pattern_allow([^HAVE_SOCKET$])
-m4trace:configure.ac:38: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:38: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:38: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:38: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:38: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:38: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:38: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:38: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:38: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
->>>>>>> origin/master
+m4trace:configure.ac:17: -1- m4_pattern_allow([^CPP$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^CPP$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^GREP$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^EGREP$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^STDC_HEADERS$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^HAVE_ARPA_INET_H$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^HAVE_NETINET_IN_H$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
+m4trace:configure.ac:20: -1- m4_pattern_allow([^HAVE_STRING_H$])
+m4trace:configure.ac:21: -1- m4_pattern_allow([^HAVE_SYS_SOCKET_H$])
+m4trace:configure.ac:22: -1- m4_pattern_allow([^HAVE_UNISTD_H$])
+m4trace:configure.ac:27: -1- m4_pattern_allow([^HAVE_MEMSET$])
+m4trace:configure.ac:28: -1- m4_pattern_allow([^HAVE_SELECT$])
+m4trace:configure.ac:29: -1- m4_pattern_allow([^HAVE_SOCKET$])
+m4trace:configure.ac:37: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:37: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:37: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:37: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:37: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:37: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:37: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:37: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:37: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
