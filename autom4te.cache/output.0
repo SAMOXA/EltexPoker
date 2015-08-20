@@ -3973,7 +3973,7 @@ fi
 
 
 # Checks for libraries.
-AX_PTHREAD
+AX_PTHREAD(, AC_MSG_ERROR([requires pthread library]))
 AX_WITH_CURSES
 if test "x$ax_cv_ncursesw" != xyes; then
   as_fn_error $? "requires NcursesW library" "$LINENO" 5

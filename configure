@@ -4505,7 +4505,7 @@ $as_echo "#define HAVE_PTHREAD 1" >>confdefs.h
         :
 else
         ax_pthread_ok=no
-
+        as_fn_error $? "requires pthread library" "$LINENO" 5
 fi
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
