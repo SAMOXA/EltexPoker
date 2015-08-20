@@ -348,7 +348,7 @@ void initGameLogic() {
 	resetCards();
 }
 
-void newEvent(unsigned int id, unsigned char type, char sourceType, void *data){
+void newEvent(int sourceType, int id, int type, void *data){
 	char errorFlag = 0;
 	if(sourceType == CLIENT){ //Клиент
 		switch(type) {
