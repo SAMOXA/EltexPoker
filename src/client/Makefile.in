@@ -76,12 +76,15 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 bin_PROGRAMS = pokerClient$(EXEEXT)
 subdir = src/client
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_pthread.m4 \
+	$(top_srcdir)/m4/ax_with_curses.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -98,7 +101,10 @@ am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
 	net_receive.$(OBJEXT) ../graf/graf.$(OBJEXT) \
 	../graf/graf_list.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
+<<<<<<< HEAD
 pokerClient_LDADD = $(LDADD)
+=======
+>>>>>>> 6ed1549956dc87c1ccd70bd80e561a2a93908823
 pokerClient_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -167,6 +173,7 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CURSES_LIB = @CURSES_LIB@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -183,7 +190,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = $(PTHREAD_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -197,6 +204,9 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -212,15 +222,24 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -244,6 +263,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+<<<<<<< HEAD
 pathgraf = ../graf
 LDADD = -lpthread -lncursesw
 pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
@@ -251,6 +271,11 @@ pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
 	net_disconnect.c net_fill_socket_addr.c net_create_socket.c \
 	net_send.c net_receive.c ../graf/graf.c ../graf/graf.h \
 	../graf/graf_api.h ../graf/graf_list.c ../graf/graf_list.h
+=======
+pokerClient_SOURCES = main.c ../global.h
+pokerClient_LDADD = @CURSES_LIB@
+AM_CFLAGS = $(PTHREAD_CFLAGS)
+>>>>>>> 6ed1549956dc87c1ccd70bd80e561a2a93908823
 all: all-am
 
 .SUFFIXES:
@@ -583,6 +608,7 @@ uninstall-am: uninstall-binPROGRAMS
 	ps ps-am tags tags-am uninstall uninstall-am \
 	uninstall-binPROGRAMS
 
+#CC = $(PTHREAD_CC)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

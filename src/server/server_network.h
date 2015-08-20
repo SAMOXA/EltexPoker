@@ -21,12 +21,13 @@
 #define DEFAULT_LISTEN_SERVER_IP "0.0.0.0"
 #define DEFAULT_LISTEN_SERVER_PORT 1921
 
+
 #define MSG_BUF_LEN 1024
 #define MAX_ACTIVE_CONNECTIONS 30
 #define MAX_TABLE_LEN 10
 
 /* Создание слушающего сокета */
-void init_listen_server_network(int listen_server_port, char *listen_server_ip);
+void init_listen_server_network(unsigned int listen_server_port, char *listen_server_ip);
 /* Цикл приема сообщений */
 void listen_server_loop(void);
 

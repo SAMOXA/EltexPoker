@@ -255,6 +255,7 @@ void createTable(void *buf)
 	if (pid == 0) { /*Дочерний*/
 		close(pipedes[1]);
 		startGameServer(pipedes[0], tableID, responce.port);
+
 		exit(0);
 	} else {
 		close(pipedes[0]);

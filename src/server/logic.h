@@ -10,12 +10,10 @@
 
 #define SIZE_DATA (MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE) /*Максимально кол-во данных по игрокам*/ 
 
-
 #include "global.h"
 #include "server_network.h"
 #include "internalIPC.h"
 #include "start.h"
-
 
 
 enum statusTable {EMPTY, SLEEP, FULL, PLAY}; /*Состояние для столов и портов*/
