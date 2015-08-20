@@ -18,7 +18,7 @@
 #include "events.h"
 #include "gameLogic.h"
 
-#define LISTEN_SERVER_IP "192.168.1.24"
+#define LISTEN_SERVER_IP "0.0.0.0"
 #define LISTEN_SERVER_PORT 1921
 
 #define MSG_BUF_LEN 1024
