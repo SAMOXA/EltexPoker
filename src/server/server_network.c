@@ -10,7 +10,6 @@
 #include <errno.h>
 #include <signal.h>
 
-
 #include "../global.h"
 #include "internalIPC.h"
 #include "events.h"
@@ -76,8 +75,8 @@ static int get_index_by_fd(int fd){
 void init_listen_server_network(void)
 {
 	listen_socket = socket (AF_INET, SOCK_STREAM, 0);
-	if(listen_socket < 0){
-		perror("[listen_server_network] Creating listen socket, socket(): ");
+	if (listen_socket < 0) {
+		perror("[network] Creating listen socket, socket(): ");
 		exit(1);
 	}
 	printf("[listen_server_network] Listen socket created successfully\n");
@@ -87,9 +86,8 @@ void init_listen_server_network(void)
 	listen_server_addr.sin_port = htons(LISTEN_SERVER_PORT);
 	inet_aton(LISTEN_SERVER_IP, &listen_server_addr.sin_addr);
 
-
-	if(bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))){
-		perror("[listen_server_network] Binding port error, bind(): ");
+	if (bind(listen_socket, (struct sockaddr *) &listen_server_addr, sizeof(listen_server_addr))) {
+		perror("[network] Binding port error, bind(): ");
 		exit(1);
 	}
 	printf("[listen_server_network] Port binded successfully\n");
@@ -104,6 +102,7 @@ void listen_server_loop(void)
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
 	int return_val;
+
 	struct timeval select_interval;
 	struct network_msg_hdr_t *net_header;
 	struct sockaddr_in new_client_addr;
@@ -127,7 +126,6 @@ void listen_server_loop(void)
 				if(max_fd < active_connection_socket[i])
 					max_fd = active_connection_socket[i];
 			}
-
 		}
 
 		/* Добавление ФД игровых столов */
@@ -146,7 +144,6 @@ void listen_server_loop(void)
 		if(select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[listen_server_network] Listen server, select(): ");
 
-
 		if(FD_ISSET(listen_socket, &fd_read_set)){	/* обработка нового подключения */
 			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr,(socklen_t *)  &new_client_addr_len);
 			if(new_client < 0){
@@ -163,7 +160,6 @@ void listen_server_loop(void)
 			}
 			current_fd = new_client;
 		}
-
 		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
 			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
 				memset(buf, 0, MSG_BUF_LEN);
@@ -183,9 +179,6 @@ void listen_server_loop(void)
 				else{
 					current_fd = active_connection_socket[i];
 					/* получить сообщение в соответствии с его длиной */
-
-					/* вызвать events(), передать параметры и сообщение */
-
 					net_header = (struct network_msg_hdr_t *) buf;
 					events(CURRENT, 0, net_header->payload_type, (void *) (buf + 8));
 				}
@@ -211,13 +204,13 @@ void listen_server_loop(void)
 				else{
 					current_fd = fd_table[i][1];
 					/* получить сообщение в соответствии с его длиной */
-
 					/* вызвать events(), передать параметры и сообщение */
 					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
 					return_val = get_index_by_fd(fd_table[i][1]);
+
 					if(return_val < 0){
-						printf("[listen_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][1]);
+						printf("[listen_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][0]);
 						events(GAME_SERVER, 0, net_header->payload_type, (void *) (buf + 8));
 					}
 					else
@@ -387,11 +380,13 @@ void game_server_loop()
 					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
 					return_val = get_index_by_fd(fd_table[i][1]);
+
 					if(return_val < 0){
-						printf("[game_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][1]);
+						printf("[game_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][0]);
 						events(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 					}
-					events(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
+					else
+						events(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -399,8 +394,8 @@ void game_server_loop()
 }
 
 /*
- * Функция передачи сообщений. 
- * destination_type: для GAME_SERVER, CLIENT 
+ * Функция передачи сообщений.
+ * destination_type: для GAME_SERVER, CLIENT
  * указать destination_id. В остальных случаях
  * destination_id = 0.
  */
@@ -410,7 +405,6 @@ void send_message(int destination_type, int destination_id,
 	struct network_msg_hdr_t *net_header;
 	char buf[MSG_BUF_LEN];
 	int return_val = 0;
-
 	int i;
 	int index;
 /*
@@ -435,7 +429,7 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] message will not send\n");
 				break;
 			}
-			
+
 			return_val = write(fd_table[index][1], buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
@@ -444,17 +438,16 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] Game server with id = %d: connection closed\n", fd_table[index][0]);
 				del_id_from_table(0, fd_table[index][0]);
 			}
+
 			if(return_val == 0){
 				printf("[network] Game server with id = %d:\n", fd_table[index][0]);
 				printf("[network] write() returned 0, closing connection\n");
 				printf("[network] Game server with id = %d: connection closed\n", fd_table[index][0]);
-
 				del_id_from_table(0, fd_table[index][0]);
 			}
 			break;
 
 		case LOBBY_SERVER:
-
 			return_val = write(pipe_fd, buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
@@ -472,7 +465,6 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] Sending message to lobby server error:\n");
 				printf("[network] write() returned 0, closing connection\n");
 				printf("[network] Connection with lobby server closed\n");
-
 				if(close(pipe_fd) < 0){
 					printf("[game_server_network] closing listen_server connection error:\n");
 					perror("close()");
@@ -488,7 +480,7 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] message will not send\n");
 				break;
 			}
-			
+
 			return_val = write(fd_table[index][1], buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
@@ -507,7 +499,6 @@ void send_message(int destination_type, int destination_id,
 			break;
 
 		case CURRENT:
-
 			return_val = write(current_fd, buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
@@ -523,7 +514,6 @@ void send_message(int destination_type, int destination_id,
 				printf("[network] Current client connection error: connection closed\n");
 				close_current_client_connection();
 			}
-
 			break;
 
 		case ALL_CLIENTS:
@@ -538,12 +528,11 @@ void send_message(int destination_type, int destination_id,
 						del_id_from_table(0, fd_table[i][0]);
 					}
 
-
-    				if(return_val == 0){
-    					printf("[network] Client with id = %d:\n", fd_table[i][0]);
-       					printf("[network] write() returned 0, closing connection\n");
-       					printf("[network] Client with id = %d: connection closed\n", fd_table[i][0]);
-        				del_id_from_table(0, fd_table[i][0]);
+					if(return_val == 0){
+						printf("[network] Client with id = %d:\n", fd_table[i][0]);
+						printf("[network] write() returned 0, closing connection\n");
+						printf("[network] Client with id = %d: connection closed\n", fd_table[i][0]);
+						del_id_from_table(0, fd_table[i][0]);
 					}
 				}
 			}
@@ -593,15 +582,14 @@ void add_id_to_table(int fd, int id)
 }
 
 void del_id_from_table(int fd, int id)
-{	
+{
 	int index;
 	if(fd == 0)
 		index = get_index_by_id(id);
 	else
 		index = get_index_by_fd(fd);
-	
-	if(index < 0){	/* ошибка */
 
+	if(index < 0){	/* ошибка */
 		printf("[network] del_id_to_table(): cant find entry with id = %d\n", id);
 	}
 	else{

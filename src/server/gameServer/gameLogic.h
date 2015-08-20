@@ -11,7 +11,7 @@
 #include "server_network.h"
 #include "shared.h"
 
-void newEvent(unsigned int id, unsigned char type, char sourceType, void *data);
+void events(int sourceType, int id, int type, void *data);
 void initGameLogic();
 
 #endif //GAMELOGIC_H
