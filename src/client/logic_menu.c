@@ -65,22 +65,21 @@ int logicHandlerBegin(int type) {
 		{
 			if (len == 0 ) {
 				//printf("List table is empty");
-				grafDrawMsgList("List table is empty");
+				grafDrawMsgList("List tables is empty");
+				break;
 			}
 			//int n = len / sizeof(struct table_t), i, j;
 			//struct table_t *table = (struct table_t *) buf;
 			strcpy(graf_list.title, "Hello");
 			if (sizeof(graf_list.tables) < len){
 				printf("Не хватает памяти под  столы\n");
-				grafExitList();
-				exit(1);
+
+				logicExitMenu();
+
 			}
 			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
 			grafInitList();
 			grafDrawTableList(&graf_list);
-			sleep(30);
-			grafExitList();
-			exit(0);
 
 /*			for(i = 0; i < n; i++) {
 				if (table->id == -1) continue;
@@ -107,6 +106,7 @@ int logicHandlerBegin(int type) {
 				cur_status = GAME;
 				/*grafDrawMsgList("port = %d\n", selResp->port);
 				grafDrawMsgList("session = %d\n", selResp->session);*/
+
 				/* Нужно потом это заменить */
 				port = selResp->port;
 				session = selResp->session;
@@ -124,11 +124,7 @@ int logicHandlerBegin(int type) {
 int logicEventLogin(char *login, char *pass, int type) {
 	int flg;
 	struct loginRequest_t logReq;
-	/*
-	if (strlen(login) >= MAX_NAME_LENGTH || strlen(pass) >= MAX_NAME_LENGTH) {
-		//grafDrawText("Превышена длина имени или пароля\n");
-		logicExitMenu();
-	}*/
+
 	strcpy(user_name, login);
 
 	strcpy(logReq.name, login);
