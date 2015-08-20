@@ -1,8 +1,5 @@
 #include "events.h"
-<<<<<<< HEAD
-=======
 
->>>>>>> lobbi_server_logic
 
 void events(int dest_type, int id, int msg_type, void *buf) {
 

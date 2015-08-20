@@ -18,13 +18,9 @@
 #include "events.h"
 #include "gameLogic.h"
 
-<<<<<<< HEAD
-#define LISTEN_SERVER_IP "192.168.1.24"
-#define LISTEN_SERVER_PORT 1921
-=======
 #define DEFAULT_LISTEN_SERVER_IP "0.0.0.0"
 #define DEFAULT_LISTEN_SERVER_PORT 1921
->>>>>>> lobbi_server_logic
+
 
 #define MSG_BUF_LEN 1024
 #define MAX_ACTIVE_CONNECTIONS 30

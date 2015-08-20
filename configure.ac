@@ -15,7 +15,7 @@ AC_PROG_RANLIB
 AC_PROG_INSTALL
 
 # Checks for libraries.
-AX_PTHREAD
+AX_PTHREAD([], [AC_MSG_ERROR([requires pthread library])])
 AX_WITH_CURSES
 if test "x$ax_cv_ncursesw" != xyes; then
   AC_MSG_ERROR([requires NcursesW library])

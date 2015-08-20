@@ -8,20 +8,12 @@
 #include <time.h>
 #include <sys/types.h>
 
-<<<<<<< HEAD
-=======
 #define SIZE_DATA (MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE) /*Максимально кол-во данных по игрокам*/ 
 
-
->>>>>>> lobbi_server_logic
 #include "global.h"
 #include "server_network.h"
 #include "internalIPC.h"
 #include "start.h"
-<<<<<<< HEAD
-=======
-
->>>>>>> lobbi_server_logic
 
 
 enum statusTable {EMPTY, SLEEP, FULL, PLAY}; /*Состояние для столов и портов*/

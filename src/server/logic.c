@@ -254,11 +254,8 @@ void createTable(void *buf)
 	pid = fork();
 	if (pid == 0) { /*Дочерний*/
 		close(pipedes[1]);
-<<<<<<< HEAD
-		startGameServer(pipedes[0], tableID, getNewPort());
-=======
 		startGameServer(pipedes[0], tableID, responce.port);
->>>>>>> lobbi_server_logic
+
 		exit(0);
 	} else {
 		close(pipedes[0]);
