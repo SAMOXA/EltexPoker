@@ -68,8 +68,6 @@ struct ncs_graf_bank_t{
     unsigned int cards_pos[2];
     unsigned int timer_pos[2];
     WINDOW *wnd;
-    
-//    WINDOW *timer_wnd;
 };
 
 struct ncs_graf_input_t{
