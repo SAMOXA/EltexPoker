@@ -331,6 +331,10 @@ static char actionConnectRequest(unsigned int session) {
 			break;
 		}
 	}
+	if(id = -1){
+		lastError.type = ERROR_AUTH;
+		strcpy(lastError.msg, "Session invalid");
+	}
 	return id;
 }
 

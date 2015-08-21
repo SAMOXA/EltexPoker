@@ -8,10 +8,9 @@ m4trace:/usr/share/aclocal-1.14/amversion.m4:33: -1- AC_DEFUN([AM_SET_CURRENT_AU
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
-m4trace:/usr/share/aclocal-1.14/auxdir.m4:47: -1- AC_DEFUN([AM_AUX_DIR_EXPAND], [dnl Rely on autoconf to set up CDPATH properly.
-AC_PREREQ([2.50])dnl
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+m4trace:/usr/share/aclocal-1.14/auxdir.m4:47: -1- AC_DEFUN([AM_AUX_DIR_EXPAND], [AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])dnl
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 ])
 m4trace:/usr/share/aclocal-1.14/cond.m4:12: -1- AC_DEFUN([AM_CONDITIONAL], [AC_PREREQ([2.52])dnl
  m4_if([$1], [TRUE],  [AC_FATAL([$0: invalid condition: $1])],
@@ -971,12 +970,12 @@ m4trace:configure.ac:37: -1- m4_pattern_allow([^size_t$])
 m4trace:configure.ac:40: -1- m4_pattern_allow([^HAVE_MEMSET$])
 m4trace:configure.ac:41: -1- m4_pattern_allow([^HAVE_SELECT$])
 m4trace:configure.ac:42: -1- m4_pattern_allow([^HAVE_SOCKET$])
-m4trace:configure.ac:51: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:51: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:51: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:51: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:51: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:51: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:51: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:51: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:51: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:54: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:54: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:54: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:54: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:54: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:54: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:54: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:54: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:54: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS

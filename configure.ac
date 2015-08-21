@@ -46,6 +46,9 @@ AC_CHECK_FUNCS([socket])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 src/client/Makefile])
+                 src/client/Makefile
+                 src/server/Makefile
+                 tests/Makefile
+                 tests/coreLogic/Makefile])
 
 AC_OUTPUT
