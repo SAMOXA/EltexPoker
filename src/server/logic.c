@@ -82,6 +82,7 @@ void registration(void * buf)
 		saveFile();
 		loginRes->status = STATUS_OK;
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
+		printf("[Logic]User %s registration\n", loginReq->name);
 	} else {
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "Bad name");
@@ -120,6 +121,7 @@ void login(void *buf)
 		/*Пользаватель с таким именем уже есть*/
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "User not found");
+		printf("[Logic]User input incorrectly name\n");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
 		free(loginRes);
 		return;
@@ -128,7 +130,7 @@ void login(void *buf)
 		/*Некоректный пароль*/
 		loginRes->status = STATUS_BAD;
 		strcpy(loginRes->errorBuf, "Incorrectly password");
-
+		printf("[Logic]User input incorrectly name\n");
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes); /*Некоректный пароль*/
 		free(loginRes);
 		return;
@@ -138,6 +140,7 @@ void login(void *buf)
 		strncpy(IdName[currentPlayer].name, loginReq->name, MAX_NAME_LENGTH);
 		currentPlayer++;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
+		printf("[Logic]User %s log in\n", loginReq->name);
 		free(loginRes);
 		return;
 	}

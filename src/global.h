@@ -7,8 +7,8 @@
 #define MAX_TABLES_COUNT 5
 #define SESSION_TOKEN_LENGTH 16
 #define MAX_ERROR_MSG_LEN 24
-#define STATUS_OK 1
-#define STATUS_BAD 0
+#define STATUS_OK 1 /*Для статуса при общении клиента с лобби сервером*/
+#define STATUS_BAD 0 /*Для статуса при общении клиента с лобби сервером*/
 #define ROOM_STATUS_EMPTY 0 /*Для пустого стола*/
 
 #define FALSE_CARD 60
@@ -40,11 +40,6 @@ enum values {
 #define GET_CARD_VALUE(x) ((unsigned char)x/4)
 #define CREATE_CARD(value, lear) ((value*4)+lear)
 
-struct loginRequest_t {
-	char name[MAX_NAME_LENGTH];
-	char pass[MAX_PASS_LENGTH];
-};
-
 /*Структура описывающая один стол*/
 struct table_t {
 	int id;
@@ -56,22 +51,25 @@ struct room_t {
 	struct table_t tables[MAX_TABLES_COUNT];
 };
 
+/*Структура описывающая запросы на регистрацию и вход в игру*/
+struct loginRequest_t {
+	char name[MAX_NAME_LENGTH];
+	char pass[MAX_PASS_LENGTH];
+};
 
+/*Для ответа на регистрацию и вход в игру*/
 struct loginResponce_t {
 	int status;
 	char errorBuf[MAX_ERROR_MSG_LEN];
 };
 
+/*Для запроса подключение к столу или создание стола*/
 struct selectRequest_t {
 	char name[MAX_NAME_LENGTH];
 	int tableID;
 };
 
-// struct selectRequest_t {
-// 	char token; //MD5(pass+login+counter)
-// 	char selectedId;
-// };
-
+/*Для ответа на подключение и созданияч списка столов*/
 struct selectResponce_t {
 	int status;
 	int port;
@@ -79,8 +77,8 @@ struct selectResponce_t {
 	char error[MAX_ERROR_MSG_LEN];
 };
 
-
 ////////////////////From lobbi server logic structures////////
+/*Описывает типы сообщений для клиент - лобби сервер*/
 enum initAction {
 	REGISTRATION,
 	LOG_IN,
