@@ -71,12 +71,11 @@ void selectTable() {
 	}
 	if(msgType == LIST_TABLE){
 		for(i=0;i<MAX_TABLES_COUNT;i++){
-				printf("%d ", tables[i].id);
-				for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
-					printf("%s ", tables[i].tables[j]);
-				}
-				printf("\n");
+			printf("%d ", tables[i].id);
+			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
+				printf("%s ", tables[i].players[j]);
 			}
+			printf("\n");
 		}
 	}
 	printf("Enter table Id to connect, 0 to create new table or -1 to refresh -2 to exit\n>");
@@ -96,17 +95,17 @@ void selectTable() {
 				}
 			}
 			graf_list.tables[i].players_count = playersCount;
-		}	
+		}
 	}
 	grafDrawTableList(&graf_list);
-#endif		
+#endif
 }
 
 #ifndef HAVE_NCURSES
 int createTable(){
 #else
 void createTable() {
-#endif	
+#endif
 	struct selectRequest_t selectReq;
 	struct selectResponce_t *selectResp;
 	int msgType;
@@ -138,7 +137,7 @@ void createTable() {
 int connectToTable(int id) {
 #else
 void connectToTable(int id) {
-#endif	
+#endif
 	struct selectRequest_t selectReq;
 	struct selectResponce_t *selectResp;
 	int msgType;
@@ -184,7 +183,7 @@ int lobbyServer(){
 		scanf("%s", &flg);
 		if(flg == 'y') {
 			retCode = registerate();
-		}else{ 
+		}else{
 			retCode = login();
 		}
 		if(retCode == 0){
@@ -211,7 +210,7 @@ int lobbyServer(){
 			break;
 		}
 	}
-#else 
+#else
 	grafInitList();
 	pthread_mutex_lock(&lock);
 	startGraphicsWaitLoop();
