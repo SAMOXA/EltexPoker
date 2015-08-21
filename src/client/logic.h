@@ -9,7 +9,7 @@
 #include "net_header.h"
 #include "../global.h"
 #include <unistd.h>
-
+#include "../graf/graf_api.h"
 
 /* Потом сделать (port, session) не глобальными 
 */ 

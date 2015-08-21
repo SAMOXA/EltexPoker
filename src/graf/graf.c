@@ -6,8 +6,11 @@ static unsigned int CUR_TEXT_COLOR=COLOR_BLACK;
 static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
 
 static struct ncs_graf_table_t *main_tbl=NULL;
+static pthread_t controls_thread;
 
-static selected_index=0;
+static int selected_index=0;
+static int ncurses_enabled=0;
+static int need_to_init=1;
 
 void (*graf_exit_event)(void)=ncsTempExit;
 void (*graf_bet_event)(int sum)=ncsTempBet;
@@ -86,7 +89,8 @@ void ncsGrafImportPlayer(const struct graf_player_t* api_player,struct ncs_graf_
 		    api_player->status_text,\
 		    api_player->money_text,\
 		    api_player->card_num,\
-		    api_player->enabled);
+		    api_player->enabled,\
+		    api_player->selected);
 }
 
 void ncsGrafImportTable(const struct graf_table_t* api_tbl,\
@@ -94,50 +98,64 @@ void ncsGrafImportTable(const struct graf_table_t* api_tbl,\
 {
     int index=0;
 
-    if((*tbl)!=NULL){
-	ncsGrafDelTable(tbl);
+//    if((*tbl)!=NULL){
+//	ncsGrafDelTable(tbl);
+//    }
+    if((*tbl)==NULL){
+        (*tbl)=(struct ncs_graf_table_t*)malloc(sizeof(struct ncs_graf_table_t));
     }
-
-    (*tbl)=(struct ncs_graf_table_t*)malloc(sizeof(struct ncs_graf_table_t));
-
-//Pre-initialisation table
+    //Pre-initialisation table
     ncsGrafInitTable((*tbl),&(api_tbl->bank),NCS_GRAF_CARD_SIZE_Y,NCS_GRAF_CARD_SIZE_X);
 
-//Loading players
+    //Loading players
     for(index=0;index<GRAF_MAX_PLAYERS;index++){
-	(*tbl)->players[index]=NULL;
+//	(*tbl)->players[index]=NULL;
 	ncsGrafInitPlayer((*tbl),index,index,\
 		    api_tbl->players[index].name,\
 		    api_tbl->players[index].status_text,\
 		    api_tbl->players[index].money_text,\
 		    api_tbl->players[index].card_num,\
-		    api_tbl->players[index].enabled);
+		    api_tbl->players[index].enabled,\
+		    api_tbl->players[index].selected);
 
-	//ncsGrafImportPlayer(&(api_tbl->players[index]),&((*tbl)->players[index]),index);
+//	ncsGrafImportPlayer(&(api_tbl->players[index]),&((*tbl)->players[index]),index);
     }
 }
 
 //------------------------------------API block
-void grafInit(struct graf_table_t* tbl)
+void ncs_grafAutoInit(struct graf_table_t* tbl)
 {
     int index=0;
-    pthread_t thread;
+//    pthread_t thread;
 
     ncsGrafImportTable(tbl,&main_tbl);
-//    for(index)
 
-//    printf("%s\n",main_tbl->bank.money_text);
+    pthread_create(&controls_thread,NULL,ncsControlsFunc,NULL);
+//    pthread_detach(thread);
 
-    pthread_create(&thread,NULL,ncsControlsFunc,NULL);
-    pthread_detach(thread);
     ncsStartGraf(main_tbl);
 }
 
-void grafDrawAll()
+void grafDrawAll(struct graf_table_t* tbl)
 {
     int index=0;
 
+    if(need_to_init){
+	need_to_init=0;
+//	grafDrawUserMsg("Init\n");
+	ncs_grafAutoInit(tbl);
+//	grafDrawUserMsg("Init OK\n");
+    }
+    else{
+//	grafDrawUserMsg("Import\n");
+	ncsGrafImportTable(tbl,&main_tbl);
+	ncsStartGraf(main_tbl);
+//	grafDrawUserMsg("Import OK\n");
+    }
+
+//    grafDrawUserMsg("Show\n");
     ncsShow(main_tbl);
+//    grafDrawUserMsg("Show OK\n");
     wrefresh(main_tbl->exit_btn.wnd);
     wrefresh(main_tbl->pass_btn.wnd);
 
@@ -150,19 +168,30 @@ void grafDrawAll()
     refresh();
 //    getch();
 }
+
 void grafDrawUserMsg(const char* msg)
 {
-    int pos[2]={0,0};
-    ncsPrintInWnd(stdscr,pos,msg);
+//    int pos[2]={0,0};
+
+    if(ncurses_enabled){
+	wclear(main_tbl->msg_wnd);
+	ncsSetWndColor(main_tbl->msg_wnd,COLOR_WHITE,COLOR_BLACK);	
+	ncsPrintInWnd(main_tbl->msg_wnd,main_tbl->msg_pos,msg);
+	wrefresh(main_tbl->msg_wnd);
+	refresh();
+    }
+    else{
+	printf("%s\n",msg);
+    }
 }
-void grafDrawPlayer(int pos){};
-void grafDrawBank(struct graf_bank_t* t)
+
+void ncs_grafDrawBank(struct graf_bank_t* t)
 {
     ncsShowBank(main_tbl);
     wrefresh(main_tbl->bank.wnd);
     refresh();
 }
-void grafDrawTimer(const char* timer)
+void ncs_grafDrawTimer(const char* timer)
 {
     strcpy(main_tbl->bank.timer_text,timer);
     ncsShowBank(main_tbl);
@@ -170,10 +199,10 @@ void grafDrawTimer(const char* timer)
     refresh();
 }
 
-void grafSetPlayer(struct graf_player_t* t,int pos){};
-void grafSetBank(struct graf_bank_t* t){};
 void grafExit()
 {
+    need_to_init=1;
+    pthread_cancel(controls_thread);
     ncsEndGraf();
 }
 
@@ -214,8 +243,6 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
 {
     int index=0;
 
-//тут проверка на правильность ввода данных
-
     tbl->card_size[0]=card_size_y;
     tbl->card_size[1]=card_size_x;
 
@@ -230,7 +257,7 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
     for(index=0;index<api_bank->card_num;index++){
 	int color=0;
 	char suit[3]="";
-	char val[2]="";
+	char val[3]="";
 	switch(api_bank->cards[index].index_suit){
 	    case GRAF_INDEX_NONE:	color=NCS_GRAF_CARD_NONE_COLOR; 
 					break;
@@ -247,20 +274,25 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
 					color=COLOR_RED;
 					break;
 	}
-	val[0]=api_bank->cards[index].val;
-	val[1]='\0';
+	strncpy(val,api_bank->cards[index].val,3);
+	val[2]='\0';
 	ncsGrafSetBankCard(&(tbl->bank),index,color,val,suit,api_bank->cards[index].selected);
     }
 
-    tbl->bank.size[0]=6+2;
+    tbl->msg_size[0]=1;
+    tbl->msg_size[1]=30+2;
+    tbl->msg_pos[0]=(NCS_GRAF_TABLE_SIZE_Y-6-2)/2;
+    tbl->msg_pos[1]=(NCS_GRAF_TABLE_SIZE_X-30-2)/2;
+
+    tbl->bank.size[0]=5+2;
     tbl->bank.size[1]=30+2;
-    tbl->bank.pos[0]=(NCS_GRAF_TABLE_SIZE_Y-6-2)/2;
+    tbl->bank.pos[0]=(NCS_GRAF_TABLE_SIZE_Y-6-2)/2+1;
     tbl->bank.pos[1]=(NCS_GRAF_TABLE_SIZE_X-30-2)/2;
     tbl->bank.money_pos[0]=1;
     tbl->bank.money_pos[1]=1;
     tbl->bank.timer_pos[0]=1;
     tbl->bank.timer_pos[1]=30+1-strlen(tbl->bank.timer_text);
-    tbl->bank.cards_pos[0]=3;
+    tbl->bank.cards_pos[0]=2;
     tbl->bank.cards_pos[1]=1;
 
     tbl->input.enabled=0;
@@ -298,7 +330,6 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
     tbl->pass_btn.pos[1]=NCS_GRAF_TABLE_SIZE_X-4-2;
     tbl->pass_btn.title_pos[0]=1;
     tbl->pass_btn.title_pos[1]=1;
-
     tbl->players=(struct ncs_graf_player_t**)(malloc(sizeof(struct ncs_graf_player_t*)*GRAF_MAX_PLAYERS));
     for(index=0;index<GRAF_MAX_PLAYERS;index++){
 	tbl->players[index]=NULL;
@@ -313,23 +344,45 @@ void ncsGrafInitPlayer(const struct ncs_graf_table_t* tbl,\
 		    const char* status,\
 		    const char* money,\
 		    int card_num,\
-		    int enabled)
+		    int enabled,
+		    int selected)
 {
+
     int index=0;
     struct ncs_graf_player_t* player=tbl->players[player_index];
-//тут проверка на правильность ввода данных
 
     if(player==NULL){
 	player=(struct ncs_graf_player_t*)malloc(sizeof(struct ncs_graf_player_t));
 	tbl->players[player_index]=player;
     }
+
+    player->enabled=enabled;
+
+    if(!enabled){
+//	memset(&player,0,sizeof(struct ncs_graf_player_t));
+	return;
+    }
+
     strncpy(player->name,name,GRAF_MAX_NAME_SIZE-1);
     player->name[GRAF_MAX_NAME_SIZE-1]='\0';
+
     strncpy(player->status_text,status,GRAF_MAX_STATUS_TEXT_SIZE-1);
     player->status_text[GRAF_MAX_STATUS_TEXT_SIZE-1]='\0';
+
     strncpy(player->money_text,money,GRAF_MAX_MONEY_TEXT_SIZE-1);
     player->money_text[GRAF_MAX_MONEY_TEXT_SIZE-1]='\0';
-    player->cards=(struct ncs_graf_card_t*)malloc(sizeof(struct ncs_graf_card_t)*card_num);
+
+    if(player->card_num!=card_num){
+	free(player->cards);
+	player->cards=NULL;
+    }
+
+    if(player->cards==NULL){
+        player->cards=(struct ncs_graf_card_t*)malloc(sizeof(struct ncs_graf_card_t)*card_num);
+	player->card_num=card_num;
+    }
+
+    player->card_num=card_num;
 
     for(index=0;index<card_num;index++){
 	player->card_num=card_num;
@@ -384,7 +437,7 @@ void ncsGrafInitPlayer(const struct ncs_graf_table_t* tbl,\
 	player->cards_pos[1]=1;
     }
 
-    player->enabled=enabled;
+    player->selected=selected;
 
     return;
 }
@@ -453,42 +506,52 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
     int index_player=0;
     int index_card=0;
 
-    tcgetattr(0,&stored_settings);
-    setlocale(LC_ALL, "");
-
-    initscr();
-    start_color();
+    struct ncs_graf_card_t* card=NULL;
 
 
-    cbreak();
-    noecho();
-    curs_set(0);
+    if(!ncurses_enabled){
 
-    keypad(stdscr, TRUE);
+        tcgetattr(0,&stored_settings);
+	setlocale(LC_ALL, "");
 
-    ncsInitColorPairs();
+	initscr();
+	start_color();
 
+        cbreak();
+	noecho();
+	curs_set(0);
+        keypad(stdscr, TRUE);
 
+        ncsInitColorPairs();
+
+	ncurses_enabled=1;    
+    }
 
     CUR_TEXT_COLOR=COLOR_WHITE;
     CUR_BACK_COLOR=COLOR_BLACK;
 
     ncsSetWndColor(stdscr,CUR_TEXT_COLOR,CUR_BACK_COLOR);
     for(index_player=0;index_player<GRAF_MAX_PLAYERS;index_player++){
-	if(tbl->players[index_player]!=NULL){
-	    tbl->players[index_player]->wnd=newwin(tbl->players[index_player]->size[0],\
+	if(	tbl->players[index_player]!=NULL && \
+		tbl->players[index_player]->enabled){
+	    if(tbl->players[index_player]->wnd==NULL){
+		tbl->players[index_player]->wnd=newwin(tbl->players[index_player]->size[0],\
 					    tbl->players[index_player]->size[1],\
 					    tbl->players[index_player]->pos[0],\
 					    tbl->players[index_player]->pos[1]);
+	    }
 	    for(index_card=0;\
 		index_card<tbl->players[index_player]->card_num;\
 		index_card++){
-		tbl->players[index_player]->cards[index_card].wnd=derwin(tbl->players[index_player]->wnd,\
+		card=&(tbl->players[index_player]->cards[index_card]);
+		if(card->wnd==NULL){
+		    card->wnd=derwin(tbl->players[index_player]->wnd,\
 					    tbl->card_size[0],\
 					    tbl->card_size[1],\
 					    tbl->players[index_player]->cards_pos[0],\
 					    tbl->players[index_player]->cards_pos[1]+tbl->card_size[1]*index_card
 					    );
+		}
 	    }
 
 //	    tbl->players[index]->wnd=newwin(6+2,30+2,24-6-2,(80-30-2)/2);
@@ -496,37 +559,52 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 	}
     }
 
-    clear();
+//    clear();
 
     CUR_TEXT_COLOR=COLOR_WHITE;
     CUR_BACK_COLOR=COLOR_GREEN;
 
-    tbl->bank.wnd=newwin(tbl->bank.size[0],\
+    if(tbl->msg_wnd==NULL){
+	tbl->msg_wnd=newwin(tbl->msg_size[0],\
+			tbl->msg_size[1],\
+			tbl->msg_pos[0],\
+			tbl->msg_pos[1]);
+    }
+
+    if(tbl->bank.wnd==NULL){
+	tbl->bank.wnd=newwin(tbl->bank.size[0],\
 			tbl->bank.size[1],\
 			tbl->bank.pos[0],\
 			tbl->bank.pos[1]);
+    }
     for(index_card=0;\
 	index_card<tbl->bank.card_num;\
 	index_card++){
-	tbl->bank.cards[index_card].wnd=derwin(	tbl->bank.wnd,\
-						tbl->card_size[0],\
-						tbl->card_size[1],\
-						tbl->bank.cards_pos[0],\
-						tbl->bank.cards_pos[1]+tbl->card_size[1]*index_card
+	card=&(tbl->bank.cards[index_card]);
+	if(card->wnd==NULL){
+	    card->wnd=derwin(	tbl->bank.wnd,\
+				tbl->card_size[0],\
+				tbl->card_size[1],\
+				tbl->bank.cards_pos[0],\
+				tbl->bank.cards_pos[1]+tbl->card_size[1]*index_card
 					      );
+	}
     }
 
-    tbl->input.wnd=newwin(tbl->input.size[0],\
+    if(tbl->input.wnd==NULL){
+	tbl->input.wnd=newwin(tbl->input.size[0],\
 			tbl->input.size[1],\
 			tbl->input.pos[0],\
 			tbl->input.pos[1]);
     wclear(tbl->input.wnd);
+    }
 
-    ncsSetWndColor(tbl->exit_btn.wnd,COLOR_WHITE,COLOR_BLUE);
+
     tbl->exit_btn.wnd=newwin(tbl->exit_btn.size[0],\
 			tbl->exit_btn.size[1],\
 			tbl->exit_btn.pos[0],\
 			tbl->exit_btn.pos[1]);
+
     wclear(tbl->exit_btn.wnd);
     wrefresh(tbl->exit_btn.wnd);
 
@@ -534,6 +612,7 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 			tbl->pass_btn.size[1],\
 			tbl->pass_btn.pos[0],\
 			tbl->pass_btn.pos[1]);
+    ncsSetWndColor(tbl->pass_btn.wnd,COLOR_WHITE,COLOR_BLUE);
     wclear(tbl->pass_btn.wnd);
     wrefresh(tbl->pass_btn.wnd);
 
@@ -670,7 +749,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 //    SetWndColor(stdscr,COLOR_WHITE,CUR_BACK_COLOR);
 //    SetWndColor(stdscr,COLOR_WHITE,COLOR_GREEN);
 
-    move(0,0);
+//    move(0,0);
     clear();
 
 //    refresh();
@@ -744,7 +823,11 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 
 void ncsEndGraf()
 {
-    endwin();
+    if(ncurses_enabled){
+        endwin();
+	ncurses_enabled=0;
+    }
+
     tcsetattr(0,TCSANOW,&stored_settings);
     return;
 }
@@ -833,7 +916,7 @@ void* ncsControlsFunc(void* data)
 //	refresh();
 	if(c==27){
 	    graf_exit_event();
-	    return NULL;
+//	    return NULL;
 	}
 	if(c==10){
 	    if(	main_tbl->input.enabled==1 && \
@@ -848,7 +931,7 @@ void* ncsControlsFunc(void* data)
 	    if(	main_tbl->exit_btn.enabled==1 &&\
 		main_tbl->exit_btn.selected==1){
 		graf_exit_event();
-		return NULL;
+//		return NULL;
 	    }
 	    if(	main_tbl->pass_btn.enabled==1 &&\
 		main_tbl->pass_btn.selected==1){

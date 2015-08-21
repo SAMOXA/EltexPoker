@@ -19,7 +19,7 @@ int main(void){
 	tbl->players[indexA].cards=(struct graf_card_t*)malloc(sizeof(struct graf_card_t)*2);
 	for(indexB=0;indexB<2;indexB++){
 	    tbl->players[indexA].cards[indexB].selected=0;
-	    tbl->players[indexA].cards[indexB].val='K';
+	    strcpy(tbl->players[indexA].cards[indexB].val,"K");
 	    tbl->players[indexA].cards[indexB].index_suit=1;
 	    printf("Card done\n");
 	}
@@ -36,17 +36,25 @@ int main(void){
     tbl->bank.cards=(struct graf_card_t*)malloc(sizeof(struct graf_card_t)*3);
     for(indexB=0;indexB<3;indexB++){
 	tbl->bank.cards[indexB].selected=0;
-	tbl->bank.cards[indexB].val='K';
+	strcpy(tbl->bank.cards[indexB].val,"K");
 	tbl->bank.cards[indexB].index_suit=1;
         printf("Card done\n");
     }
 
     printf("Bank done\n");    
 
-    grafInit(tbl);
+//    grafInit(tbl);
 
-    grafShowInput("Print your bet","100");
-    grafDrawAll();
+    grafDrawAll(tbl);
+//    grafDrawAll(tbl);
+
+//    sleep(1);
+    for(indexA=0;indexA<10;indexA++){
+        grafDrawAll(tbl);
+        grafShowInput("Print your bet","100");
+
+//	sleep(1);
+    }
 
     while(1){
 	sleep(100);

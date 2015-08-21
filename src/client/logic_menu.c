@@ -1,23 +1,37 @@
 #include "logic.h"
-#include "../graf/graf_api.h"
+
+
+int graf;
 
 struct graf_list_t graf_list;
+pthread_cond_t cond;
+pthread_mutex_t mut;
 
-void create_msg(int type, int len, void *data, unsigned char *buf) {
-	struct msg *msg;
-	//unsigned char *buf = (unsigned char *) malloc(sizeof(struct msg) + len);
-	msg = (struct msg *) buf;
-
-	msg->type = type;
-	msg->len = len;
-	memcpy(buf + sizeof(struct msg), data, len);
-}
 
 
 void logicExitMenu() {
 	net_disconnect_server(fd);
-	grafExitList();
-	exit(1);
+	if (graf == 1) grafExitList();
+	printf("EXIT\n");
+	exit(0);
+}
+
+void logicHandlerTable(struct table_t *tables, struct graf_list_t *graf_list) {
+	int i, j;
+
+	for(i = 0; i < MAX_TABLES_COUNT; i++) {
+		graf_list->tables[i].enabled = (tables[i].id == 0) ? 0 : 1;
+		graf_list->tables[i].id = tables[i].id;
+		graf_list->tables[i].players_count = 0;
+		if (tables[i].id != 0) {
+			for( j = 0; j < MAX_PLAYERS_PER_TABLE; j++) {
+				if (strlen(tables[i].players[j]) != 0) 
+					++(graf_list->tables[i].players_count);
+
+			}
+		}
+	}
+
 }
 
 /* Обработка ответов от сервера
@@ -61,21 +75,25 @@ int logicHandlerBegin(int type) {
 		}
 		/* Обработка получения списка столов
 		*/
+		//case 
 		case LIST_TABLE: 
 		{
-			if (len == 0 ) {
+			struct room_t *room = (struct room_t *)buf;
+			if (room->status == ROOM_STATUS_EMPTY) {
 				//printf("List table is empty");
 				grafDrawMsgList("List tables is empty");
+				grafDrawTableList(NULL);
 				break;
 			}
 			//int n = len / sizeof(struct table_t), i, j;
 			//struct table_t *table = (struct table_t *) buf;
-			strcpy(graf_list.title, "Hello");
-			if (sizeof(graf_list.tables) < len){
+			//strcpy(graf_list.title, "Hello");
+		/*	if (sizeof(graf_list.tables) < len){
 				printf("Не хватает памяти под  столы\n");
 				logicExitMenu();
-			}
-			memcpy(graf_list.tables, buf, sizeof(graf_list.tables));
+			}*/
+			memcpy(graf_list.tables, room->tables, sizeof(graf_list.tables));
+			logicHandlerTable(room->tables, &graf_list);			
 			grafDrawTableList(&graf_list);
 
 /*			for(i = 0; i < n; i++) {
@@ -99,7 +117,8 @@ int logicHandlerBegin(int type) {
 					//printf("Table is created\n");
 					grafDrawMsgList("Table is created");
 				else
-					grafDrawMsgList("Succesfull connection to table\n");
+					grafDrawMsgList("Succesfull connection to table");
+				sleep(3);
 				cur_status = GAME;
 				/*grafDrawMsgList("port = %d\n", selResp->port);
 				grafDrawMsgList("session = %d\n", selResp->session);*/
@@ -107,8 +126,11 @@ int logicHandlerBegin(int type) {
 				/* Нужно потом это заменить */
 				port = selResp->port;
 				session = selResp->session;
+				logicExitMenu();
 			} else {
 				grafDrawMsgList(selResp->error);
+				cur_status = DEAD;
+				logicExitMenu();
 			}
 			break;
 		}	
@@ -195,11 +217,18 @@ void logicInitGrafList() {
 int logicSelTable() {
 	logicInitGrafList();
 	grafInitList();
+	graf = 1;
 	if( logicGetTableList() == -1 ) {
 		printf("Error: logicGetTableList()\n");
 		exit(1);
 	}
-
+	while(1){
+		if(cur_status != SEL_TABLES){
+			break;
+		}
+		usleep(100);
+	}
+	printf("End SEL_TABLES");
 	//get_tables()
 	/*int tmp, ret = 0;
 	if( logicGetTableList() == -1 )
@@ -223,10 +252,16 @@ int logicSelTable() {
 	
 }
 
-
+void handler_sig(int sig) {
+	printf("dddddd\n");
+	logicExitMenu();
+}
 
 
 void run(char *ip, char *namePort) {
+	signal(SIGINT, handler_sig);
+	signal(SIGTERM, handler_sig);
+	graf = 0;
 	int port_ = atoi(namePort), stop = 0;
 
 	fd = net_create_connect_server(ip, port_);
@@ -277,7 +312,7 @@ void run(char *ip, char *namePort) {
 			*/
 			case DEAD: 
 			{
-				net_disconnect_server(fd);
+				logicExitMenu();
 				stop = 1;
 				break;
 			}

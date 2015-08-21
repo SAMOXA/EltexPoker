@@ -9,6 +9,7 @@
 #define MAX_ERROR_MSG_LEN 24
 #define STATUS_OK 1
 #define STATUS_BAD 0
+#define ROOM_STATUS_EMPTY 0 /*Для пустого стола*/
 
 #define FALSE_CARD 60
 
@@ -19,7 +20,7 @@ enum lears {
 	SPADES
 };
 
-enum values{
+enum values {
 	TWO = 0,
 	THREE = 1,
 	FOUR = 2,
@@ -44,10 +45,17 @@ struct loginRequest_t {
 	char pass[MAX_PASS_LENGTH];
 };
 
+/*Структура описывающая один стол*/
 struct table_t {
 	int id;
-	char tables[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
+	char players[MAX_PLAYERS_PER_TABLE][MAX_NAME_LENGTH];
 };
+/*Описывает все существующие столы*/
+struct room_t {
+	int status;
+	struct table_t tables[MAX_TABLES_COUNT];
+};
+
 
 struct loginResponce_t {
 	int status;
@@ -78,7 +86,8 @@ enum initAction {
 	LOG_IN,
 	CREATE_TABLE,
 	CONNECT_TO_TABLE,
-	LIST_TABLE
+	LIST_TABLE,
+	EMPTY_LIST
 };
 //////////////////////////////////////////////////////////////
 
