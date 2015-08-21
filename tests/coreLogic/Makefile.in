@@ -91,28 +91,12 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-<<<<<<< HEAD:src/client/Makefile
-am__installdirs = "$(DESTDIR)$(bindir)"
-PROGRAMS = $(bin_PROGRAMS)
-am__dirstamp = $(am__leading_dot)dirstamp
-am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
-	net_connect.$(OBJEXT) net_create_connect_server.$(OBJEXT) \
-	net_disconnect.$(OBJEXT) net_fill_socket_addr.$(OBJEXT) \
-	net_create_socket.$(OBJEXT) net_send.$(OBJEXT) \
-	net_receive.$(OBJEXT) ../graf/graf.$(OBJEXT)
-pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
-pokerClient_LDADD = $(LDADD)
-pokerClient_DEPENDENCIES =
-AM_V_P = $(am__v_P_$(V))
-am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
-=======
 am__EXEEXT_1 = coreLogic$(EXEEXT)
 am_coreLogic_OBJECTS = test.$(OBJEXT)
 coreLogic_OBJECTS = $(am_coreLogic_OBJECTS)
 coreLogic_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
->>>>>>> origin/master:tests/coreLogic/Makefile.in
 am__v_P_0 = false
 am__v_P_1 = :
 AM_V_GEN = $(am__v_GEN_@AM_V@)
@@ -188,100 +172,6 @@ am__tty_colors = { \
   fi; \
 }
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-<<<<<<< HEAD:src/client/Makefile
-ACLOCAL = ${SHELL} /home/tima/sysprog/EltexPoker/missing aclocal-1.14
-AMTAR = $${TAR-tar}
-AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoconf
-AUTOHEADER = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoheader
-AUTOMAKE = ${SHELL} /home/tima/sysprog/EltexPoker/missing automake-1.14
-AWK = gawk
-CC = gcc
-CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
-CPPFLAGS = 
-CYGPATH_W = echo
-DEFS = -DHAVE_CONFIG_H
-DEPDIR = .deps
-ECHO_C = 
-ECHO_N = -n
-ECHO_T = 
-EXEEXT = 
-INSTALL = /usr/bin/install -c
-INSTALL_DATA = ${INSTALL} -m 644
-INSTALL_PROGRAM = ${INSTALL}
-INSTALL_SCRIPT = ${INSTALL}
-INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = 
-LIBOBJS = 
-LIBS = 
-LTLIBOBJS = 
-MAINT = #
-MAKEINFO = ${SHELL} /home/tima/sysprog/EltexPoker/missing makeinfo
-MKDIR_P = /bin/mkdir -p
-OBJEXT = o
-PACKAGE = poker
-PACKAGE_BUGREPORT = amdsamoxa@gmail.com
-PACKAGE_NAME = Poker
-PACKAGE_STRING = Poker 0.1
-PACKAGE_TARNAME = poker
-PACKAGE_URL = 
-PACKAGE_VERSION = 0.1
-PATH_SEPARATOR = :
-SET_MAKE = 
-SHELL = /bin/bash
-STRIP = 
-VERSION = 0.1
-abs_builddir = /home/tima/sysprog/EltexPoker/src/client
-abs_srcdir = /home/tima/sysprog/EltexPoker/src/client
-abs_top_builddir = /home/tima/sysprog/EltexPoker
-abs_top_srcdir = /home/tima/sysprog/EltexPoker
-ac_ct_CC = gcc
-am__include = include
-am__leading_dot = .
-am__quote = 
-am__tar = $${TAR-tar} chof - "$$tardir"
-am__untar = $${TAR-tar} xf -
-bindir = ${exec_prefix}/bin
-build_alias = 
-builddir = .
-datadir = ${datarootdir}
-datarootdir = ${prefix}/share
-docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
-dvidir = ${docdir}
-exec_prefix = ${prefix}
-host_alias = 
-htmldir = ${docdir}
-includedir = ${prefix}/include
-infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/tima/sysprog/EltexPoker/install-sh
-libdir = ${exec_prefix}/lib
-libexecdir = ${exec_prefix}/libexec
-localedir = ${datarootdir}/locale
-localstatedir = ${prefix}/var
-mandir = ${datarootdir}/man
-mkdir_p = $(MKDIR_P)
-oldincludedir = /usr/include
-pdfdir = ${docdir}
-prefix = /usr/local
-program_transform_name = s,x,x,
-psdir = ${docdir}
-sbindir = ${exec_prefix}/sbin
-sharedstatedir = ${prefix}/com
-srcdir = .
-sysconfdir = ${prefix}/etc
-target_alias = 
-top_build_prefix = ../../
-top_builddir = ../..
-top_srcdir = ../..
-pathgraf = ../graf
-LDADD = -lpthread -lncurses
-pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
-	net_header.h net_connect.c net_create_connect_server.c \
-	net_disconnect.c net_fill_socket_addr.c net_create_socket.c \
-	net_send.c net_receive.c ../graf/graf.c ../graf/graf.h \
-	../graf/graf_api.h
-=======
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -391,7 +281,6 @@ AM_CFLAGS = -Wall -I$(top_builddir)/src -I$(top_builddir)/src/server \
 	-I$(top_builddir)/src/server/lobbiServer \
 	-I$(top_builddir)/src/server/gameServer -Wunused-function \
 	#static functions in modules warning
->>>>>>> origin/master:tests/coreLogic/Makefile.in
 all: all-am
 
 .SUFFIXES:
@@ -405,15 +294,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-<<<<<<< HEAD:src/client/Makefile
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/client/Makefile'; \
-	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/client/Makefile
-=======
 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu tests/coreLogic/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu tests/coreLogic/Makefile
->>>>>>> origin/master:tests/coreLogic/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -432,62 +315,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-<<<<<<< HEAD:src/client/Makefile
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p \
-	  ; then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' \
-	    -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	    } \
-	; done
-
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' \
-	`; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
-
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-../graf/$(am__dirstamp):
-	@$(MKDIR_P) ../graf
-	@: > ../graf/$(am__dirstamp)
-../graf/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../graf/$(DEPDIR)
-	@: > ../graf/$(DEPDIR)/$(am__dirstamp)
-../graf/graf.$(OBJEXT): ../graf/$(am__dirstamp) \
-	../graf/$(DEPDIR)/$(am__dirstamp)
-
-pokerClient$(EXEEXT): $(pokerClient_OBJECTS) $(pokerClient_DEPENDENCIES) $(EXTRA_pokerClient_DEPENDENCIES) 
-	@rm -f pokerClient$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(pokerClient_OBJECTS) $(pokerClient_LDADD) $(LIBS)
-=======
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
@@ -495,29 +322,14 @@ clean-checkPROGRAMS:
 coreLogic$(EXEEXT): $(coreLogic_OBJECTS) $(coreLogic_DEPENDENCIES) $(EXTRA_coreLogic_DEPENDENCIES) 
 	@rm -f coreLogic$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(coreLogic_OBJECTS) $(coreLogic_LDADD) $(LIBS)
->>>>>>> origin/master:tests/coreLogic/Makefile.in
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../graf/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-<<<<<<< HEAD:src/client/Makefile
-include ../graf/$(DEPDIR)/graf.Po
-include ./$(DEPDIR)/logic_menu.Po
-include ./$(DEPDIR)/main.Po
-include ./$(DEPDIR)/net_connect.Po
-include ./$(DEPDIR)/net_create_connect_server.Po
-include ./$(DEPDIR)/net_create_socket.Po
-include ./$(DEPDIR)/net_disconnect.Po
-include ./$(DEPDIR)/net_fill_socket_addr.Po
-include ./$(DEPDIR)/net_receive.Po
-include ./$(DEPDIR)/net_send.Po
-=======
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test.Po@am__quote@
->>>>>>> origin/master:tests/coreLogic/Makefile.in
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -742,8 +554,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../graf/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../graf/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -753,7 +563,7 @@ clean: clean-am
 clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../graf/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -799,7 +609,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../graf/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

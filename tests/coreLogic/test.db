@@ -1,0 +1,33 @@
+2h 3d 4c Qs Kh   5d 7c   5s 7h   5c 7d -1 -1 -1 Nothing
+2h 3h 4h Qs Kd	 5d 7c	 5h 7h	 5c 7d 1 -1 -1  Simple flush
+2h 3h 4h Qh Kh	 5d 7c	 5s 7d	 5c 7d 0 1 2    Flush on table
+4h 5h 6h Qs Kd   7h 9h   8h 10h  5c 7d 1 -1 -1  2x Flush
+4h 5h 6h Qs Kd   2h 3h   8d 9d   5c 7d 0 -1 -1  StraitFlush
+4h 5h 6h Qs Kd   2h 3h   7h 8h   5c 7d 1 -1 -1  2x StraitFlush
+4h 5h 6h 7h 8h   2c 3c   7d 8d   5d 9d 0 1 2    StraitFlush on table
+10h Jh Qh 7c 8c  7d 8d   Kh Ah   5d 6d 1 -1 -1  RoyalFlush
+10h Jh Qh Kh Ah  7d 8d   7c 8c   7s 8s 0 1 2    RoyalFlush on table
+4c 5d 6h Ks As   3s 9d   7c 8s   2s Qd 1 -1 -1  Strait
+4h 5h 6h Kc As   7d 8d   7h 8h   7s 9d 0 1 -1   Strait ident but not table
+4h 5h 6h Kc As   2c 3d   7d 8s   7d 9d 1 -1 -1  2x Strait
+Ac 2d 3h Kc As   5c 6d   4d 5s   9d Qd 1 -1 -1  Strait with ace
+Ac 2d 3h Kc As   4c 5c   4d 5d   9d Qd 0 1 -1   2x starit with ace ident
+Ac 2d 2s 3h Kc   4c 5c   4d 5d   9d Qd 0 1 -1   2x strait with ace and hole
+2d 3c 4s 5h 6c   8s 9s   8d 9d   8c 9c 0 1 2    Strait on table
+Ac 2d 3c 4s 5h   8s 9s   8d 9d   8c 9c 0 1 2    Strait on table with ace
+Ac 3c 3d 3s 5h   3h 4d   4c 5c   4s 5s 0 -1 -1  Kare
+Ac 3c 3d 3s 3h   4d 5d   4c 5c   4s 5s 0 1 2    Kare witch ident kikers
+Ac 3c 3s 3d 3h   4d 5d   4c 6c   4s 4s 1 -1 -1  Kare with kiker
+2c 3d 3s 6d 7d   3c 4d   8d 9d   8c 9c 0 -1 -1  Three
+2c 3d 3s 6d 7d   3c 4d   3h 4h   8c 9c 0 1 -1   2xThree with ident kicker
+2c 3d 3s 6d 7d   3c 5d   3h 4h   8c 9c 0 -1 -1  2xThree with kicker
+2c 3d 3s 3h 7d   4s 5s   4c 5c   4h 5h 0 1 2    Three on table with ident kiker
+2c 3d 3s 3h 7d   4s 5s   4c 6c   4h 5h 1 -1 -1  Three on table with kiker
+3c 3d 3s 4d 5d   4s 5d   7d 8d   9d 6s 0 -1 -1  FullHouse
+3c 3d 3s 4d 5h   6d 6s   7d 8s   7h 8d 0 -1 -1  FullHouse pare in hand
+3c 3d 3s 4d 5h   4d 6d   5d 7s   7h 8d 0 1 -1   2xFullHouse
+3c 3d 3s 4d 5h   4d 6d   5h 6s   7h 8d 0 1 -1   2xFullHouse ident
+3c 3d 3s 4d 4h   5d 6d   5c 6c   5d 6d 0 1 2    FullHouse on table
+3c 3d 4c 4d 5h   4s 6d   4h 6h   7d 8d 0 1 -1   FullHouse ident three
+3c 3d 4d 4d 5h   4s 6d   4h 7h   7d 8d 1 -1 -1  FullHouse higest three
+

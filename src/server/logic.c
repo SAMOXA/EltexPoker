@@ -156,7 +156,7 @@ void tableList()
 		lists[0].id = -1;
 
 		/*В случае ошибки посылаем пустой буфер*/
-		send_message(CURRENT, 0, LIST_TABLE, 0, (void*) &lists);
+		send_message(CURRENT, 0, EMPTY_LIST, 0, (void*) &lists);
 		printf("[logic]Players get empty table list\n");
 
 		return;

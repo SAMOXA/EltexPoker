@@ -78,7 +78,8 @@ enum initAction {
 	LOG_IN,
 	CREATE_TABLE,
 	CONNECT_TO_TABLE,
-	LIST_TABLE
+	LIST_TABLE,
+	EMPTY_LIST
 };
 //////////////////////////////////////////////////////////////
 
