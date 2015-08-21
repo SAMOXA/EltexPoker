@@ -1,9 +1,10 @@
 #include "net_header.h"
 
 /*
-static struct msg {
-    int type;
-    int len;
+static struct network_msg_hdr_t {
+	int payload_type;
+	int payload_len;
+
 };
 */
 
@@ -116,7 +117,7 @@ int net_receive(void *buffer, int *type)
 {
     int rw_bytes;
     int offset;
-    struct msg *recv_msg;
+    struct network_msg_hdr_t *recv_msg;
 
     /* Zero out before read message */
     bzero((char*)buffer, 1024);
@@ -127,9 +128,9 @@ int net_receive(void *buffer, int *type)
         return -1;
     }
 
-    recv_msg = (struct msg*)buffer;
+    recv_msg = (struct network_msg_hdr_t*)buffer;
 
-    *type = recv_msg->type;
+    *type = recv_msg->payload_type;
     offset = *((int*)(buffer + 4));
     memmove(buffer, buffer + 8, offset);
 
