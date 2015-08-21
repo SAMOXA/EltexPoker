@@ -1,0 +1,10 @@
+#!    /bin/bash
+gcc -c graf.c
+gcc -c graf_list.c
+gcc -c test.c
+gcc -c test_list.c
+gcc -o TEST graf.o test.o -lncursesw -lpthread
+gcc -o TL graf.o graf_list.o test_list.o -lncursesw -lpthread
+
+
+

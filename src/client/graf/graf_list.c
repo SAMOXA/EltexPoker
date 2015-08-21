@@ -6,6 +6,7 @@ static unsigned int CUR_TEXT_COLOR=COLOR_BLACK;
 static unsigned int CUR_BACK_COLOR=COLOR_WHITE;
 
 static struct ncs_graf_list_t main_list;
+static pthread_t controls_list_thread;
 
 static int btn_index=0;
 
@@ -20,24 +21,32 @@ void (*graf_list_refresh_event)(void)=ncsTempListRefresh;
 void grafInitList(void)
 {
     int index=0;
-    pthread_t thread;
+//    pthread_t thread;
 
     struct graf_list_t api_list;
 
     ncsListGrafInit(&main_list,&api_list);
     ncsListStartGraf(&main_list);
 
-    pthread_create(&thread,NULL,ncsListControlsFunc,NULL);
-    pthread_detach(thread);
+    pthread_create(&controls_list_thread,NULL,ncsListControlsFunc,NULL);
+//    pthread_detach(thread);
 }
 
 void grafDrawTableList(struct graf_list_t* list)
 {
     int index=0;
 
-    strcpy(main_list.title,list->title);
-    for(index=0;index<MAX_TABLES_COUNT;index++){
-        main_list.tables[index]=list->tables[index];
+    if(list==NULL){
+	strcpy(main_list.title,"No tables");
+	    for(index=0;index<MAX_TABLES_COUNT;index++){
+    		main_list.tables[index].enabled=0;
+	    }
+    }
+    else{
+	strcpy(main_list.title,list->title);
+	for(index=0;index<MAX_TABLES_COUNT;index++){
+    	    main_list.tables[index]=list->tables[index];
+	}
     }
 
     ncsListShow(&main_list);
@@ -52,9 +61,14 @@ void grafDrawTableList(struct graf_list_t* list)
 void grafDrawMsgList(const char* msg)
 {
     int pos[2]={0,0};
+    int index=0;
     char clr_msg[NCS_GRAF_TABLE_SIZE_X]={' '};
-
-    ncsPrintInWnd(stdscr,pos,clr_msg);//чтоб весь экран не очищать
+    
+    move(pos[0],pos[1]);
+    for(index=0;index<NCS_GRAF_TABLE_SIZE_X;index++){
+	printw(" ");
+    }
+//    ncsPrintInWnd(stdscr,pos,clr_msg);//чтоб весь экран не очищать
     ncsPrintInWnd(stdscr,pos,msg);
     refresh();
 }
@@ -62,6 +76,7 @@ void grafDrawMsgList(const char* msg)
 void grafExitList()
 {
     ncsListEndGraf();
+    pthread_cancel(controls_list_thread);
 }
 
 void ncsSetBtnParams(	struct ncs_graf_button_t *btn,\
@@ -193,9 +208,11 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 	    continue;
 	}
 	wmove(list->wnd,indexA+2,1);
-	wprintw(list->wnd,"%d - %d players",\
+	int max_players=MAX_PLAYERS_PER_TABLE;
+	wprintw(list->wnd,"ID - %d. %d/%d",\
 		list->tables[indexA].id,\
-		list->tables[indexA].players_count);
+		list->tables[indexA].players_count,\
+		max_players);
     }
     ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_BLACK);	
     box(list->wnd,0,0);
@@ -331,7 +348,7 @@ void* ncsListControlsFunc(void* data)
 	if(c==10){
 	    if(	main_list.enabled==1 && \
 		main_list.selected==1){
-		graf_list_select_event(main_list.selected_index);
+		graf_list_select_event(main_list.tables[main_list.selected_index].id);
 	    }
 	    if(	main_list.exit_btn.enabled==1 &&\
 		main_list.exit_btn.selected==1){
