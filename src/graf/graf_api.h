@@ -20,7 +20,7 @@
 
 struct graf_card_t{
     int selected;
-    char val[2];
+    char val;//[2];
     int index_suit;
 };
 
@@ -46,14 +46,14 @@ struct graf_table_t{
     struct graf_bank_t bank;
 };
 
-//void grafInit(struct graf_table_t*);//без отрисовки
-void grafDrawAll(struct graf_table_t*);
+void grafInit(struct graf_table_t*);//без отрисовки
+void grafDrawAll();//struct graf_table_t*);
 void grafDrawUserMsg(const char* msg);//вывод строки состояния
-//void grafDrawPlayer(int pos);//struct graf_player_t*,
-//void grafDrawBank(struct graf_bank_t*);
+void grafDrawPlayer(int pos);//struct graf_player_t*,
+void grafDrawBank(struct graf_bank_t*);
 void grafDrawTimer(const char* timer);
-//void grafSetPlayer(struct graf_player_t*,int pos);
-//void grafSetBank(struct graf_bank_t*);
+void grafSetPlayer(struct graf_player_t*,int pos);
+void grafSetBank(struct graf_bank_t*);
 void grafExit();
 
 void grafShowInput(const char* title,const char* default_text);

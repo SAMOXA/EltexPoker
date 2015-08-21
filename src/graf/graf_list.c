@@ -193,9 +193,11 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 	    continue;
 	}
 	wmove(list->wnd,indexA+2,1);
-	wprintw(list->wnd,"%d - %d players",\
+	int max_players=MAX_PLAYERS_PER_TABLE;
+	wprintw(list->wnd,"ID - %d. %d/%d",\
 		list->tables[indexA].id,\
-		list->tables[indexA].players_count);
+		list->tables[indexA].players_count,\
+		max_players);
     }
     ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_BLACK);	
     box(list->wnd,0,0);
