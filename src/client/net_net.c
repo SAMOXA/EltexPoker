@@ -21,6 +21,7 @@ int net_disconnect_server()
     /* Close file descriptor */
     ret_val = close(fd);
     if (ret_val == -1) {
+	strcpy(net_error_msg, "error: can't disconnect from server\n");
 	return -1;
     } else {
 	return 0;
@@ -51,7 +52,7 @@ int net_create_connect_server(char *addres, int port)
 
     /* Check port */
     if ((port > 65000) || (port < 1024)) {
-	fprintf(stderr, "error: not correct port\n");
+	strcpy(net_error_msg, "error: not correct port\n");
 	return -1;
     }
 
@@ -64,7 +65,7 @@ int net_create_connect_server(char *addres, int port)
 
     /* Check ip address and setup address */
     if ((inet_aton(addres, &addr.sin_addr.s_addr)) == 0) {
-	fprintf(stderr, "error: not correct ip address\n");
+	strcpy(net_error_msg, "error: not correct ip address\n");
 	return -1;
     }
     //addr.sin_addr.s_addr = inet_addr(addres);
@@ -72,13 +73,13 @@ int net_create_connect_server(char *addres, int port)
     /* Create TCP socket */
     fd = net_create_socket();
     if (fd < 0) {
-	fprintf(stderr, "error: can't socket()\n");
+	strcpy(net_error_msg, "error: can't socket()\n");
         return -1;
     }
 
     /* Connect to server */
     if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-	fprintf(stderr, "error: can't connect() to server\n");
+	strcpy(net_error_msg, "error: can't connect() to server\n");
         return -1;
     }
     return 0;
@@ -103,6 +104,7 @@ int net_send(void *buffer, int type, int len)
 
     rw_bytes = write(fd, msg, 1024);
     if (rw_bytes < 0) {
+	strcpy(net_error_msg, "error: can't write to server\n");
         return -1;
     }
     return rw_bytes;
@@ -113,7 +115,7 @@ int net_send(void *buffer, int type, int len)
 * Receive message from server
 * return value error: -1, good: 0
 */
-int net_receive(void *buffer, int *type)
+int net_receive(void *buffer, int *type, int *len)
 {
     int rw_bytes;
     int offset;
@@ -125,14 +127,15 @@ int net_receive(void *buffer, int *type)
     /* Receive buffer from server */
     rw_bytes = read(fd, (char*)buffer, 1024);
     if (rw_bytes < 0) {
+	strcpy(net_error_msg, "error: can't read from server\n");
         return -1;
     }
 
     recv_msg = (struct network_msg_hdr_t*)buffer;
 
     *type = recv_msg->payload_type;
-    offset = *((int*)(buffer + 4));
-    memmove(buffer, buffer + 8, offset);
+    *len = *((int*)(buffer + 4));
+    memmove(buffer, buffer + 8, *len);
 
     return 0;
 }

@@ -9,10 +9,12 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+char net_error_msg[256];
+
 int net_disconnect_server();
 int net_create_connect_server(char *addres, int port);
 
 int net_send(void *buffer, int type, int len);
-int net_receive(void *buffer, int *type);
+int net_receive(void *buffer, int *type, int *len);
 
 #endif
