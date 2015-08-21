@@ -1,0 +1,5 @@
+#!/bin/bash -x
+
+gcc -c gtk_poker_func.c `pkg-config --cflags --libs gtk+-3.0`
+gcc -g -o gtk_poker_game gtk_poker_main.c gtk_poker_func.o `pkg-config --cflags --libs gtk+-3.0`
+rm gtk_poker_func.o
