@@ -22,7 +22,7 @@ GtkWidget *pngBox(gchar *png_filename)
 
 void cell_clicked (GtkWidget *widget) //Обработка клика по изображению (event_box)
 {   
-    return; 
+		return; 
 }
 
 void destroyWidget (struct playerBox *players) {
@@ -38,7 +38,7 @@ void initBoxPlayers (struct graf_player_t *p, struct playerBox *players) {
 		destroyWidget (players);
 		int i; 
 		int j;
-		char nameCard[10];
+	
 		char path[100];
 		char suitCard[2];
 		char tmp_path[] = "gfx/\0";
@@ -70,28 +70,30 @@ void initBoxPlayers (struct graf_player_t *p, struct playerBox *players) {
 								players[i].name, FALSE, FALSE, 30);
 				}
 				
-				suitCard[1] = '\0';
-				if ( p->cards->index_suit == GRAF_INDEX_SPADES) {
-						suitCard[0] = '\0' + GRAF_INDEX_SPADES;
-				}
-				if ( p->cards->index_suit == GRAF_INDEX_CLUBS) {
-						suitCard[0] = '\0' + GRAF_INDEX_CLUBS;
-				}
-				if ( p->cards->index_suit == GRAF_INDEX_HEARTS) {
-						suitCard[0] = '\0' + GRAF_INDEX_HEARTS;
-				}				
-				if ( p->cards->index_suit == GRAF_INDEX_DIAMONDS) {
-						suitCard[0] = '\0' + GRAF_INDEX_DIAMONDS;
-				}				
+				if (p->cards->val != '\0') {
+						suitCard[1] = '\0';
+						if ( p->cards->index_suit == GRAF_INDEX_SPADES) {
+								suitCard[0] = '\0' + GRAF_INDEX_SPADES;
+						}
+						if ( p->cards->index_suit == GRAF_INDEX_CLUBS) {
+								suitCard[0] = '\0' + GRAF_INDEX_CLUBS;
+						}
+						if ( p->cards->index_suit == GRAF_INDEX_HEARTS) {
+								suitCard[0] = '\0' + GRAF_INDEX_HEARTS;
+						}				
+						if ( p->cards->index_suit == GRAF_INDEX_DIAMONDS) {
+								suitCard[0] = '\0' + GRAF_INDEX_DIAMONDS;
+						}				
 
-				strncat(path,  tmp_path, strlen(tmp_path));
-				strncat(path,  nameCard, strlen(nameCard));
-				strncat(path,  format, strlen(format));
-				
+						strncpy(path,  tmp_path, strlen(tmp_path));
+						strncat(path,  p->cards->val , strlen(p->cards->val));
+						strncat(path,  suitCard , strlen(suitCard));
+						strncat(path,  format, strlen(format));
+				}
 				gtk_box_pack_start(GTK_BOX(players[i].infoBox),
-					players[i].money, FALSE, FALSE, 0);
+						players[i].money, FALSE, FALSE, 0);
 				gtk_box_pack_start(GTK_BOX(players[i].infoBox),
-					players[i].bet, FALSE, FALSE, 0);
+						players[i].bet, FALSE, FALSE, 0);
 				
 				players[i].leftCard = pngBox("gfx/rubashka.png");
 				players[i].rightCard = pngBox("gfx/rubashka.png");
