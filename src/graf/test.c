@@ -43,10 +43,18 @@ int main(void){
 
     printf("Bank done\n");    
 
-    grafInit(tbl);
+//    grafInit(tbl);
 
-    grafShowInput("Print your bet","100");
-    grafDrawAll();
+    grafDrawAll(tbl);
+//    grafDrawAll(tbl);
+
+//    sleep(1);
+    for(indexA=0;indexA<10;indexA++){
+        grafDrawAll(tbl);
+        grafShowInput("Print your bet","100");
+
+//	sleep(1);
+    }
 
     while(1){
 	sleep(100);

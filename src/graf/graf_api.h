@@ -26,6 +26,7 @@ struct graf_card_t{
 
 struct graf_player_t{
     int enabled;
+    int selected;
     char name[GRAF_MAX_NAME_SIZE];
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];
@@ -46,14 +47,14 @@ struct graf_table_t{
     struct graf_bank_t bank;
 };
 
-void grafInit(struct graf_table_t*);//без отрисовки
-void grafDrawAll();//struct graf_table_t*);
+//void grafInit(struct graf_table_t*);//без отрисовки
+void grafDrawAll(struct graf_table_t*);
 void grafDrawUserMsg(const char* msg);//вывод строки состояния
-void grafDrawPlayer(int pos);//struct graf_player_t*,
-void grafDrawBank(struct graf_bank_t*);
-void grafDrawTimer(const char* timer);
-void grafSetPlayer(struct graf_player_t*,int pos);
-void grafSetBank(struct graf_bank_t*);
+//void grafDrawPlayer(int pos);//struct graf_player_t*,
+//void grafDrawBank(struct graf_bank_t*);
+//void grafDrawTimer(const char* timer);
+//void grafSetPlayer(struct graf_player_t*,int pos);
+//void grafSetBank(struct graf_bank_t*);
 void grafExit();
 
 void grafShowInput(const char* title,const char* default_text);

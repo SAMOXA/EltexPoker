@@ -43,6 +43,7 @@ struct ncs_graf_card_t{
 
 struct ncs_graf_player_t{
     int enabled;
+    int selected;
     char name[GRAF_MAX_NAME_SIZE];
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];
@@ -98,8 +99,13 @@ struct ncs_graf_table_t{
     struct ncs_graf_input_t input;
     struct ncs_graf_button_t exit_btn;
     struct ncs_graf_button_t pass_btn;
+    WINDOW *msg_wnd;
+    unsigned int msg_pos[2];
+    unsigned int msg_size[2];
     unsigned int card_size[2];
 };
+
+void ncs_grafAutoInit(	struct graf_table_t*);
 
 void ncsGrafInitTable(	struct ncs_graf_table_t*,const struct graf_bank_t*,\
 			const int,const int);
@@ -108,7 +114,7 @@ void ncsGrafInitPlayer(const struct ncs_graf_table_t*,\
 		    int,const char*,\
 		    const char*,\
 		    const char*,\
-		    int,int);
+		    int,int,int);
 void ncsGrafSetCard(const struct ncs_graf_player_t*,\
 		int,int,const char*,const char*,\
 		int);

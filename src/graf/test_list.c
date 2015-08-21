@@ -8,9 +8,9 @@ int main()
     struct graf_list_t list;
 
     strcpy(list.title,"Tables list");
-    for(index=0;index<MAX_TABLES_COUNT;index++){
+    for(index=0;index<10;index++){
 	list.tables[index].enabled=1;
-	list.tables[index].id=index;
+	list.tables[index].id=index+7;
 	list.tables[index].players_count=4;
     }
 
