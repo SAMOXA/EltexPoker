@@ -1,7 +1,11 @@
 #include "logic.h"
-//#include "../graf/graf_api.h"
+#ifdef HAVE_NCURSES
 
-//struct graf_list_t graf_list;
+#include "graf_api.h"
+struct graf_list_t graf_list;
+pthread_mutex_t lock;
+#endif
+
 int cur_status, session;
 char user_name[MAX_NAME_LENGTH];
 
@@ -48,7 +52,12 @@ int registerate(){
 	return 0;
 }
 
+#ifndef HAVE_NCURSES
 int selectTable(){
+#else
+void selectTable() {
+	int playersCount;
+#endif
 	struct table_t *tables;
 	int msgType;
 	int i, j;
@@ -56,24 +65,48 @@ int selectTable(){
 
 	sendMsg(LIST_TABLE, 0, NULL);
 	tables = (struct table_t *)recvMsg(&msgType);
+#ifndef HAVE_NCURSES
 	if(msgType == EMPTY_LIST){
 		printf("No tables\n");
 	}
 	if(msgType == LIST_TABLE){
 		for(i=0;i<MAX_TABLES_COUNT;i++){
-			printf("%d ", tables[i].id);
-			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
-				printf("%s ", tables[i].tables[j]);
+				printf("%d ", tables[i].id);
+				for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
+					printf("%s ", tables[i].tables[j]);
+				}
+				printf("\n");
 			}
-			printf("\n");
 		}
 	}
 	printf("Enter table Id to connect, 0 to create new table or -1 to refresh -2 to exit\n>");
 	scanf("%d", &id);
 	return id;
+#else
+	memset(&graf_list, 0, sizeof(struct graf_list_t));
+	sprintf(graf_list.title, "%s", "Tables");
+	if(msgType == LIST_TABLE){
+		for(i=0;i<MAX_TABLES_COUNT;i++){
+			graf_list.tables[i].id = tables[i].id;
+			graf_list.tables[i].enabled = (tables[i].id == -1);
+			playersCount++;
+			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
+				if(tables[i].tables[j][0] != 0){
+					playersCount++;
+				}
+			}
+			graf_list.tables[i].players_count = playersCount;
+		}	
+	}
+	grafDrawTableList(&graf_list);
+#endif		
 }
 
+#ifndef HAVE_NCURSES
 int createTable(){
+#else
+void createTable() {
+#endif	
 	struct selectRequest_t selectReq;
 	struct selectResponce_t *selectResp;
 	int msgType;
@@ -85,13 +118,27 @@ int createTable(){
 	if(selectResp->status == STATUS_OK){
 		port = selectResp->port;
 		session = selectResp->session;
+#ifndef HAVE_NCURSES
 		return 0;
+#else
+		pthread_mutex_unlock(&lock);
+		return;
+#endif
 	}
+#ifndef HAVE_NCURSES
 	printf(selectResp->error);
 	return -1;
+#else
+	grafDrawMsgList(selectResp->error);
+	return;
+#endif
 }
 
+#ifndef HAVE_NCURSES
 int connectToTable(int id) {
+#else
+void connectToTable(int id) {
+#endif	
 	struct selectRequest_t selectReq;
 	struct selectResponce_t *selectResp;
 	int msgType;
@@ -103,11 +150,27 @@ int connectToTable(int id) {
 	if(selectResp->status == STATUS_OK){
 		port = selectResp->port;
 		session = selectResp->session;
+#ifndef HAVE_NCURSES
 		return 0;
+#else
+		pthread_mutex_unlock(&lock);
+		return;
+#endif
 	}
+#ifndef HAVE_NCURSES
 	printf(selectResp->error);
 	return -1;
+#else
+	grafDrawMsgList(selectResp->error);
+	return;
+#endif
 }
+
+#ifdef HAVE_NCURSES
+void startGraphicsWaitLoop() {
+	pthread_mutex_lock(&lock);
+}
+#endif
 
 int lobbyServer(){
 	int retCode;
@@ -128,6 +191,7 @@ int lobbyServer(){
 			break;
 		}
 	}
+#ifndef HAVE_NCURSES
 	while(1){
 		tableId = selectTable();
 		if(tableId == -1){
@@ -147,6 +211,29 @@ int lobbyServer(){
 			break;
 		}
 	}
+#else 
+	grafInitList();
+	pthread_mutex_lock(&lock);
+	startGraphicsWaitLoop();
+#endif
 	networkDisconnect();
+#ifdef HAVE_NCURSES
+	grafExitList();
+#endif
 	return 0;
 }
+
+#ifdef HAVE_NCURSES
+void exitCallback() {
+	grafExitList();
+	networkDisconnect();
+	exit(1);
+}
+
+void logicInitGrafList() {
+	graf_list_exit_event = exitCallback;
+	graf_list_select_event = connectToTable;
+	graf_list_create_event = createTable;
+	graf_list_refresh_event = selectTable;
+}
+#endif

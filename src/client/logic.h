@@ -7,11 +7,16 @@
 #include "network.h"
 #include "global.h"
 #include <unistd.h>
+#ifdef HAVE_NCURSES
+#include <pthread.h>
+#endif
 
 extern int session;
 
 int lobbyServer();
 void gameServer();
-//void startGraphicsLoop();
+#ifdef HAVE_NCURSES
+void startGraphicsWaitLoop();
+#endif
 
 #endif
