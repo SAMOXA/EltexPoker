@@ -20,7 +20,7 @@
 
 struct graf_card_t{
     int selected;
-    char val;//[2];
+    char val[2];
     int index_suit;
 };
 

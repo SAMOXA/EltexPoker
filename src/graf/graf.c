@@ -230,7 +230,7 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
     for(index=0;index<api_bank->card_num;index++){
 	int color=0;
 	char suit[3]="";
-	char val[2]="";
+	char val[3]="";
 	switch(api_bank->cards[index].index_suit){
 	    case GRAF_INDEX_NONE:	color=NCS_GRAF_CARD_NONE_COLOR; 
 					break;
@@ -247,8 +247,8 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
 					color=COLOR_RED;
 					break;
 	}
-	val[0]=api_bank->cards[index].val;
-	val[1]='\0';
+	strncpy(val,api_bank->cards[index].val,3);
+	val[2]='\0';
 	ncsGrafSetBankCard(&(tbl->bank),index,color,val,suit,api_bank->cards[index].selected);
     }
 
