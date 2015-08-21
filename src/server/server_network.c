@@ -253,7 +253,7 @@ void init_game_server_network(int game_server_port, int listen_server_fd)
 	memset((void *) &game_server_addr, 0, sizeof(struct sockaddr_in));
 	game_server_addr.sin_family = AF_INET;
 	game_server_addr.sin_port = htons(game_server_port);
-	if(!strlen(defined_ip)){	/* Если слушающий сервер установил новый IP */
+	if(strlen(defined_ip)){	/* Если слушающий сервер установил новый IP */
 		inet_aton(defined_ip, &game_server_addr.sin_addr);
 		printf("[game_server_network] Game server IP: %s\n", defined_ip);
 	}
