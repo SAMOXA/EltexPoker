@@ -26,6 +26,7 @@ struct graf_card_t{
 
 struct graf_player_t{
     int enabled;
+    int selected;
     char name[GRAF_MAX_NAME_SIZE];
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];

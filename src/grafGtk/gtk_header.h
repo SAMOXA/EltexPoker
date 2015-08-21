@@ -34,13 +34,15 @@ struct playersGameTableBox {
 		GtkWidget *tableCard[5];
 		GtkWidget *labelInfo;
 		GtkWidget *gameTable;
+		GtkWidget *entryRaise;
 		struct playerBox players[MAX_PLAYERS];
 };
 
+void funcExit();
 
-void itoa(int n, char s[]);
+void funcBet(int sum);
 
-void reverse(char s[]);
+void funcPass();
 
 GtkWidget *png_box(gchar *png_filename);
 
