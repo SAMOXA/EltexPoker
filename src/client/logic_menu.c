@@ -3,7 +3,7 @@
 
 #include "graf_api.h"
 struct graf_list_t graf_list;
-pthread_mutex_t lock;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 int cur_status, session;
@@ -90,7 +90,7 @@ void selectTable() {
 			graf_list.tables[i].enabled = (tables[i].id == -1);
 			playersCount++;
 			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
-				if(tables[i].tables[j][0] != 0){
+				if(tables[i].players[j][0] != 0){
 					playersCount++;
 				}
 			}
@@ -98,6 +98,7 @@ void selectTable() {
 		}
 	}
 	grafDrawTableList(&graf_list);
+	return;
 #endif
 }
 
@@ -120,6 +121,7 @@ void createTable() {
 #ifndef HAVE_NCURSES
 		return 0;
 #else
+		grafDrawMsgList("unclock");
 		pthread_mutex_unlock(&lock);
 		return;
 #endif
@@ -177,7 +179,6 @@ int lobbyServer(){
 	int tableId;
 	retCode = initNetwork();
 
-	//graf_draw_logging();
 	while(1){
 		printf("Create new profile?(y/n)\n");
 		scanf("%s", &flg);
@@ -211,7 +212,9 @@ int lobbyServer(){
 		}
 	}
 #else
+	logicInitGrafList();
 	grafInitList();
+	selectTable();
 	pthread_mutex_lock(&lock);
 	startGraphicsWaitLoop();
 #endif

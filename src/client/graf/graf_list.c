@@ -63,7 +63,7 @@ void grafDrawMsgList(const char* msg)
     int pos[2]={0,0};
     int index=0;
     char clr_msg[NCS_GRAF_TABLE_SIZE_X]={' '};
-    
+
     move(pos[0],pos[1]);
     for(index=0;index<NCS_GRAF_TABLE_SIZE_X;index++){
 	printw(" ");
@@ -214,9 +214,9 @@ void ncsListShow(const struct ncs_graf_list_t *list)
 		list->tables[indexA].players_count,\
 		max_players);
     }
-    ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_BLACK);	
+    ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_BLACK);
     box(list->wnd,0,0);
-    ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_WHITE);	
+    ncsSetWndColor(list->wnd,COLOR_BLACK,COLOR_WHITE);
     if(list->selected==1){
         box(list->wnd,0,0);
     }
@@ -348,7 +348,10 @@ void* ncsListControlsFunc(void* data)
 	if(c==10){
 	    if(	main_list.enabled==1 && \
 		main_list.selected==1){
-		graf_list_select_event(main_list.tables[main_list.selected_index].id);
+		if(main_list.tables[main_list.selected_index].enabled == 1){
+			graf_list_select_event(main_list.tables[main_list.selected_index].id);
+		}
+		continue;
 	    }
 	    if(	main_list.exit_btn.enabled==1 &&\
 		main_list.exit_btn.selected==1){
@@ -358,13 +361,15 @@ void* ncsListControlsFunc(void* data)
 	    if(	main_list.refresh_btn.enabled==1 &&\
 		main_list.refresh_btn.selected==1){
 		graf_list_refresh_event();
+		continue;
 	    }
 	    if(	main_list.create_btn.enabled==1 &&\
 		main_list.create_btn.selected==1){
 		graf_list_create_event();
+		continue;
 	    }
 	}
-	refresh();
+	//refresh();
     }
 
     return NULL;

@@ -14,7 +14,6 @@ int initNetwork() {
     server_addr.sin_family      = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(address);
     server_addr.sin_port        = htons(port);
-
     fd = socket(AF_INET, SOCK_STREAM, 0);
     if(fd < 0){
         perror("Create socket");
