@@ -63,7 +63,7 @@ int selectTable(){
 		for(i=0;i<MAX_TABLES_COUNT;i++){
 			printf("%d ", tables[i].id);
 			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
-				printf("%s ", tables[i].tables[j]);
+				printf("%s ", tables[i].players[j]);
 			}
 			printf("\n");
 		}

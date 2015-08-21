@@ -36,5 +36,12 @@
 *.swp
 *.swo
 
+#autotools
+/autom4te.cache/
+/Makefile
+/config.log
+/config.statusi
+
 #automake bug
 *$(*
+
