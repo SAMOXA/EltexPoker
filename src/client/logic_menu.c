@@ -1,6 +1,5 @@
 #include "logic.h"
 
-
 int graf;
 
 struct graf_list_t graf_list;
@@ -10,11 +9,28 @@ pthread_mutex_t mut;
 
 
 void logicExitMenu() {
-	net_disconnect_server(fd);
-	if (graf == 1) grafExitList();
+	net_disconnect_server();
+	if (graf == 1) {
+		grafExitList();
+		graf = 0;
+	}
+	pthread_cond_signal(&cond);
 	printf("EXIT\n");
 	exit(0);
 }
+
+/*void logicChangeStatus(int status) {
+	pthread_mutex_lock(&mut);
+	cur_status = status;
+	pthread_mutex_unlock(&mut);
+}*/
+
+void logicExitProg() {
+
+}
+
+
+
 
 void logicHandlerTable(struct table_t *tables, struct graf_list_t *graf_list) {
 	int i, j;
@@ -34,158 +50,144 @@ void logicHandlerTable(struct table_t *tables, struct graf_list_t *graf_list) {
 
 }
 
-/* Обработка ответов от сервера
+/* Ф-ия получения сообщений и обработка на ошибки
 */
-int logicHandlerBegin(int type) {
-	unsigned char buf[MAX_LEN_MSG];
-	int flg, type_recv, len;
 
-	flg = net_receive(fd, buf, &type_recv, &len);
+int logicRecv(void *buf, int type) {
+	int len, type_recv, flg = net_receive(buf, &type_recv, &len);
 	if (flg == -1) {
 		printf("Connection problem\n");
 		logicExitMenu();
 	}
 	if (type != type_recv) {
-		printf("Несоответствие типов сообщений\n");
+		printf("Variance types messages\n");
 		logicExitMenu();
 	}
-	switch(type) {
-		/* Обработка авторизации 
-		*/
-		case LOG_IN:
-		case REGISTRATION:
-		{
-			struct loginResponce_t *logResp;
-			logResp = (struct loginResponce_t *) buf;
+	return len;
+}
 
-			if (logResp->status == STATUS_OK) {
-				if (type == REGISTRATION) {
-					printf("Registration");
-					cur_status = LOGIN;
-				}
-				else {
-					printf("Authorization");
-					cur_status = SEL_TABLES;
-				}
-				printf(" is succesfull\n");
-			} else {
-				printf("%s\n", logResp->errorBuf);
-			}
-			break;
-		}
-		/* Обработка получения списка столов
-		*/
-		//case 
-		case LIST_TABLE: 
-		{
-			struct room_t *room = (struct room_t *)buf;
-			if (room->status == ROOM_STATUS_EMPTY) {
-				//printf("List table is empty");
-				grafDrawMsgList("List tables is empty");
-				grafDrawTableList(NULL);
-				break;
-			}
-			//int n = len / sizeof(struct table_t), i, j;
-			//struct table_t *table = (struct table_t *) buf;
-			//strcpy(graf_list.title, "Hello");
-		/*	if (sizeof(graf_list.tables) < len){
-				printf("Не хватает памяти под  столы\n");
-				logicExitMenu();
-			}*/
-			memcpy(graf_list.tables, room->tables, sizeof(graf_list.tables));
-			logicHandlerTable(room->tables, &graf_list);			
-			grafDrawTableList(&graf_list);
-
-/*			for(i = 0; i < n; i++) {
-				if (table->id == -1) continue;
-				printf("\nid = %d\n", table->id);
-				for (j = 0; j < MAX_PLAYERS_PER_TABLE; j++) {
-					printf("%d) %s\n", j + 1, table->tables[j]);
-					table++;
-				}
-			}*/
-
-			break;
-		} 
-		/*Обработка подключения и создания стола */
-		case CREATE_TABLE:
-		case CONNECT_TO_TABLE:
-		{
-			struct selectResponce_t *selResp = (struct selectResponce_t *) buf;
-			if( selResp->status == STATUS_OK ) {
-				if (type == CREATE_TABLE) 
-					//printf("Table is created\n");
-					grafDrawMsgList("Table is created");
-				else
-					grafDrawMsgList("Succesfull connection to table");
-				sleep(3);
-				cur_status = GAME;
-				/*grafDrawMsgList("port = %d\n", selResp->port);
-				grafDrawMsgList("session = %d\n", selResp->session);*/
-
-				/* Нужно потом это заменить */
-				port = selResp->port;
-				session = selResp->session;
-				logicExitMenu();
-			} else {
-				grafDrawMsgList(selResp->error);
-				cur_status = DEAD;
-				logicExitMenu();
-			}
-			break;
-		}	
-	}
-	return 0;
-}   
 
 /* Запрос авторизации
 */
-int logicEventLogin(char *login, char *pass, int type) {
-	int flg;
+void logicEventLogin() {
+	
 	struct loginRequest_t logReq;
+	int type;
+	char login[MAX_NAME_LENGTH], pass[MAX_PASS_LENGTH], flg;
+	
+	printf("Create new profile?(y/n)\n");
+	scanf("%1s", &flg);
+	if (flg == 'y') type = REGISTRATION;
+	else type = LOG_IN; 
+	printf("Input login:\n");
+	scanf("%s", login);
+/*	if (fgets(login, MAX_NAME_LENGTH, stdin) == NULL) {
+		perror("fgets()");
+		logicExitMenu();
+	}*/
+	printf("Input pass:\n");
+	scanf("%s", pass);
+
+	/*if (fgets(pass, MAX_PASS_LENGTH, stdin) == NULL) {
+		perror("fgets()");
+		logicExitMenu();
+	}*/
 
 	strcpy(user_name, login);
-
 	strcpy(logReq.name, login);
 	strcpy(logReq.pass, pass);
 	
-	flg = net_send(fd, &logReq, type, sizeof(struct loginRequest_t));
+	flg = net_send(&logReq, type, sizeof(struct loginRequest_t));
 	if (flg == -1) {
 		printf("Connection problem\n");
-		//graf_draw_text("Connection problem");
 		logicExitMenu();
 	}
-	else {
-		return logicHandlerBegin(type);
+	/* Принятие ответа
+	*/
+	unsigned char buf[MAX_LEN_MSG];
+	logicRecv(buf, type);
+	struct loginResponce_t *logResp = (struct loginResponce_t *) buf;
+
+	if (logResp->status == STATUS_OK) {
+		if (type == REGISTRATION) {
+			printf("Registration");
+			cur_status = LOGIN;
+		}
+		else {
+			printf("Authorization");
+			cur_status = SEL_TABLES;
+		}
+		printf(" is succesfull\n");
+	} else {
+		printf("%s\n", logResp->errorBuf);
 	}
-	return 0;
 }
 
 /* Запрос на подключение или создание стола
 */
-int logicEventTable(int id, int flg) {
+void logicEventTable(int id, int type) {
+
 	int err = 0;
 	struct selectRequest_t selReq;
 	strcpy(selReq.name, user_name);
+	
+
 	selReq.tableID = id;
-	err = net_send(fd, (void *)&selReq, flg, sizeof(selReq));
+	err = net_send((void *)&selReq, type, sizeof(selReq));
 	if (err == -1) {
 		printf("Connection problem\n");
 		logicExitMenu();
 	}
-	return logicHandlerBegin(flg);
+	/* Принятие ответа
+	*/
+	unsigned char buf[MAX_LEN_MSG];
+	logicRecv(buf, type);
+	struct selectResponce_t *selResp = (struct selectResponce_t *) buf;
+	if( selResp->status == STATUS_OK ) {
+		if (type == CREATE_TABLE) {
+			grafDrawMsgList("Table is created");
+		}
+		else {
+			grafDrawMsgList("Succesfull connection to table");
+		}
+		sleep(2);
+		
+		pthread_mutex_lock(&mut);
+		cur_status = GAME;
+		pthread_mutex_unlock(&mut);
+
+		port = selResp->port;
+		session = selResp->session;
+		logicExitMenu();
+	} else {
+		grafDrawMsgList(selResp->error);
+		sleep(2);
+		cur_status = DEAD;
+		logicExitMenu();
+	}
 }
 
 /* Запрос списка столов
 */
-int logicGetTableList() {
+void logicGetTableList() {
 	int err = 0;
-	err = net_send(fd, NULL, LIST_TABLE, 0);	
+	err = net_send(NULL, LIST_TABLE, 0);	
 	if (err == -1) {
 		printf("Connection problem\n");
 		logicExitMenu();
 	}
-	return logicHandlerBegin(LIST_TABLE);
+	/* Принятие ответа
+	*/
+	unsigned char buf[MAX_LEN_MSG];
+	logicRecv(buf, LIST_TABLE);
+	struct room_t *room = (struct room_t *)buf;
+	if (room->status == ROOM_STATUS_EMPTY) {
+		grafDrawMsgList("List tables is empty");
+		grafDrawTableList(NULL);
+	}
+	memcpy(graf_list.tables, room->tables, sizeof(graf_list.tables));
+	logicHandlerTable(room->tables, &graf_list);			
+	grafDrawTableList(&graf_list);
 }
 
 /*Запрос создания стола
@@ -200,56 +202,23 @@ void loginConnectTable(int id) {
 	logicEventTable(id, CONNECT_TO_TABLE);
 }
 
-/*Запрос обновления столов
-*/
-void logicRefreshTables() {
-	logicGetTableList();
-}
 
 void logicInitGrafList() {
 	graf_list_exit_event = logicExitMenu;
 	graf_list_select_event = loginConnectTable;
 	graf_list_create_event = loginCreateTable;
-	graf_list_refresh_event = logicRefreshTables;
+	graf_list_refresh_event = logicGetTableList;
 }
 
 
-int logicSelTable() {
+void logicSelTable() {
 	logicInitGrafList();
+	pthread_mutex_lock(&mut);
 	grafInitList();
 	graf = 1;
-	if( logicGetTableList() == -1 ) {
-		printf("Error: logicGetTableList()\n");
-		exit(1);
-	}
-	while(1){
-		if(cur_status != SEL_TABLES){
-			break;
-		}
-		usleep(100);
-	}
-	printf("End SEL_TABLES");
-	//get_tables()
-	/*int tmp, ret = 0;
-	if( logicGetTableList() == -1 )
-	printf("\n1) CREATE TABLE\n2) CONNECT TO TABLE\n");
-	scanf("%d", &tmp);
-	switch(tmp) {
-		case 1:
-		{
-			loginCreateTable();
-			break;
-		}
-		case 2:
-		{
-			printf("Input id table:\n");
-			scanf("%d", &tmp);
-			loginConnectTable(tmp);
-			break;
-		}
-	}*/
-	return 0;
-	
+	logicGetTableList();
+	pthread_cond_wait(&cond, &mut);	
+	pthread_mutex_unlock(&mut);
 }
 
 void handler_sig(int sig) {
@@ -276,29 +245,15 @@ void run(char *ip, char *namePort) {
 			*/
 			case LOGIN:		
 			{
-				//graf_draw_logging();
-				char flg; 
-				int registerFlag;
-				char login[MAX_NAME_LENGTH], pass[MAX_NAME_LENGTH];
-				printf("Create new profile?(y/n)\n");
-				scanf("%s", &flg);
-				if (flg == 'y') registerFlag = REGISTRATION;
-				else registerFlag = LOG_IN; 
-				printf("Input login:\n");
-				scanf("%s", login);
-				printf("Input pass:\n");
-				scanf("%s", pass);
-				if (logicEventLogin(login, pass, registerFlag) == -1) cur_status = DEAD;
+				logicEventLogin();
 				break;
 			}	
 			/* Выборка столов
 			*/
 			case SEL_TABLES:
 			{
-				if (logicSelTable() == -1) 
-					cur_status = DEAD;
+				logicSelTable(); 
 				cur_status = DEAD;
-
 				break;
 			}	
 			/* Стадия игры

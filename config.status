@@ -393,7 +393,7 @@ on `(hostname || uname -n) 2>/dev/null | sed 1q`
 "
 
 # Files that config.status was made for.
-config_files=" Makefile src/Makefile src/client/Makefile"
+config_files=" Makefile src/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
 config_headers=" config.h"
 config_commands=" depfiles"
 
@@ -551,6 +551,9 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/client/Makefile") CONFIG_FILES="$CONFIG_FILES src/client/Makefile" ;;
+    "src/server/Makefile") CONFIG_FILES="$CONFIG_FILES src/server/Makefile" ;;
+    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "tests/coreLogic/Makefile") CONFIG_FILES="$CONFIG_FILES tests/coreLogic/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -769,13 +772,27 @@ D["HAVE_INTTYPES_H"]=" 1"
 D["HAVE_STDINT_H"]=" 1"
 D["HAVE_UNISTD_H"]=" 1"
 D["HAVE_ARPA_INET_H"]=" 1"
+D["HAVE_LOCALE_H"]=" 1"
+D["HAVE_MALLOC_H"]=" 1"
 D["HAVE_NETINET_IN_H"]=" 1"
 D["HAVE_STDLIB_H"]=" 1"
 D["HAVE_STRING_H"]=" 1"
 D["HAVE_SYS_SOCKET_H"]=" 1"
+D["HAVE_SYS_TIME_H"]=" 1"
+D["HAVE_TERMIOS_H"]=" 1"
 D["HAVE_UNISTD_H"]=" 1"
+D["HAVE_FORK"]=" 1"
+D["HAVE_VFORK"]=" 1"
+D["HAVE_WORKING_VFORK"]=" 1"
+D["HAVE_WORKING_FORK"]=" 1"
+D["HAVE_STDLIB_H"]=" 1"
+D["HAVE_MALLOC"]=" 1"
+D["HAVE_BZERO"]=" 1"
+D["HAVE_INET_NTOA"]=" 1"
+D["HAVE_MEMMOVE"]=" 1"
 D["HAVE_MEMSET"]=" 1"
 D["HAVE_SELECT"]=" 1"
+D["HAVE_SETLOCALE"]=" 1"
 D["HAVE_SOCKET"]=" 1"
   for (key in D) D_is_set[key] = 1
   FS = ""

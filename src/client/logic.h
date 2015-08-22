@@ -10,6 +10,8 @@
 #include "../global.h"
 #include <unistd.h>
 #include "../graf/graf_api.h"
+#include <pthread.h>
+
 
 /* Потом сделать (port, session) не глобальными 
 */ 
