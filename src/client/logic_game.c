@@ -1,8 +1,8 @@
 #include "logic.h"
 
 void run_game(char *ip, int port, int session) {
-    fd = net_create_connect_server(ip, port);
-    if (fd < 0) {
+    int err = net_create_connect_server(ip, port);
+    if (err < 0) {
         printf("Server unavaible\n");
         exit(1);
     }
@@ -10,7 +10,7 @@ void run_game(char *ip, int port, int session) {
 
     /* Отправка сессии серверу 
     */
-    net_send(fd, &session, ACTION_CONNECT_REQUEST, sizeof(session));
+    net_send(&session, ACTION_CONNECT_REQUEST, sizeof(session));
 }
 
 

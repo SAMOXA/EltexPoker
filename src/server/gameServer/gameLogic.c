@@ -319,12 +319,21 @@ static char actionConnectRequest(unsigned int session) {
 		{
 			game.players[i].state = PLAYER_PASS;
 			id = game.players[i].id;
+			add_id_to_table(0, id);
 			game.playersCount++;
-			updateState();
+			//updateState();
+			send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
+					sizeof(int), &id);
 			send_message(ALL_CLIENTS, 0, STATE_NEW_PLAYER, sizeof(struct player_t),
 					&(game.players[i]));
+			send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
+					sizeof(struct gameState_t), &game);
 			break;
 		}
+	}
+	if(id = -1){
+		lastError.type = ERROR_AUTH;
+		strcpy(lastError.msg, "Session invalid");
 	}
 	return id;
 }
@@ -334,7 +343,9 @@ static void removePlayer(int id){
 	memset(&game.players[index], 0, sizeof(struct player_t));
 	game.players[index].state = PLAYER_FREE;
 	game.playersCount--;
-	updateState();
+	send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
+			sizeof(struct gameState_t), &game);
+	//updateState();
 }
 
 void initGameLogic() {
@@ -354,11 +365,13 @@ void gameEvents(int sourceType, int id, int type, void *data){
 		switch(type) {
 			case(ACTION_EXIT):
 				removePlayer(id);
-				updateState();
+				//updateState();
 				del_id_from_table(0, id);
 				send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_LEFT, sizeof(int), &id);
 				send_message(ALL_CLIENTS, 0, STATE_PLAYER_DISCONECTED,
 						sizeof(int), &id);
+				send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
+						sizeof(struct gameState_t), &game);
 				break;
 			case(ACTION_CALL):
 				if(actionCall(id) == 0){
@@ -406,9 +419,7 @@ void gameEvents(int sourceType, int id, int type, void *data){
 		switch(type) {
 			case (INTERNAL_NEW_PLAYER):
 				addNewPlayer((struct newPlayer_t *)data);
-				add_id_to_table(0, id);
-				send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
-						sizeof(int), &id);
+				//add_id_to_table(0, id);
 				break;
 			default:
 				//ERROR

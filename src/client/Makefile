@@ -92,10 +92,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
-	net_connect.$(OBJEXT) net_create_connect_server.$(OBJEXT) \
-	net_disconnect.$(OBJEXT) net_fill_socket_addr.$(OBJEXT) \
-	net_create_socket.$(OBJEXT) net_send.$(OBJEXT) \
-	net_receive.$(OBJEXT) ../graf/graf.$(OBJEXT) \
+	net_net.$(OBJEXT) ../graf/graf.$(OBJEXT) \
 	../graf/graf_list.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
 pokerClient_LDADD = $(LDADD)
@@ -247,9 +244,7 @@ top_srcdir = ../..
 pathgraf = ../graf
 LDADD = -lpthread -lncursesw
 pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
-	net_header.h net_connect.c net_create_connect_server.c \
-	net_disconnect.c net_fill_socket_addr.c net_create_socket.c \
-	net_send.c net_receive.c ../graf/graf.c ../graf/graf.h \
+	net_header.h net_net.c ../graf/graf.c ../graf/graf.h \
 	../graf/graf_api.h ../graf/graf_list.c ../graf/graf_list.h
 all: all-am
 
@@ -353,13 +348,7 @@ include ../graf/$(DEPDIR)/graf.Po
 include ../graf/$(DEPDIR)/graf_list.Po
 include ./$(DEPDIR)/logic_menu.Po
 include ./$(DEPDIR)/main.Po
-include ./$(DEPDIR)/net_connect.Po
-include ./$(DEPDIR)/net_create_connect_server.Po
-include ./$(DEPDIR)/net_create_socket.Po
-include ./$(DEPDIR)/net_disconnect.Po
-include ./$(DEPDIR)/net_fill_socket_addr.Po
-include ./$(DEPDIR)/net_receive.Po
-include ./$(DEPDIR)/net_send.Po
+include ./$(DEPDIR)/net_net.Po
 
 .c.o:
 	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

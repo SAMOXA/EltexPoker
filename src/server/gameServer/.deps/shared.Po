@@ -1,0 +1,8 @@
+gameServer/shared.o: gameServer/shared.c /usr/include/stdc-predef.h \
+ gameServer/shared.h ../../src/global.h
+
+/usr/include/stdc-predef.h:
+
+gameServer/shared.h:
+
+../../src/global.h:

@@ -166,94 +166,6 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-<<<<<<< HEAD:src/Makefile
-ACLOCAL = ${SHELL} /home/tima/sysprog/EltexPoker/missing aclocal-1.14
-AMTAR = $${TAR-tar}
-AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoconf
-AUTOHEADER = ${SHELL} /home/tima/sysprog/EltexPoker/missing autoheader
-AUTOMAKE = ${SHELL} /home/tima/sysprog/EltexPoker/missing automake-1.14
-AWK = gawk
-CC = gcc
-CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
-CPPFLAGS = 
-CYGPATH_W = echo
-DEFS = -DHAVE_CONFIG_H
-DEPDIR = .deps
-ECHO_C = 
-ECHO_N = -n
-ECHO_T = 
-EXEEXT = 
-INSTALL = /usr/bin/install -c
-INSTALL_DATA = ${INSTALL} -m 644
-INSTALL_PROGRAM = ${INSTALL}
-INSTALL_SCRIPT = ${INSTALL}
-INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = 
-LIBOBJS = 
-LIBS = 
-LTLIBOBJS = 
-MAINT = #
-MAKEINFO = ${SHELL} /home/tima/sysprog/EltexPoker/missing makeinfo
-MKDIR_P = /bin/mkdir -p
-OBJEXT = o
-PACKAGE = poker
-PACKAGE_BUGREPORT = amdsamoxa@gmail.com
-PACKAGE_NAME = Poker
-PACKAGE_STRING = Poker 0.1
-PACKAGE_TARNAME = poker
-PACKAGE_URL = 
-PACKAGE_VERSION = 0.1
-PATH_SEPARATOR = :
-SET_MAKE = 
-SHELL = /bin/bash
-STRIP = 
-VERSION = 0.1
-abs_builddir = /home/tima/sysprog/EltexPoker/src
-abs_srcdir = /home/tima/sysprog/EltexPoker/src
-abs_top_builddir = /home/tima/sysprog/EltexPoker
-abs_top_srcdir = /home/tima/sysprog/EltexPoker
-ac_ct_CC = gcc
-am__include = include
-am__leading_dot = .
-am__quote = 
-am__tar = $${TAR-tar} chof - "$$tardir"
-am__untar = $${TAR-tar} xf -
-bindir = ${exec_prefix}/bin
-build_alias = 
-builddir = .
-datadir = ${datarootdir}
-datarootdir = ${prefix}/share
-docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
-dvidir = ${docdir}
-exec_prefix = ${prefix}
-host_alias = 
-htmldir = ${docdir}
-includedir = ${prefix}/include
-infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/tima/sysprog/EltexPoker/install-sh
-libdir = ${exec_prefix}/lib
-libexecdir = ${exec_prefix}/libexec
-localedir = ${datarootdir}/locale
-localstatedir = ${prefix}/var
-mandir = ${datarootdir}/man
-mkdir_p = $(MKDIR_P)
-oldincludedir = /usr/include
-pdfdir = ${docdir}
-prefix = /usr/local
-program_transform_name = s,x,x,
-psdir = ${docdir}
-sbindir = ${exec_prefix}/sbin
-sharedstatedir = ${prefix}/com
-srcdir = .
-sysconfdir = ${prefix}/etc
-target_alias = 
-top_build_prefix = ../
-top_builddir = ..
-top_srcdir = ..
-SUBDIRS = client
-=======
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -344,7 +256,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = coreLogic
->>>>>>> origin/master:tests/Makefile.in
 all: all-recursive
 
 .SUFFIXES:
@@ -357,15 +268,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-<<<<<<< HEAD:src/Makefile
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
-	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/Makefile
-=======
 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu tests/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu tests/Makefile
->>>>>>> origin/master:tests/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

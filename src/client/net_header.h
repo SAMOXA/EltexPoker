@@ -8,19 +8,15 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include "../global.h"
 
-#include <pthread.h>
 
-int net_create_socket(int fd);
+char net_error_msg[256];
+
+int net_disconnect_server();
 int net_create_connect_server(char *addres, int port);
-int net_send(int fd, void *buffer, int type, int len);
-int net_receive(int fd, void *buffer, int *type, int *size);
-int net_connect(int fd, struct sockaddr_in server_addr);
-void *handler_send(void *args);
-void *handler_recv(void *args);
-void client(void);
-void net_disconnect_server(int fd);
-struct sockaddr_in net_fill_socket_addr(struct sockaddr_in addr, 
-						char *address, int port);
+
+int net_send(void *buffer, int type, int len);
+int net_receive(void *buffer, int *type, int *len);
 
 #endif

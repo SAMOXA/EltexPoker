@@ -255,7 +255,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-SUBDIRS = client
+SUBDIRS = client server
 all: all-recursive
 
 .SUFFIXES:
