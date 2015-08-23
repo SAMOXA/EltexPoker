@@ -13,10 +13,10 @@
 #define GRAF_MAX_TIMER_TEXT_SIZE 128
 
 #define GRAF_INDEX_NONE -1//отсутствие масти
-#define GRAF_INDEX_SPADES 0//пики
-#define GRAF_INDEX_CLUBS 1//трефы
-#define GRAF_INDEX_HEARTS 2//червы
-#define GRAF_INDEX_DIAMONDS 3//бубны
+#define GRAF_INDEX_HEARTS 0//пики
+#define GRAF_INDEX_DIAMONDS 1//трефы
+#define GRAF_INDEX_CLUBS 2//червы
+#define GRAF_INDEX_SPADES 3//бубны
 
 struct graf_card_t{
     int selected;

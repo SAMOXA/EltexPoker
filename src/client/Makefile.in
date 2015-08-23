@@ -92,7 +92,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
-	net_net.$(OBJEXT) ../graf/graf.$(OBJEXT) \
+	logic_game.$(OBJEXT) net_net.$(OBJEXT) ../graf/graf.$(OBJEXT) \
 	../graf/graf_list.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
 pokerClient_LDADD = $(LDADD)
@@ -243,8 +243,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pathgraf = ../graf
 LDADD = -lpthread -lncursesw
-pokerClient_SOURCES = main.c ../global.h logic_menu.c logic.h \
-	net_header.h net_net.c ../graf/graf.c ../graf/graf.h \
+pokerClient_SOURCES = main.c ../global.h logic_menu.c logic_game.c \
+	logic.h net_header.h net_net.c ../graf/graf.c ../graf/graf.h \
 	../graf/graf_api.h ../graf/graf_list.c ../graf/graf_list.h
 all: all-am
 
@@ -259,9 +259,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/client/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/client/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/client/Makefile
+	  $(AUTOMAKE) --foreign src/client/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -346,6 +346,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@../graf/$(DEPDIR)/graf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../graf/$(DEPDIR)/graf_list.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic_game.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic_menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_net.Po@am__quote@

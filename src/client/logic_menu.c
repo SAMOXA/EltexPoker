@@ -1,6 +1,5 @@
 #include "logic.h"
 
-int graf;
 
 struct graf_list_t graf_list;
 pthread_cond_t cond;
@@ -223,7 +222,11 @@ void logicSelTable() {
 
 void handler_sig(int sig) {
 	printf("dddddd\n");
-	logicExitMenu();
+	if (cur_status != GAME)
+		logicExitMenu();
+	else {
+		gameExit();
+	}
 }
 
 
@@ -235,7 +238,7 @@ void run(char *ip, char *namePort) {
 	graf = 0;
 	int port_ = atoi(namePort), stop = 0;
 
-	fd = net_create_connect_server(ip, port_);
+	int fd = net_create_connect_server(ip, port_);
 	if (fd < 0) {
 		printf("Server unavaible\n");
 		exit(1);
@@ -255,14 +258,13 @@ void run(char *ip, char *namePort) {
 			case SEL_TABLES:
 			{
 				logicSelTable(); 
-				cur_status = DEAD;
 				break;
 			}	
 			/* Стадия игры
 			*/
 			case GAME:
 			{
-				//run_game(ip, port, session);
+				run_game(ip, port, session);
 				break;
 			}
 			/* Конец

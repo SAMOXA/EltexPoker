@@ -12,10 +12,12 @@
 #include "../graf/graf_api.h"
 #include <pthread.h>
 
+#define numCardsPlayer 2
+#define numCardsTable 5
 
 /* Потом сделать (port, session) не глобальными 
 */ 
-int fd, cur_status, port, session;
+int cur_status, port, session, graf; 
 char user_name[MAX_NAME_LENGTH];
 
 enum status {
@@ -30,9 +32,8 @@ struct msg {
 	int len;
 };
 
-/*void create_msg(int type, int len, void *data, unsigned char *buf);
-int logicEventLogin(char *login, char *pass, int registerFlag);
-int logicHandlerBegin(int type);*/
+void gameExit();
+
 void run(char *ip, char *namePort);
 void run_game(char *ip, int port, int session);
 
