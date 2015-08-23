@@ -1,11 +1,4 @@
 #include "net_header.h"
-/*
-static struct network_msg_hdr_t {
-	int payload_type;
-	int payload_len;
-
-};
-*/
 
 static int fd = 0;
 
