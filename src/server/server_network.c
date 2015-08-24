@@ -306,13 +306,16 @@ void game_server_loop()
 				if(max_fd < fd_table[i][1])
 					max_fd = fd_table[i][1];
 			}
+		//}
+		/* Добавление ФД клиентов */
+		if(connections_count > 0){
 			for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){
 				if(active_connection_socket[i] != 0)
 					FD_SET(active_connection_socket[i], &fd_read_set);
 				if(max_fd < active_connection_socket[i])
 					max_fd = active_connection_socket[i];
 			}
-		//}
+		}
 
 		select_interval.tv_sec = 0;
 		select_interval.tv_usec = 100000UL;
@@ -429,6 +432,30 @@ void game_server_loop()
 					}
 					else
 						gameEvents(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
+				}
+			}
+		}
+		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
+			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
+				memset(buf, 0, MSG_BUF_LEN);
+				bytes_recv = 0;
+				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
+
+				if(bytes_recv < 0){
+					perror("[game_server_network] read()");
+					current_fd = active_connection_socket[i];
+					close_current_client_connection();
+				}
+				else if(bytes_recv == 0){
+					printf("[game_server_network] read() returned 0, closing connection\n");
+					current_fd = active_connection_socket[i];
+					close_current_client_connection();
+				}
+				else{
+					current_fd = active_connection_socket[i];
+					/* получить сообщение в соответствии с его длиной */
+					net_header = (struct network_msg_hdr_t *) buf;
+					events(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
