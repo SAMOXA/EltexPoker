@@ -20,6 +20,7 @@ enum statusTable {EMPTY, SLEEP, FULL, PLAY}; /*Состояние для сто�
 
 /*Информация о игроках*/
 struct dataPlayers {
+	int id;
 	char name[MAX_NAME_LENGTH];
 	char pswd[MAX_PASS_LENGTH];
 };

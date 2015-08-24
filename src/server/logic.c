@@ -12,6 +12,7 @@ struct dataPlayers data[SIZE_DATA]; /*Информация по игрокам*/
 struct infoOfTable inofList[MAX_TABLES_COUNT]; /*Информация по столам*/
 struct listNameId IdName[MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE]; /*Таблица хранит Name - ID*/
 struct gamePort gPorts; /*Ифформация по портам*/
+int freeId;
 
 /*Чтение из файла*/
 int readFile() {
@@ -23,7 +24,8 @@ int readFile() {
 		}
 		return -1;
 	}
-	while (fscanf(fp, "%s%s", (data[countAllPlayers].name), (data[countAllPlayers].pswd)) != EOF) {
+	while (fscanf(fp, "%d%s%s", &(data[countAllPlayers].id), (data[countAllPlayers].name), (data[countAllPlayers].pswd)) != EOF) {
+		freeId = data[countAllPlayers].id + 1;
 		countAllPlayers++;
 	}
 	fclose(fp);
@@ -51,7 +53,9 @@ void saveFile()
 		perror("[logic]Error - open file in saveFile():");
 	}
 	for (i = 0; i <= countAllPlayers; i++) {
-		fprintf(fp, "%s %s\n", data[i].name, data[i].pswd);
+		if(data[i].id!=0){
+			fprintf(fp, "%d %s %s\n", data[i].id, data[i].name, data[i].pswd);
+		}
 	}
 	fclose(fp);
 }
@@ -79,6 +83,8 @@ void registration(void * buf)
 	if (checkName(loginReq->name) == -1) {
 		strncpy(data[countAllPlayers].name, loginReq->name, MAX_NAME_LENGTH);
 		strncpy(data[countAllPlayers].pswd, loginReq->pass, MAX_PASS_LENGTH);
+		data[countAllPlayers].id = freeId;
+		freeId++;
 		saveFile();
 		loginRes->status = STATUS_OK;
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
@@ -136,7 +142,8 @@ void login(void *buf)
 		return;
 	} else {
 		loginRes->status = STATUS_OK;
-		IdName[currentPlayer].id = ++playersID;
+		playersID++;
+		IdName[currentPlayer].id = playersID;
 		strncpy(IdName[currentPlayer].name, loginReq->name, MAX_NAME_LENGTH);
 		currentPlayer++;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
@@ -245,9 +252,10 @@ void createTable(void *buf)
 	/*Money*/
 	newPlayer.money = 1000;
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
-	room.tables[empt].id = tableID++;
+	tableID++;
+	room.tables[empt].id = tableID;
 
-	if (pipe(pipedes) < 0 ) {
+	if (socketpair(AF_UNIX, SOCK_STREAM, 0, pipedes) < 0 ) {
 		perror("pipe");
 	}
 	responce.port = getNewPort();
@@ -270,6 +278,8 @@ void createTable(void *buf)
 		inofList[empt].port = responce.port;
 		responce.status = STATUS_OK;
 		responce.session = newSessison;
+		responce.id = id;
+		printf("Logic id after fork %d\n", id);
 		add_id_to_table(pipedes[1], tableID);
 
 		send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
@@ -339,11 +349,12 @@ void connectTable(void *buf)
 	newPlayer.session = newSessison;
 	newPlayer.money = 1000;
 	newPlayer.id = id;
-	printf("ID  - %d\n", newPlayer.id );
+
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
 	responce.status = STATUS_OK;
 	responce.session = newSessison;
 	responce.port = inofList[check].port;
+	responce.id = id;
 
 	send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 	send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), (void *) &responce);
@@ -371,6 +382,7 @@ void confirmedConnect(void *buf, int serverID)
 	inofList[num].countPlayer++;
 	(inofList[num].countPlayer == 4) ? (inofList[num].status = FULL) : (inofList[num].status = SLEEP);
 	strncpy(room.tables[num].players[inofList[num].countPlayer], IdName[IDforName].name, MAX_NAME_LENGTH);
+	printf("[logic] Player confirmed %d %s\n", *clID, IdName[IDforName].name);
 }
 
 /*Удаление игрока*/

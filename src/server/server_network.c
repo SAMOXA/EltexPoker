@@ -309,12 +309,12 @@ void game_server_loop()
 			for(i = 0; i < MAX_TABLE_LEN; i++){
 				if(fd_table[i][1] != 0)
 					FD_SET(fd_table[i][1], &fd_read_set);
+
 				if(max_fd < fd_table[i][1])
 					max_fd = fd_table[i][1];
 			}
 		}
-		
-				/* Добавление ФД клиентов */
+		/* Добавление ФД клиентов */
 		if(connections_count > 0){
 			for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){
 				if(active_connection_socket[i] != 0)
@@ -325,8 +325,8 @@ void game_server_loop()
 		}
 
 		select_interval.tv_sec = 0;
-		select_interval.tv_usec = 100000UL;
-
+		select_interval.tv_usec = 1000000UL;
+		
 		if(select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[game_server_network] Game server, select(): ");
 
@@ -419,6 +419,7 @@ void game_server_loop()
 				}
 			}
 		}
+
 		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
 			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
 				memset(buf, 0, MSG_BUF_LEN);
@@ -437,7 +438,7 @@ void game_server_loop()
 				}
 				else{
 					current_fd = active_connection_socket[i];
-					/* получить сообщение в соответствии с его длиной */
+
 					net_header = (struct network_msg_hdr_t *) buf;
 					gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 					active_connection_socket[i] = 0;	/* ? */
@@ -577,7 +578,6 @@ void send_message(int destination_type, int destination_id,
 			for(i = 0; i < MAX_TABLE_LEN; i++){
 				if(fd_table[i][0] != 0){
 					return_val = write(fd_table[i][1], buf, MSG_BUF_LEN);
-
 					if(return_val < 0){
 						printf("[game_server_network] Client with id %d:\n", fd_table[i][0]);
 						perror("[network] write()");

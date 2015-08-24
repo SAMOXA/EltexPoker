@@ -36,5 +36,17 @@
 *.swp
 *.swo
 
+# template ** is any subdir
+#autotools
+/autom4te.cache/
+/config.log
+/config.statusi
+src/**/.deps/
+src/**/.dirstamp
+src/**/config.log
+/**/Makefile
+**/stamp-*
+
 #automake bug
 *$(*
+
