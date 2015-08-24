@@ -205,3 +205,8 @@ void run_game(char *ip, int port, int session) {
     }
     gameHandlerListener();
 }
+
+    /* Отправка сессии серверу
+    */
+    net_send(&session, ACTION_CONNECT_REQUEST, sizeof(session));
+}

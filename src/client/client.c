@@ -16,8 +16,8 @@ void client(void)
 	socket_fd = net_create_connect_server(address, port);
 	if (socket_fd < 0) {
 		fprintf(stderr, "\033[0;31m-Error\033[0m: connect(main server)\n");
-		exit(1);	
-	} 
+		exit(1);
+	}
 
 	bzero(buffer, 256);
 	printf("--\033[0;32mConnecting\033[0m to server: %s:%d\n", address, port);
@@ -28,55 +28,15 @@ void client(void)
 	pthread_t th_recv, th_send;
 
 	if ((pthread_create(&th_recv, NULL, handler_recv, (void*)&socket_fd)) != 0) {
-		fprintf(stderr, "\033[0;31m-Error\033[0m: pthread_create(recv)\n");	
+		fprintf(stderr, "\033[0;31m-Error\033[0m: pthread_create(recv)\n");
 	}
 
 	if ((pthread_create(&th_send, NULL, handler_send, (void*)&socket_fd)) != 0) {
-		fprintf(stderr, "\033[0;31m-Error\033[0m: pthread_create(send)\n");	
+		fprintf(stderr, "\033[0;31m-Error\033[0m: pthread_create(send)\n");
 	}
 
 	pthread_join(th_send, NULL);
 	pthread_join(th_recv, NULL);
 
-/*
-    // send message
-    rw_bytes = net_send(socket_fd, buffer, 256);
-    if (rw_bytes < 0) {
-		fprintf(stderr,"\033[0;31merror\033[0m: write()\n");
-		exit(1);
-	}
-
-	// read response
-	bzero(buffer, 256);
-
-	char *ptr = NULL;
-
-	ptr = net_receive(socket_fd, 256);
-	if (!ptr) {
-		fprintf(stderr,"\033[0;31merror\033[0m: read()\n");
-		exit(1);	
-	}
-
-	printf("Ready game tables:\n");
-	printf("%s\nChoose: ", ptr);
-	char input[256];
-	scanf("%s", input);
-	strcpy(buffer, input);
-
-	net_disconnect_server(socket_fd);
-	
-	socket_fd = net_create_connect_server(address, port);
-	if (socket_fd < 0) {
-		fprintf(stderr, "\033[0;31m-Error\033[0m: connect(main server#2)\n");
-		exit(1);	
-	}
-
-	// send message
-    rw_bytes = net_send(socket_fd, buffer, 256);
-    if (rw_bytes < 0) {
-		fprintf(stderr,"\033[0;31merror\033[0m: write()\n");
-		exit(1);
-	}
-*/
 	net_disconnect_server(socket_fd);
 }

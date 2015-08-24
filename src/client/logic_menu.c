@@ -18,12 +18,6 @@ void logicExitMenu() {
 	exit(0);
 }
 
-/*void logicChangeStatus(int status) {
-	pthread_mutex_lock(&mut);
-	cur_status = status;
-	pthread_mutex_unlock(&mut);
-}*/
-
 void logicExitProg() {
 
 }
@@ -40,7 +34,7 @@ void logicHandlerTable(struct table_t *tables, struct graf_list_t *graf_list) {
 		graf_list->tables[i].players_count = 0;
 		if (tables[i].id != 0) {
 			for( j = 0; j < MAX_PLAYERS_PER_TABLE; j++) {
-				if (strlen(tables[i].players[j]) != 0) 
+				if (strlen(tables[i].players[j]) != 0)
 					++(graf_list->tables[i].players_count);
 
 			}
@@ -69,33 +63,24 @@ int logicRecv(void *buf, int type) {
 /* Запрос авторизации
 */
 void logicEventLogin() {
-	
+
 	struct loginRequest_t logReq;
 	int type;
 	char login[MAX_NAME_LENGTH], pass[MAX_PASS_LENGTH], flg;
-	
+
 	printf("Create new profile?(y/n)\n");
 	scanf("%1s", &flg);
 	if (flg == 'y') type = REGISTRATION;
-	else type = LOG_IN; 
+	else type = LOG_IN;
 	printf("Input login:\n");
 	scanf("%s", login);
-/*	if (fgets(login, MAX_NAME_LENGTH, stdin) == NULL) {
-		perror("fgets()");
-		logicExitMenu();
-	}*/
 	printf("Input pass:\n");
 	scanf("%s", pass);
-
-	/*if (fgets(pass, MAX_PASS_LENGTH, stdin) == NULL) {
-		perror("fgets()");
-		logicExitMenu();
-	}*/
 
 	strcpy(user_name, login);
 	strcpy(logReq.name, login);
 	strcpy(logReq.pass, pass);
-	
+
 	flg = net_send(&logReq, type, sizeof(struct loginRequest_t));
 	if (flg == -1) {
 		printf("Connection problem\n");
@@ -129,7 +114,7 @@ void logicEventTable(int id, int type) {
 	int err = 0;
 	struct selectRequest_t selReq;
 	strcpy(selReq.name, user_name);
-	
+
 
 	selReq.tableID = id;
 	err = net_send((void *)&selReq, type, sizeof(selReq));
@@ -150,7 +135,7 @@ void logicEventTable(int id, int type) {
 			grafDrawMsgList("Succesfull connection to table");
 		}
 		sleep(2);
-		
+
 		pthread_mutex_lock(&mut);
 		cur_status = GAME;
 		pthread_mutex_unlock(&mut);
@@ -170,7 +155,7 @@ void logicEventTable(int id, int type) {
 */
 void logicGetTableList() {
 	int err = 0;
-	err = net_send(NULL, LIST_TABLE, 0);	
+	err = net_send(NULL, LIST_TABLE, 0);
 	if (err == -1) {
 		printf("Connection problem\n");
 		logicExitMenu();
@@ -185,7 +170,7 @@ void logicGetTableList() {
 		grafDrawTableList(NULL);
 	}
 	memcpy(graf_list.tables, room->tables, sizeof(graf_list.tables));
-	logicHandlerTable(room->tables, &graf_list);			
+	logicHandlerTable(room->tables, &graf_list);
 	grafDrawTableList(&graf_list);
 }
 
@@ -216,7 +201,7 @@ void logicSelTable() {
 	grafInitList();
 	graf = 1;
 	logicGetTableList();
-	pthread_cond_wait(&cond, &mut);	
+	pthread_cond_wait(&cond, &mut);
 	pthread_mutex_unlock(&mut);
 }
 
@@ -248,18 +233,18 @@ void run(char *ip, char *namePort) {
 		switch(cur_status) {
 			/* Авторизация
 			*/
-			case LOGIN:		
+			case LOGIN:
 			{
 				logicEventLogin();
 				break;
-			}	
+			}
 			/* Выборка столов
 			*/
 			case SEL_TABLES:
 			{
-				logicSelTable(); 
+				logicSelTable();
 				break;
-			}	
+			}
 			/* Стадия игры
 			*/
 			case GAME:
@@ -269,7 +254,7 @@ void run(char *ip, char *namePort) {
 			}
 			/* Конец
 			*/
-			case DEAD: 
+			case DEAD:
 			{
 				logicExitMenu();
 				stop = 1;
