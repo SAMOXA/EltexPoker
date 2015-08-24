@@ -12,6 +12,7 @@ struct dataPlayers data[SIZE_DATA]; /*Информация по игрокам*/
 struct infoOfTable inofList[MAX_TABLES_COUNT]; /*Информация по столам*/
 struct listNameId IdName[MAX_TABLES_COUNT * MAX_PLAYERS_PER_TABLE]; /*Таблица хранит Name - ID*/
 struct gamePort gPorts; /*Ифформация по портам*/
+int freeId;
 
 /*Чтение из файла*/
 int readFile() {
@@ -23,7 +24,8 @@ int readFile() {
 		}
 		return -1;
 	}
-	while (fscanf(fp, "%s%s", (data[countAllPlayers].name), (data[countAllPlayers].pswd)) != EOF) {
+	while (fscanf(fp, "%d%s%s", &(data[countAllPlayers].id), (data[countAllPlayers].name), (data[countAllPlayers].pswd)) != EOF) {
+		freeId = data[countAllPlayers].id + 1;
 		countAllPlayers++;
 	}
 	fclose(fp);
@@ -51,7 +53,7 @@ void saveFile()
 		perror("[logic]Error - open file in saveFile():");
 	}
 	for (i = 0; i <= countAllPlayers; i++) {
-		fprintf(fp, "%s %s\n", data[i].name, data[i].pswd);
+		fprintf(fp, "%d %s %s\n", data[i].id, data[i].name, data[i].pswd);
 	}
 	fclose(fp);
 }
@@ -79,6 +81,8 @@ void registration(void * buf)
 	if (checkName(loginReq->name) == -1) {
 		strncpy(data[countAllPlayers].name, loginReq->name, MAX_NAME_LENGTH);
 		strncpy(data[countAllPlayers].pswd, loginReq->pass, MAX_PASS_LENGTH);
+		data[countAllPlayers].id = freeId;
+		freeId++;
 		saveFile();
 		loginRes->status = STATUS_OK;
 		send_message(CURRENT, 0, REGISTRATION, sizeof(struct loginResponce_t), (void *)loginRes);
@@ -136,7 +140,8 @@ void login(void *buf)
 		return;
 	} else {
 		loginRes->status = STATUS_OK;
-		IdName[currentPlayer].id = ++playersID;
+		playersID++;
+		IdName[currentPlayer].id = playersID;
 		strncpy(IdName[currentPlayer].name, loginReq->name, MAX_NAME_LENGTH);
 		currentPlayer++;
 		send_message(CURRENT, 0, LOG_IN, sizeof(struct loginResponce_t), (void *)loginRes);
@@ -202,7 +207,7 @@ int getIDtoName(char *name)
 {
 	int i;
 	for (i = 0; i <= currentPlayer; i++) {
-		if (strcmp(name, IdName[i].name)) {
+		if (!strcmp(name, IdName[i].name)) {
 			return IdName[i].id;
 		}
 	}
@@ -246,7 +251,7 @@ void createTable(void *buf)
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
 	room.tables[empt].id = tableID++;
 
-	if (pipe(pipedes) < 0 ) {
+	if (socketpair(AF_UNIX, SOCK_STREAM, 0, pipedes) < 0 ) {
 		perror("pipe");
 	}
 	responce.port = getNewPort();

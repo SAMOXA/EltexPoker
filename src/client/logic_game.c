@@ -5,8 +5,14 @@ void gameServer(){
     void *msg;
     int msgType;
     struct errorMsg_t *err;
+    int fails = 0;
 
-    retCode = initNetwork();
+    printf("Port %d session %d\n", port, session);
+    do{
+        retCode = initNetwork();
+        fails++;
+        sleep(1);
+    }while(retCode != 0 && fails < 5);
     sendMsg(ACTION_CONNECT_REQUEST, sizeof(int), &session);
     msg = recvMsg(&msgType);
     if(msgType == STATE_ERROR){
@@ -18,30 +24,32 @@ void gameServer(){
         printf("Error when create network thread\n");
         return;
     }
-    //startGameLoop();
+    printf("Sended\n");
+    networkLoop();
 }
 
 void gameHandler(int type, void *msg)
 {
+    printf("gameHandler\n");
     switch  (type)
     {
         case STATE_NEW_PLAYER:
-            // do something
+            printf("STATE_NEW_PLAYER\n");
             break;
         case STATE_PLAYER_STATE_CHANGED:
-            // do something
+            printf("STATE_PLAYER_STATE_CHANGED\n");
             break;
         case STATE_FULL_UPDATE:
-            // do something
+            printf("STATE_FULL_UPDATE\n");
             break;
         case STATE_ACTIVE_PLAYER_CHANGED:
-            // do smething
+            printf("STATE_ACTIVE_PLAYER_CHANGED\n");
             break;
         case STATE_NEW_CARD_TABLE:
-            // do smething
+            printf("STATE_NEW_CARD_TABLE\n");
             break;
         case STATE_NEW_CARD_PALAYER:
-            // do something
+            printf("STATE_NEW_CARD_PALAYER\n");
             break;
         default:
             break;

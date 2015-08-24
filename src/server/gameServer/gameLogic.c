@@ -61,6 +61,7 @@ static char playerIsActive(int id) {
 //TODO pending buffer
 static void addNewPlayer(struct newPlayer_t *newPlayer) {
 	int i;
+	printf("[gameLogic] addNewPlayer\n");
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		if(game.players[i].state == PLAYER_FREE){
 			break;
@@ -68,6 +69,7 @@ static void addNewPlayer(struct newPlayer_t *newPlayer) {
 	}
 	game.players[i].state = PLAYER_CONNECTING;
 	game.players[i].id = newPlayer->id;
+	printf("id %d\n", newPlayer->id);
 	game.players[i].money = newPlayer->money;
 	game.players[i].session = newPlayer->session;
 	memcpy(game.players[i].name, newPlayer->name, sizeof(char) * MAX_NAME_LENGTH);
@@ -251,7 +253,9 @@ static void updateState() {
 static char actionCall(int id){
 	int index = getPlayerIndex(id);
 	int betCount;
+	printf("[gameLogic] actionCall %d ", id);
 	if(checkActionPermission(id, PERM_CALL, 0)) {
+		printf("sucsess\n");
 		betCount = game.bet - game.players[index].bet;
 		game.players[index].money -= betCount;
 		game.players[index].bet = game.bet;
@@ -259,13 +263,16 @@ static char actionCall(int id){
 		updateState();
 		return 1;
 	}
+	printf("fail\n");
 	return 0;
 }
 
 static char actionRise(int id, int riseCount){
 	int index = getPlayerIndex(id);
 	int betCount;
+	printf("[gameLogic] actionRise %d %d ", id, riseCount);
 	if(checkActionPermission(id, PERM_RISE, &riseCount)){
+		printf("sucsess\n");
 		betCount = (game.bet - game.players[index].bet) + riseCount;
 		game.players[index].money -= betCount;
 		game.bank += betCount;
@@ -275,31 +282,40 @@ static char actionRise(int id, int riseCount){
 		updateState();
 		return 1;
 	}
+	printf("fail\n");
 	return 0;
 }
 
 static char actionFold(int id){
 	int index = getPlayerIndex(id);
+	printf("[gameLogic] actionFold %d ", id);
 	if(checkActionPermission(id, PERM_FOLD, 0)){
+		printf("sucsess\n");
 		game.players[index].state = PLAYER_PASS;
 		updateState();
 		return 1;
 	}
+	printf("fail\n");
 	return 0;
 }
 
 static char actionCheck(int id) {
 	int index = getPlayerIndex(id);
+	printf("[gameLogic] actionCheck %d ", id);
 	if(checkActionPermission(id, PERM_CHECK, 0)){
+		printf("sucsess\n");
 		updateState();
 		return 1;
 	}
+	printf("fail\n");
 	return 0;
 }
 
 static char actionAllIn(int id) {
 	int index = getPlayerIndex(id);
+	printf("[gameLogic] actionAllIn %d ", id);
 	if(checkActionPermission(id, PERM_ALL_IN, 0)){
+		printf("sucsess\n");
 		game.bank += game.players[index].money;
 		game.players[index].bet += game.players[index].money;
 		game.bet += game.players[index].money;
@@ -307,12 +323,14 @@ static char actionAllIn(int id) {
 		updateState();
 		return 1;
 	}
+	printf("fail\n");
 	return 0;
 }
 
 static char actionConnectRequest(unsigned int session) {
 	int i;
 	int id = -1;
+	printf("[gameLogic] actionConnectRequest %d ", session);
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		if(game.players[i].session == session &&
 				game.players[i].state == PLAYER_CONNECTING)
@@ -331,14 +349,18 @@ static char actionConnectRequest(unsigned int session) {
 			break;
 		}
 	}
-	if(id = -1){
+	if(id == -1){
 		lastError.type = ERROR_AUTH;
 		strcpy(lastError.msg, "Session invalid");
+		printf("fail\n");
+		return -1;
 	}
+	printf("sucsess\n");
 	return id;
 }
 
 static void removePlayer(int id){
+	printf("[gameLogic] Remove player %d\n", id);
 	int index = getPlayerIndex(id);
 	memset(&game.players[index], 0, sizeof(struct player_t));
 	game.players[index].state = PLAYER_FREE;
@@ -361,6 +383,7 @@ void initGameLogic() {
 
 void gameEvents(int sourceType, int id, int type, void *data){
 	char errorFlag = 0;
+	printf("[gameLogic] gameEvents\n");
 	if(sourceType == CLIENT){ //Клиент
 		switch(type) {
 			case(ACTION_EXIT):
@@ -400,8 +423,10 @@ void gameEvents(int sourceType, int id, int type, void *data){
 				break;
 			case(ACTION_CONNECT_REQUEST):
 				if(actionConnectRequest(*((unsigned int *)data)) == -1){
+					*((char *)data) = 0;
 					errorFlag = 1;
 				}
+				*((char *)data) = 1;
 				break;
 			default:
 				errorFlag = 1;

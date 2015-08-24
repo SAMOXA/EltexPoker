@@ -299,14 +299,20 @@ void game_server_loop()
 		max_fd = listen_socket > pipe_fd ? listen_socket : pipe_fd;
 
 		/* Добавление ФД игроков */
-		if(tables_count > 0){
+		//if(tables_count > 0){
 			for(i = 0; i < MAX_TABLE_LEN; i++){
 				if(fd_table[i][1] != 0)
 					FD_SET(fd_table[i][1], &fd_read_set);
 				if(max_fd < fd_table[i][1])
 					max_fd = fd_table[i][1];
 			}
-		}
+			for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){
+				if(active_connection_socket[i] != 0)
+					FD_SET(active_connection_socket[i], &fd_read_set);
+				if(max_fd < active_connection_socket[i])
+					max_fd = active_connection_socket[i];
+			}
+		//}
 
 		select_interval.tv_sec = 0;
 		select_interval.tv_usec = 100000UL;
@@ -362,6 +368,33 @@ void game_server_loop()
 				net_header = (struct network_msg_hdr_t *) buf;
 
 				gameEvents(LOBBY_SERVER, 0, net_header->payload_type, (void *) (buf + 8));
+			}
+		}
+
+		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
+			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
+				memset(buf, 0, MSG_BUF_LEN);
+				bytes_recv = 0;
+				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
+
+				if(bytes_recv < 0){
+                	perror("[game_server_network] read()");
+                	close(active_connection_socket[i]);
+                }
+                else if(bytes_recv == 0){
+                	printf("[game_server_network] read() returned 0, closing connection\n");
+                	close(active_connection_socket[i]);
+                }
+				else{
+					current_fd = active_connection_socket[i];
+					/* получить сообщение в соответствии с его длиной */
+
+					/* вызвать events(), передать параметры и сообщение */
+					net_header = (struct network_msg_hdr_t *) buf;
+					gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
+					active_connection_socket[i] = 0;
+					connections_count--;
+				}
 			}
 		}
 
@@ -529,7 +562,6 @@ void send_message(int destination_type, int destination_id,
 			for(i = 0; i < MAX_TABLE_LEN; i++){
 				if(fd_table[i][0] != 0){
 					return_val = write(fd_table[i][1], buf, MSG_BUF_LEN);
-
 					if(return_val < 0){
 						printf("[network] Client with id = %d:\n", fd_table[i][0]);
 						perror("[network] write()");
