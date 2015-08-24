@@ -13,6 +13,6 @@ id - у клиента 0, у сервера его id, в buf скрыта ст�
 void events(int dest_type, int id, int msg_type, void *buf);
 /*Инициализация внутренних струтур лобби сервера*/
 
-void init();
+void init(unsigned int port);
 
 #endif //EVENTS_H

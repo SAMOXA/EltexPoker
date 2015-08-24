@@ -340,12 +340,10 @@ static char actionConnectRequest(unsigned int session) {
 			add_id_to_table(0, id);
 			game.playersCount++;
 			//updateState();
-			send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
-					sizeof(int), &id);
 			send_message(ALL_CLIENTS, 0, STATE_NEW_PLAYER, sizeof(struct player_t),
 					&(game.players[i]));
-			send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
-					sizeof(struct gameState_t), &game);
+			send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
+					sizeof(int), &id);
 			break;
 		}
 	}
