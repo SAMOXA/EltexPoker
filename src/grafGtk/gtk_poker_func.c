@@ -1,28 +1,27 @@
 #include "gtk_header.h"
 
 struct playersGameTableBox *gameTable = NULL; 
+/*
 void (*graf_exit_event)(void) = funcExit;
 void (*graf_bet_event)(int sum) = funcBet;
 void (*graf_pass_event)(void) = funcPass;
-
+*/
 void funcExit() {
 	free(gameTable);
 	gtk_main_quit();
 }
 
+
 void funcBet() {
 	const char *entry_text;
-
+	int val = 0; 
+	
 	/* Извлечение текста из окна виджета */
 	entry_text = gtk_entry_get_text (GTK_ENTRY (gameTable->entryRaise));
-	printf("%s\n", entry_text);
-	
+	val = atoi(entry_text);
 	/* Затирание сообщения (после нажатие "enter") */
 	gtk_entry_set_text(GTK_ENTRY (gameTable->entryRaise), "");
-	
-	//graf_bet_event("");
-	
-	return;
+	graf_bet_event(val);
 }
 
 void funcPass() {
@@ -429,7 +428,7 @@ void grafDrawAll(struct  graf_table_t* p) {
 	}
 
 }
-
+/*
 int main() {
 	struct  graf_table_t p;
 	int i;
@@ -468,7 +467,7 @@ int main() {
 		p.players[i].cards[1].index_suit = 3;
 		/*if (i > 2)
 			p.bank.cards[i].index_suit = -1;
-		else */
+		else *//*
 		p.bank.cards[i].index_suit = 1;
 		p.bank.cards[i].val[0] = '0' + i + 5;
 		p.bank.cards[i].val[1] = '\0';
@@ -483,4 +482,4 @@ int main() {
 	
 	return 0;
 }
-
+*/

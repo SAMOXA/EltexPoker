@@ -32,7 +32,7 @@ struct graf_player_t{
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];
     unsigned int card_num;
     struct graf_card_t cards[2];
-//    unsigned int index_pos;//0 - пользователь
+//  unsigned int index_pos;//0 - пользователь
 };
 
 struct graf_bank_t{
