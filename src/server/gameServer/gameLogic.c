@@ -463,5 +463,12 @@ void gameEvents(int sourceType, int id, int type, void *data){
 				break;
 		}
 	}
-	printf("LOL\n");
+
+	/* Сообщение об разрыве соединения с клиентом */
+	/* gameEvents(NETWORK, disconnected_client_id, 0, NULL); */
+	if(sourceType == NETWORK){
+		/* Клиент с ID = disconnected_client_id отвалился */
+		printf("[game_logic] Client with id %d disconnected\n", id);
+	}
+
 }

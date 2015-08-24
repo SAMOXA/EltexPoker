@@ -2,7 +2,7 @@
 
 int countAllPlayers = 0; /*Кол-во всех игроков*/
 int countCurrentTables = 0; /*Текущее кол-во столов*/
-int playersID = 0; /*Последний id игрока*/
+int playersID = 1; /*Последний id игрока*/
 unsigned int tableID = 0;/*id таблицы*/
 int currentPlayer = 0; /*текущий игрок*/
 
@@ -246,6 +246,7 @@ void createTable(void *buf)
 	newSessison = getSession();
 	newPlayer.session = newSessison;
 	newPlayer.id = id;
+	printf("ID cre - %d\n", newPlayer.id);
 	/*Money*/
 	newPlayer.money = 1000;
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
