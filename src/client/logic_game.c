@@ -4,6 +4,9 @@
 struct gameState_t gameState;
 struct graf_table_t grafState;
 unsigned char myid;
+int cur_pos, flgturn;
+pthread_mutex_t mut;
+
 
 const char *player_state[] = {
     "FREE",
@@ -116,23 +119,30 @@ void convertBank(struct graf_bank_t *grafBank, struct gameState_t *gameState) {
 }
 
 
-void gameCheckMyTurn(struct gameState_t *gameState) {
+int gameCheckMyTurn(struct gameState_t *gameState) {
     if (gameState->activePlayerId == myid) {
-        char msg[GRAF_MAX_STATUS_TEXT_SIZE];
-        sprintf(msg, "Min bet: %d", gameState->bet);
-        grafShowInput("YOUR TURN", msg);
-        //запуск таймера
+
+        return 1;
     } else {
-        grafHideInput();
+        return 0;
     }
 }
 
 void gameFullUpdate(void *buf, struct gameState_t *gameState, struct graf_table_t* grafState) {
    int i;
+   char msg[GRAF_MAX_STATUS_TEXT_SIZE];
+
    memcpy(gameState, buf, sizeof(struct gameState_t));
    for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++) 
         convertPlayer(&(gameState->players[i]), &(grafState->players[i]));
-    gameCheckMyTurn(gameState);
+    if (gameCheckMyTurn(gameState)) {
+        sprintf(msg, "Min bet: %d", gameState->bet);
+        pthread_mutex_lock(&mut);
+        grafShowInput("YOUR TURN", msg);
+        pthread_mutex_unlock(&mut);
+    } else {
+        grafHideInput();
+    }
     convertBank(&(grafState->bank), gameState);
     grafDrawAll(grafState);
 }
@@ -140,6 +150,41 @@ void gameFullUpdate(void *buf, struct gameState_t *gameState, struct graf_table_
 void gameError(void *buf, struct gameState_t *gameState, struct graf_table_t* grafState) {
     struct errorMsg_t *errMsg = (struct errorMsg_t *) buf;
     grafShowInput("", errMsg->msg); 
+}
+
+int findMyPos(struct player_t *players) {
+    int i;
+    for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++) {
+        if (players[i].id == myid) 
+            return i;
+    }
+    return -1;
+}
+
+void gameEventBet(int sum) {
+    if (gameState.activePlayerId != myid) 
+        return;
+    int mypos = findMyPos(gameState.players);
+    if (mypos == -1) {
+        printf("Меня нету в списке (O_o)\n");
+        gameExit();
+    }        
+    unsigned int curMyMoney = gameState.players[mypos].money;
+    //Если не хватает денег, то ALL_IN
+    if (sum < gameState.bet && ) {
+        pthread_mutex_lock(&mut);
+        grafShowInput("", const char *default_text)
+        pthread_mutex_unlock(&mut);
+
+    }
+    if (mypos == -1) {
+        printf("Ошибка в определении позиции\n");
+        gameExit();
+    }
+    if (gameState.bet == sum && sum <= gameState.players[mypos].money) {
+        net_send(NULL, ACTION_CHECK, 0);
+    }
+    if (gameState)
 }
 
 
@@ -150,11 +195,15 @@ void gameHandlerListener() {
     unsigned char buf[1024];
     while(1) {
     	int ret_val, type, len;
+        printf("before RECV\n");
+        fflush(stdout);
         ret_val = net_receive(buf, &type, &len);
         if (ret_val == -1) {
             printf("\033[0;31merror\033[0m: read()\n");
             gameExit();
         }
+        printf("Recv: type = %d\n", type);
+        fflush(stdout);
         // do something
         switch  (type)
         {
@@ -165,7 +214,6 @@ void gameHandlerListener() {
                 // do something
                 break;
             case STATE_FULL_UPDATE:
-                
                 gameFullUpdate(buf, &gameState, &grafState);
                 break;
             case STATE_ACTIVE_PLAYER_CHANGED:
@@ -190,7 +238,11 @@ void gameHandlerListener() {
 
 void run_game(char *ip, int port, int session) {
     myid = 0;
+    cur_pos = -1;
+    pthread_mutex_init(&mut, NULL);
     int err = net_create_connect_server(ip, port);
+    printf("port = %d\n", port);
+    fflush(stdout);
     if (err < 0) {
         printf("Server unavaible\n");
         exit(1);
@@ -206,7 +258,4 @@ void run_game(char *ip, int port, int session) {
     gameHandlerListener();
 }
 
-    /* Отправка сессии серверу
-    */
-    net_send(&session, ACTION_CONNECT_REQUEST, sizeof(session));
-}
+

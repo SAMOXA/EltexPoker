@@ -242,6 +242,7 @@ void init_game_server_network(int game_server_port, int listen_server_fd)
 	pipe_fd = listen_server_fd;
 	current_fd = listen_server_fd;
 	connections_count = 0;
+	tables_count = 0;
 
 	listen_socket = socket (AF_INET, SOCK_STREAM, 0);
 	if(listen_socket < 0){
@@ -305,6 +306,16 @@ void game_server_loop()
 					FD_SET(fd_table[i][1], &fd_read_set);
 				if(max_fd < fd_table[i][1])
 					max_fd = fd_table[i][1];
+			}
+		}
+		
+				/* Добавление ФД клиентов */
+		if(connections_count > 0){
+			for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){
+				if(active_connection_socket[i] != 0)
+					FD_SET(active_connection_socket[i], &fd_read_set);
+				if(max_fd < active_connection_socket[i])
+					max_fd = active_connection_socket[i];
 			}
 		}
 
@@ -396,6 +407,30 @@ void game_server_loop()
 					}
 					else
 						gameEvents(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
+				}
+			}
+		}
+		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
+			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
+				memset(buf, 0, MSG_BUF_LEN);
+				bytes_recv = 0;
+				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
+
+				if(bytes_recv < 0){
+					perror("[game_server_network] read()");
+					current_fd = active_connection_socket[i];
+					close_current_client_connection();
+				}
+				else if(bytes_recv == 0){
+					printf("[game_server_network] read() returned 0, closing connection\n");
+					current_fd = active_connection_socket[i];
+					close_current_client_connection();
+				}
+				else{
+					current_fd = active_connection_socket[i];
+					/* получить сообщение в соответствии с его длиной */
+					net_header = (struct network_msg_hdr_t *) buf;
+					events(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -587,6 +622,7 @@ void add_id_to_table(int fd, int id)
 	else{
 		fd_table[i][0] = id;
 		fd_table[i][1] = fd == 0 ? current_fd : fd;
+		tables_count++;
 	}
 }
 
@@ -606,8 +642,8 @@ void del_id_from_table(int fd, int id)
 			printf("[network] del_id_from_table(): closing connection error:\n");
 			perror("close()");
 		}
-
 		fd_table[index][0] = 0;
 		fd_table[index][1] = 0;
+		tables_count--;
 	}
 }
