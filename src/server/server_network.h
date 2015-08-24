@@ -23,7 +23,7 @@
 
 
 #define MSG_BUF_LEN 1024
-#define MAX_ACTIVE_CONNECTIONS 5
+#define MAX_ACTIVE_CONNECTIONS 30
 #define MAX_TABLE_LEN 10
 
 /* Создание слушающего сокета */

@@ -80,7 +80,7 @@ void printState(){
         if(state.players[i].state == PLAYER_ACTIVE || 
             state.players[i].state == PLAYER_PASS){
             printf("%4d ", state.players[i].money);
-            printf("%4d ", state.players[i].bet);
+            printf("%5d ", state.players[i].bet);
         }
     }
     printf("\n");

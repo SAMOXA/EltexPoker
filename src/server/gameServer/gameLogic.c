@@ -186,6 +186,7 @@ static void startNewGame(){
 	game.players[game.bigBlindPlayerId].money -= game.bet;
 	game.bank += game.bet/2 + game.bet;
 
+	game.activePlayerId = getNextPlayer(game.bigBlindPlayerId);
 	game.state = GAME_PRE_FLOP_ROUND;
 }
 
@@ -234,6 +235,7 @@ static void updateState() {
 		if(game.playersCount > 1){
 			startNewGame();
 		}
+		return;
 	}
 	if(game.playersCount < 2){
 		game.state = GAME_START;
@@ -330,6 +332,8 @@ static char actionAllIn(int id) {
 static char actionConnectRequest(unsigned int session) {
 	int i;
 	int id = -1;
+	int oldPlayersCount = 0;
+
 	printf("[gameLogic] actionConnectRequest %d ", session);
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		if(game.players[i].session == session &&
@@ -338,12 +342,15 @@ static char actionConnectRequest(unsigned int session) {
 			game.players[i].state = PLAYER_PASS;
 			id = game.players[i].id;
 			add_id_to_table(0, id);
+			oldPlayersCount = game.playersCount;
 			game.playersCount++;
-			//updateState();
 			send_message(ALL_CLIENTS, 0, STATE_NEW_PLAYER, sizeof(struct player_t),
 					&(game.players[i]));
 			send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
 					sizeof(int), &id);
+			if(oldPlayersCount == 1){
+				startNewGame();
+			}
 			break;
 		}
 	}
@@ -371,6 +378,13 @@ static void removePlayer(int id){
 void initGameLogic() {
 	int i;
 	memset(&game, 0, sizeof(struct gameState_t));
+	for(i=0;i<5;i++){
+		game.cards[i] = FALSE_CARD;
+	}
+	for(i=0;i<MAX_PLAYERS_PER_TABLE;i++){
+		game.players[i].cards[0] = FALSE_CARD;
+		game.players[i].cards[1] = FALSE_CARD;
+	}
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		game.players[i].state = PLAYER_FREE;
 	}
