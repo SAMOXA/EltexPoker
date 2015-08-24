@@ -57,8 +57,8 @@ void grafDrawUserMsg(const char* msg);//вывод строки состояни
 //void grafSetBank(struct graf_bank_t*);
 void grafExit();
 
-void grafShowInput(const char* title,const char* default_text);
-void grafHideInput();
+void grafShowInput(struct graf_table_t*,const char* title,const char* default_text);
+void grafHideInput(struct graf_table_t*);
 
 extern void (*graf_exit_event)(void);
 extern void (*graf_bet_event)(int sum);

@@ -8,6 +8,7 @@
 #include <ncurses.h>
 #include <locale.h>
 #include <pthread.h>
+#include <time.h>
 
 #include "graf_api.h"
 
@@ -43,6 +44,7 @@ struct ncs_graf_card_t{
 
 struct ncs_graf_player_t{
     int enabled;
+    int last_enabled;
     int selected;
     char name[GRAF_MAX_NAME_SIZE];
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];

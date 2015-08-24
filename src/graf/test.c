@@ -49,10 +49,11 @@ int main(void){
 //    grafDrawAll(tbl);
 
 //    sleep(1);
+    grafShowInput(tbl,"Print your bet","100");
     for(indexA=0;indexA<10;indexA++){
 	sprintf(tbl->bank.timer_text,"00:0%1d",9-indexA);
         grafDrawAll(tbl);
-        grafShowInput("Print your bet","100");
+//        grafShowInput("Print your bet","100");
 
 	sleep(1);
     }
