@@ -56,12 +56,13 @@ int registerate(){
 int selectTable(){
 #else
 void selectTable() {
-	int playersCount;
+	int playersCount = 0;
 #endif
 	struct table_t *tables;
 	int msgType;
 	int i, j;
 	int id;
+	char str[10];
 
 	sendMsg(LIST_TABLE, 0, NULL);
 	tables = (struct table_t *)recvMsg(&msgType);
@@ -90,8 +91,7 @@ void selectTable() {
 	if(msgType == LIST_TABLE){
 		for(i=0;i<MAX_TABLES_COUNT;i++){
 			graf_list.tables[i].id = tables[i].id;
-			graf_list.tables[i].enabled = (tables[i].id == -1);
-			playersCount++;
+			graf_list.tables[i].enabled = (tables[i].id != 0);
 			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
 				if(tables[i].players[j][0] != 0){
 					playersCount++;
@@ -99,6 +99,8 @@ void selectTable() {
 			}
 			graf_list.tables[i].players_count = playersCount;
 		}
+		sprintf(str, "%d", playersCount);
+		grafDrawMsgList(str);
 	}
 	grafDrawTableList(&graf_list);
 	return;
