@@ -193,7 +193,7 @@ void gameHandler(int type, void *msg)
             case(4):
                 sendMsg(ACTION_ALL_IN, 0, NULL);
             break;
-            case(5):S
+            case(5):
                 sendMsg(ACTION_EXIT, 0, NULL);
             break;
             default:
