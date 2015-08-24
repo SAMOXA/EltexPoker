@@ -17,7 +17,12 @@ static char defined_ip[24] = {0};
 static int active_connection_socket[MAX_ACTIVE_CONNECTIONS] = {0};
 static int connections_count = 0;	/* количество активных соединений клиентов */
 static int tables_count = 0;	/* количество активных игровых столов */
-static int fd_table[MAX_TABLE_LEN][2] = {{0}};	/* Для хранения ИД и ФД игровых столов */
+/* 
+ * Для хранения ИД и ФД игровых столов.
+ * fd_table[x][0] - ID
+ * fd_table[x][1] - FD
+ */
+static int fd_table[MAX_TABLE_LEN][2] = {{0}};
 
 /*
  * При передаче управление в другой
@@ -383,12 +388,16 @@ void game_server_loop()
 				bytes_recv = read(fd_table[i][1], buf, MSG_BUF_LEN);
 
 				if(bytes_recv < 0){
+					printf("[game_server_network] Client with id %d:\n", fd_table[i][0]);
                 	perror("[game_server_network] read()");
+                	gameEvents(NETWORK, fd_table[i][0], 0, NULL);
                 	current_fd = fd_table[i][1];
                 	del_id_from_table(0, fd_table[i][0]);
                 }
                 else if(bytes_recv == 0){
+                	printf("[game_server_network] Client with id %d:\n", fd_table[i][0]);
                 	printf("[game_server_network] read() returned 0, closing connection\n");
+                	gameEvents(NETWORK, fd_table[i][0], 0, NULL);
                 	current_fd = fd_table[i][1];
                 	del_id_from_table(0, fd_table[i][0]);
                 }
@@ -528,16 +537,18 @@ void send_message(int destination_type, int destination_id,
 			return_val = write(fd_table[index][1], buf, MSG_BUF_LEN);
 
 			if(return_val < 0){
-				printf("[network] Client with id = %d:\n", fd_table[index][1]);
+				printf("[game_server_network] Client with id %d:\n", fd_table[index][0]);
 				perror("[network] write()");
 				printf("[network] Client with id = %d: connection closed\n", fd_table[index][1]);
+				gameEvents(NETWORK, fd_table[index][0], 0, NULL);
 				del_id_from_table(0, fd_table[index][0]);
 			}
 
 			if(return_val == 0){
-				printf("[network] Client with id = %d:\n", fd_table[index][1]);
+				printf("[game_server_network] Client with id %d:\n", fd_table[index][0]);
 				printf("[network] write() returned 0, closing connection\n");
 				printf("[network] Client with id = %d: connection closed\n", fd_table[index][1]);
+				gameEvents(NETWORK, fd_table[index][0], 0, NULL);
 				del_id_from_table(0, fd_table[index][0]);
 			}
 			break;
@@ -566,16 +577,18 @@ void send_message(int destination_type, int destination_id,
 					return_val = write(fd_table[i][1], buf, MSG_BUF_LEN);
 
 					if(return_val < 0){
-						printf("[network] Client with id = %d:\n", fd_table[i][0]);
+						printf("[game_server_network] Client with id %d:\n", fd_table[i][0]);
 						perror("[network] write()");
 						printf("[network] Client with id = %d: connection closed", fd_table[i][0]);
+						gameEvents(NETWORK, fd_table[i][0], 0, NULL);
 						del_id_from_table(0, fd_table[i][0]);
 					}
 
 					if(return_val == 0){
-						printf("[network] Client with id = %d:\n", fd_table[i][0]);
+						printf("[game_server_network] Client with id %d:\n", fd_table[i][0]);
 						printf("[network] write() returned 0, closing connection\n");
 						printf("[network] Client with id = %d: connection closed\n", fd_table[i][0]);
+						gameEvents(NETWORK, fd_table[i][0], 0, NULL);
 						del_id_from_table(0, fd_table[i][0]);
 					}
 				}

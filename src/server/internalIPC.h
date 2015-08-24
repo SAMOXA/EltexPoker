@@ -11,7 +11,8 @@ enum destinationType_e {
 /* For game server */
 	LOBBY_SERVER,
 	CLIENT,
-	ALL_CLIENTS
+	ALL_CLIENTS,
+	NETWORK
 };
 
 enum messagesType {
