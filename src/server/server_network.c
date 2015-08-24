@@ -644,6 +644,7 @@ void add_id_to_table(int fd, int id)
 		printf("[network] add_id_to_table(): table overflowed or cant find entry with id = %d\n", id);
 	}
 	else{
+		tables_count++;
 		fd_table[i][0] = id;
 		fd_table[i][1] = fd == 0 ? current_fd : fd;
 	}
@@ -665,7 +666,7 @@ void del_id_from_table(int fd, int id)
 			printf("[network] del_id_from_table(): closing connection error:\n");
 			perror("close()");
 		}
-
+		tables_count--;
 		fd_table[index][0] = 0;
 		fd_table[index][1] = 0;
 	}
