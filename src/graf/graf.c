@@ -16,6 +16,19 @@ void (*graf_exit_event)(void)=ncsTempExit;
 void (*graf_bet_event)(int sum)=ncsTempBet;
 void (*graf_pass_event)(void)=ncsTempPass;
 
+//---------------------КОСТЫЛЬ, но работает
+void mywclear(WINDOW *wnd)
+{
+    int index=0;
+
+    wmove(wnd,0,0);
+    for(index=0;index<getmaxx(wnd)*getmaxy(wnd);index++){
+	wprintw(wnd," ");
+    }
+}
+
+#define wclear mywclear//активация костыля
+
 //-------------------------------------API connect block
 void ncsGrafDelPlayer(struct ncs_graf_player_t **player)
 {
@@ -256,26 +269,27 @@ void ncsGrafInitTable(	struct ncs_graf_table_t* tbl,\
 
     for(index=0;index<api_bank->card_num;index++){
 	int color=0;
-	char suit[3]="";
+	char suit[4]="";
 	char val[3]="";
 	switch(api_bank->cards[index].index_suit){
 	    case GRAF_INDEX_NONE:	color=NCS_GRAF_CARD_NONE_COLOR; 
 					break;
-	    case GRAF_INDEX_SPADES:	strncpy(suit,NCS_GRAF_SPADES,3);
+	    case GRAF_INDEX_SPADES:	strncpy(suit,NCS_GRAF_SPADES,4);
 					color=COLOR_BLACK;
 					break;
-	    case GRAF_INDEX_CLUBS:	strncpy(suit,NCS_GRAF_CLUBS,3);
+	    case GRAF_INDEX_CLUBS:	strncpy(suit,NCS_GRAF_CLUBS,4);
 					color=COLOR_BLACK;
 					break;
-	    case GRAF_INDEX_HEARTS:	strncpy(suit,NCS_GRAF_HEARTS,3);
+	    case GRAF_INDEX_HEARTS:	strncpy(suit,NCS_GRAF_HEARTS,4);
 					color=COLOR_RED;
 					break;
-	    case GRAF_INDEX_DIAMONDS:	strncpy(suit,NCS_GRAF_DIAMONDS,3);
+	    case GRAF_INDEX_DIAMONDS:	strncpy(suit,NCS_GRAF_DIAMONDS,4);
 					color=COLOR_RED;
 					break;
 	}
-	strncpy(val,api_bank->cards[index].val,3);
+	strncpy(val,api_bank->cards[index].val,4);
 	val[2]='\0';
+	suit[3]='\0';
 	ncsGrafSetBankCard(&(tbl->bank),index,color,val,suit,api_bank->cards[index].selected);
     }
 
@@ -451,13 +465,13 @@ void ncsGrafSetCard(	const struct ncs_graf_player_t* player,\
 {
 //тут проверка на правильность ввода данных
 
-    strncpy(player->cards[index].name,val,19);
+    strncpy(player->cards[index].name,val,3);//19
 
     player->cards[index].name[19]='\0';
     strncat(player->cards[index].name,\
 	    suit,\
-	    19-strlen(player->cards[index].name));
-    player->cards[index].name[19]='\0';
+	    4);//19-strlen(player->cards[index].name));
+//    player->cards[index].name[4]='\0';//19
     player->cards[index].color=color;
     player->cards[index].selected=selected;
 
@@ -473,13 +487,20 @@ void ncsGrafSetBankCard(const struct ncs_graf_bank_t* bank,\
 {
 //тут проверка на правильность ввода данных
 
-    strncpy(bank->cards[index].name,val,19);
+    strncpy(bank->cards[index].name,val,3);//19
 
     bank->cards[index].name[19]='\0';
     strncat(bank->cards[index].name,\
 	    suit,\
-	    19-strlen(bank->cards[index].name));
-    bank->cards[index].name[19]='\0';
+	    4);//19-strlen(bank->cards[index].name));
+/*    if(suit!=NULL){
+	char test[256];
+	strcpy(test,suit);
+	test[strlen(suit)-1]='\0';
+	printf("%s\n",test);
+    }
+    getchar();*/
+//    bank->cards[index].name[strlen(val)+strlen(suit)]='\0';//19
     bank->cards[index].color=color;
     bank->cards[index].selected=selected;
 
