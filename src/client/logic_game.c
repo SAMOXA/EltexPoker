@@ -175,32 +175,25 @@ void gameHandler(int type, void *msg)
         printf("0 - fold 1 - check 2 -rise 3 - call 4 - all 5 -exit\n");
         printf("> ");
         scanf("%d", &command);
-        printf("%d\n", command);
         switch(command){
             case(0):
-                printf("ACTION_FOLD\n");
                 sendMsg(ACTION_FOLD, 0, NULL);
             break;
             case(1):
-                printf("ACTION_CHECK\n");
                 sendMsg(ACTION_CHECK, 0, NULL);
             break;
             case(2):
                 printf("Count - ");
                 scanf("%d", &count);
-                printf("ACTION_RISE\n");
                 sendMsg(ACTION_RISE, sizeof(int), &count);
             break;
             case(3):
-                printf("ACTION_CALL\n");
                 sendMsg(ACTION_CALL, 0, NULL);
             break;
             case(4):
-                printf("ACTION_ALL_IN\n");
                 sendMsg(ACTION_ALL_IN, 0, NULL);
             break;
             case(5):
-                printf("ACTION_EXIT\n");
                 sendMsg(ACTION_EXIT, 0, NULL);
             break;
             default:
