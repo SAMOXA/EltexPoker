@@ -1,5 +1,6 @@
 #include <unistd.h>
-#include "graf.h"
+#include <string.h>
+#include <malloc.h>
 #include "graf_api.h"
 
 int main(void){
@@ -15,8 +16,7 @@ int main(void){
 	strcpy(tbl->players[indexA].name,"name");
 	strcpy(tbl->players[indexA].money_text,"Money: 100");
 	strcpy(tbl->players[indexA].status_text,"Status: pass");
-	tbl->players[indexA].card_num=2;
-	tbl->players[indexA].cards=(struct graf_card_t*)malloc(sizeof(struct graf_card_t)*2);
+	tbl->players[indexA].enabled=1;
 	for(indexB=0;indexB<2;indexB++){
 	    tbl->players[indexA].cards[indexB].selected=0;
 	    strcpy(tbl->players[indexA].cards[indexB].val,"K");
@@ -32,8 +32,6 @@ int main(void){
     printf("Money\n");
     strcpy(tbl->bank.timer_text,"Timer: 00:00");
     printf("Timer\n");
-    tbl->bank.card_num=3;
-    tbl->bank.cards=(struct graf_card_t*)malloc(sizeof(struct graf_card_t)*3);
     for(indexB=0;indexB<3;indexB++){
 	tbl->bank.cards[indexB].selected=0;
 	strcpy(tbl->bank.cards[indexB].val,"K");
