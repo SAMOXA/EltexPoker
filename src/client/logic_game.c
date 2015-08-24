@@ -17,29 +17,6 @@ const char *player_state[] = {
 };
 
 
-// (O_O)
-void mallocCards(struct graf_table_t *grafTab) {
-    int i;
-    for (i = 0; i < GRAF_MAX_PLAYERS; i++) {
-        grafTab->players[i].card_num = numCardsPlayer;
-        grafTab->players[i].cards = (struct graf_card_t *) 
-            malloc(sizeof(struct graf_card_t) * numCardsPlayer);
-    }
-    grafTab->bank.card_num = numCardsTable;
-    grafTab->bank.cards = (struct graf_card_t *) 
-            malloc(sizeof(struct graf_card_t) * numCardsTable);
-}
-
-void freeCards(struct graf_table_t *grafTab) {
-    int i;
-    for (i = 0; i < GRAF_MAX_PLAYERS; i++) {
-        if (grafTab->players[i].cards != NULL)
-            free(grafTab->players[i].cards);
-    }
-    if (grafTab->bank.cards != NULL)
-        free(grafTab->bank.cards);
-}
-// (O_O)
 
 
 void gameExit() {
@@ -48,13 +25,12 @@ void gameExit() {
         grafExit();
         graf = 0;
     }
-    freeCards(&grafState);
     printf("EXIT\n");
     exit(0);
 }
 
 void convertValueCard(unsigned char card, char *s, int* lear) {
-    
+
     if (card == FALSE_CARD) {
         strcpy(s, "");
         *lear = GRAF_INDEX_NONE;
@@ -87,12 +63,12 @@ void convertValueCard(unsigned char card, char *s, int* lear) {
 
 void convertPlayerState(struct player_t *player, char *sstate) {
    sprintf(sstate, "%s - %d", player_state[player->state], player->bet);
-} 
+}
 
 
 
 void convertPlayer(struct player_t *player, struct graf_player_t* grafPlayer) {
-    int i; 
+    int i;
     grafPlayer->enabled = 1;
     grafPlayer->card_num = 2;
     // Определение id клиента
@@ -103,7 +79,7 @@ void convertPlayer(struct player_t *player, struct graf_player_t* grafPlayer) {
     sprintf(grafPlayer->money_text, "%d", player->money);
     convertPlayerState(player, grafPlayer->status_text);
     for (i = 0; i < 2; i++) {
-        convertValueCard(player->cards[i], grafPlayer->cards[i].val, 
+        convertValueCard(player->cards[i], grafPlayer->cards[i].val,
             &(grafPlayer->cards[i].index_suit));
     }
 }
@@ -112,7 +88,7 @@ void convertBank(struct graf_bank_t *grafBank, struct gameState_t *gameState) {
     int i;
     grafBank->card_num = numCardsTable;
     for (i = 0; i < numCardsTable; i++) {
-        convertValueCard(gameState->cards[i], grafBank->cards[i].val, 
+        convertValueCard(gameState->cards[i], grafBank->cards[i].val,
              &(grafBank->cards[i].index_suit));
     }
     sprintf(grafBank->money_text, "%d", gameState->bank);
@@ -133,7 +109,7 @@ void gameFullUpdate(void *buf, struct gameState_t *gameState, struct graf_table_
    char msg[GRAF_MAX_STATUS_TEXT_SIZE];
 
    memcpy(gameState, buf, sizeof(struct gameState_t));
-   for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++) 
+   for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++)
         convertPlayer(&(gameState->players[i]), &(grafState->players[i]));
     if (gameCheckMyTurn(gameState)) {
         sprintf(msg, "Min bet: %d", gameState->bet);
@@ -149,20 +125,20 @@ void gameFullUpdate(void *buf, struct gameState_t *gameState, struct graf_table_
 
 void gameError(void *buf, struct gameState_t *gameState, struct graf_table_t* grafState) {
     struct errorMsg_t *errMsg = (struct errorMsg_t *) buf;
-    grafShowInput("", errMsg->msg); 
+    grafShowInput("", errMsg->msg);
 }
 
 int findMyPos(struct player_t *players) {
     int i;
     for (i = 0; i < MAX_PLAYERS_PER_TABLE; i++) {
-        if (players[i].id == myid) 
+        if (players[i].id == myid)
             return i;
     }
     return -1;
 }
 
 void gameEventBet(int sum) {
-    if (gameState.activePlayerId != myid) 
+    if (gameState.activePlayerId != myid)
         return;
     int mypos = findMyPos(gameState.players);
     if (mypos == -1) {
@@ -209,7 +185,6 @@ void initGrafGameFunc() {
 
 void gameHandlerListener() {
 
-    mallocCards(&grafState);
     unsigned char buf[1024];
     while(1) {
     	int ret_val, type, len;
@@ -268,7 +243,7 @@ void run_game(char *ip, int port, int session) {
         exit(1);
     }
     graf = 1;
-    /* Отправка сессии серверу 
+    /* Отправка сессии серверу
     */
     err = net_send(&session, ACTION_CONNECT_REQUEST, sizeof(session));
     if (err < 0) {

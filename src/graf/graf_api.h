@@ -18,6 +18,9 @@
 #define GRAF_INDEX_CLUBS 2//червы
 #define GRAF_INDEX_SPADES 3//бубны
 
+#define CARD_COUNT_PER_PLAYER 2 // It hold'em, we also can omaha
+#define CARD_COUNT_FOR_BANK 5 // hold'em, not omaha
+
 struct graf_card_t{
     int selected;
     char val[2];
@@ -31,7 +34,7 @@ struct graf_player_t{
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];
     unsigned int card_num;
-    struct graf_card_t *cards;
+    struct graf_card_t cards[CARD_COUNT_PER_PLAYER];
 //    unsigned int index_pos;//0 - пользователь
 };
 
@@ -39,7 +42,7 @@ struct graf_bank_t{
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char timer_text[GRAF_MAX_TIMER_TEXT_SIZE];
     unsigned int card_num;
-    struct graf_card_t *cards;
+    struct graf_card_t cards[CARD_COUNT_PER_PLAYER];
 };
 
 struct graf_table_t{
