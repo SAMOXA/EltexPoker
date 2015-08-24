@@ -439,7 +439,9 @@ void game_server_loop()
 					current_fd = active_connection_socket[i];
 					/* получить сообщение в соответствии с его длиной */
 					net_header = (struct network_msg_hdr_t *) buf;
-					events(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
+					gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
+					active_connection_socket[i] = 0;	/* ? */
+					connections_count--;
 				}
 			}
 		}
