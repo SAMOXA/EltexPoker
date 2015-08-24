@@ -53,7 +53,9 @@ void saveFile()
 		perror("[logic]Error - open file in saveFile():");
 	}
 	for (i = 0; i <= countAllPlayers; i++) {
-		fprintf(fp, "%d %s %s\n", data[i].id, data[i].name, data[i].pswd);
+		if(data[i].id!=0){
+			fprintf(fp, "%d %s %s\n", data[i].id, data[i].name, data[i].pswd);
+		}
 	}
 	fclose(fp);
 }

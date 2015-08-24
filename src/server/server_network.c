@@ -307,8 +307,10 @@ void game_server_loop()
 		/* Добавление ФД игроков */
 		//if(tables_count > 0){
 			for(i = 0; i < MAX_TABLE_LEN; i++){
-				if(fd_table[i][1] != 0)
+				if(fd_table[i][1] != 0){
+					//printf("id %d fd %d\n", fd_table[i][0], fd_table[i][1]);
 					FD_SET(fd_table[i][1], &fd_read_set);
+				}
 				if(max_fd < fd_table[i][1])
 					max_fd = fd_table[i][1];
 			}
@@ -325,9 +327,10 @@ void game_server_loop()
 
 		select_interval.tv_sec = 0;
 		select_interval.tv_usec = 1000000UL;
-
+		//printf("Befire select\n");
 		if(select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[game_server_network] Game server, select(): ");
+		//printf("After select\n");
 		if(FD_ISSET(listen_socket, &fd_read_set)){	/* обработка нового подключения */
 			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr,(socklen_t *)  &new_client_addr_len);
 			if(new_client < 0){
@@ -407,13 +410,12 @@ void game_server_loop()
 					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
 					return_val = get_index_by_fd(fd_table[i][1]);
-
 					if(return_val < 0){
 						printf("[game_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][0]);
 						gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 					}
 					else
-						gameEvents(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
+						gameEvents(CLIENT, fd_table[return_val][0], net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -633,7 +635,6 @@ void add_id_to_table(int fd, int id)
 		printf("[network] add_id_to_table(): table overflowed or cant find entry with id = %d\n", id);
 	}
 	else{
-		tables_count++;
 		fd_table[i][0] = id;
 		fd_table[i][1] = fd == 0 ? current_fd : fd;
 		tables_count++;

@@ -4,6 +4,41 @@ struct player_t players[MAX_PLAYERS_PER_TABLE];
 struct gameState_t state;
 int myId;
 
+char *getPlayerName(int id){
+    int i;
+    for(i=0;i<MAX_PLAYERS_PER_TABLE;i++){
+        if(state.players[i].id == id){
+            return state.players[i].name;
+        }
+    }
+}
+
+void printGameState(){
+    switch(state.state) {
+        case(GAME_START):
+            printf("GAME_START ");
+        break;
+        case(GAME_PRE_FLOP_ROUND):
+            printf("GAME_PRE_FLOP_ROUND ");
+        break;
+        case(GAME_FLOP_ROUND):
+            printf("GAME_FLOP_ROUND ");
+        break;
+        case(GAME_TERN_ROUND):
+            printf("GAME_TERN_ROUND ");
+        break;
+        case(GAME_RIVER_ROUND):
+            printf("GAME_RIVER_ROUND" );
+        break;
+        case(GAME_FINAL):
+            printf("GAME_FINAL ");
+        break;
+        case(GAME_INSTANT_WIN):
+            printf("GAME_INSTANT_WIN ");
+        break;
+    }
+}
+
 void printCard(unsigned char card){
     char lear = GET_CARD_LEAR(card);
     char value = GET_CARD_VALUE(card);
@@ -58,12 +93,13 @@ void printState(){
     for(i=0;i<5;i++){
         printCard(state.cards[i]);
     }
-    printf("%d %d %d", state.bank, myId, state.activePlayerId);
+    printf("%d %d %d ", state.bank, myId, state.activePlayerId);
+    printGameState();
     printf("\n");
     for(i=0;i<MAX_PLAYERS_PER_TABLE;i++){
         if(state.players[i].state == PLAYER_ACTIVE || 
             state.players[i].state == PLAYER_PASS){
-            printf("%10s ", state.players[i].name);
+            printf("%8s(%d) ", state.players[i].name, state.players[i].id);
         }
     }
     printf("\n");
@@ -80,7 +116,7 @@ void printState(){
         if(state.players[i].state == PLAYER_ACTIVE || 
             state.players[i].state == PLAYER_PASS){
             printf("%4d ", state.players[i].money);
-            printf("%5d ", state.players[i].bet);
+            printf("%5d    ", state.players[i].bet);
         }
     }
     printf("\n");
@@ -90,6 +126,11 @@ void gameHandler(int type, void *msg)
 {
     struct player_t *player;
     struct gameState_t *newState;
+    int *id;
+    char command;
+    char str[100];
+    char count;
+    struct errorMsg_t *err;
     
     switch  (type)
     {
@@ -118,11 +159,53 @@ void gameHandler(int type, void *msg)
             printState();
             //printf("STATE_NEW_CARD_PALAYER\n");
             break;
+        case STATE_PLAYER_DISCONECTED:
+            id = (int *)msg;
+            //printf("Player disconnected %s\n", getPlayerName(*id));
+            printf("Player disconnected %d\n", *id);
+            break;
+        case STATE_ERROR:
+            err = (struct errorMsg_t *)msg;
+            printf("ERROR - %s\n", err->msg);
+            break;
         default:
             break;
     }
     if(state.activePlayerId == myId){
-        printf("TYPE\n");
+        printf("0 - fold 1 - check 2 -rise 3 - call 4 - all 5 -exit\n");
+        printf("> ");
+        scanf("%d", &command);
+        printf("%d\n", command);
+        switch(command){
+            case(0):
+                printf("ACTION_FOLD\n");
+                sendMsg(ACTION_FOLD, 0, NULL);
+            break;
+            case(1):
+                printf("ACTION_CHECK\n");
+                sendMsg(ACTION_CHECK, 0, NULL);
+            break;
+            case(2):
+                printf("Count - ");
+                scanf("%d", &count);
+                printf("ACTION_RISE\n");
+                sendMsg(ACTION_RISE, sizeof(int), &count);
+            break;
+            case(3):
+                printf("ACTION_CALL\n");
+                sendMsg(ACTION_CALL, 0, NULL);
+            break;
+            case(4):
+                printf("ACTION_ALL_IN\n");
+                sendMsg(ACTION_ALL_IN, 0, NULL);
+            break;
+            case(5):
+                printf("ACTION_EXIT\n");
+                sendMsg(ACTION_EXIT, 0, NULL);
+            break;
+            default:
+                printf("> ");
+        }
     }
 }
 
