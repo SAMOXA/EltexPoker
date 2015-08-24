@@ -69,7 +69,6 @@ static void addNewPlayer(struct newPlayer_t *newPlayer) {
 	}
 	game.players[i].state = PLAYER_CONNECTING;
 	game.players[i].id = newPlayer->id;
-	printf("id %d\n", newPlayer->id);
 	game.players[i].money = newPlayer->money;
 	game.players[i].session = newPlayer->session;
 	memcpy(game.players[i].name, newPlayer->name, sizeof(char) * MAX_NAME_LENGTH);
@@ -77,11 +76,11 @@ static void addNewPlayer(struct newPlayer_t *newPlayer) {
 
 
 static char getNextPlayer(int oldPlayerId) { //Call only after reset player states
-	int newIndex = oldPlayerId;
+	int newIndex = getPlayerIndex(oldPlayerId);
 	while(1){
 		newIndex = (newIndex + 1) % MAX_PLAYERS_PER_TABLE;
 		if(playerIsActive(game.players[newIndex].id)){
-			return newIndex;
+			return game.players[newIndex].id;
 		}
 	}
 }
@@ -91,12 +90,12 @@ static char checkActionPermission(int playerId, char actionType, void *data){
 	int riseCount = *((int *)data);
 	if(game.state == GAME_START || game.state == GAME_FINAL){
 		lastError.type = ERROR_PERMISSION;
-		strcpy(lastError.msg, "You can not do this now");
+		strcpy(lastError.msg, "You can not do this now (gameState)");
 		return 0;
 	}
 	if(game.activePlayerId != playerId){
 		lastError.type = ERROR_PERMISSION;
-		strcpy(lastError.msg, "You can not do this now");
+		strcpy(lastError.msg, "You can not do this now (Active player)");
 		return 0;
 	}
 	switch(actionType){
@@ -181,11 +180,13 @@ static void startNewGame(){
 	}
 	//Blinds
 	//TODO check money
-	game.players[game.smallBlindPlayerId].money -= game.bet/2;
-	game.players[game.smallBlindPlayerId].bet = game.bet/2;
-	game.players[game.bigBlindPlayerId].money -= game.bet;
+	game.players[getPlayerIndex(game.smallBlindPlayerId)].money -= game.bet/2;
+	game.players[getPlayerIndex(game.smallBlindPlayerId)].bet = game.bet/2;
+	game.players[getPlayerIndex(game.bigBlindPlayerId)].money -= game.bet;
+	game.players[getPlayerIndex(game.bigBlindPlayerId)].bet = game.bet;
 	game.bank += game.bet/2 + game.bet;
 
+	game.activePlayerId = getNextPlayer(game.bigBlindPlayerId);
 	game.state = GAME_PRE_FLOP_ROUND;
 }
 
@@ -219,6 +220,7 @@ static void updateTurn() {
 		game.lastRiseCount = 0;
 		game.lastRisePlayerId = game.smallBlindPlayerId;
 		game.activePlayerId = game.smallBlindPlayerId;
+		game.bet = 0;
 		for(i=0;i<MAX_PLAYERS_PER_TABLE;i++){
 			game.players[i].bet = 0;
 		}
@@ -234,6 +236,7 @@ static void updateState() {
 		if(game.playersCount > 1){
 			startNewGame();
 		}
+		return;
 	}
 	if(game.playersCount < 2){
 		game.state = GAME_START;
@@ -241,13 +244,13 @@ static void updateState() {
 				sizeof(struct gameState_t), &game);
 		return;
 	}
+	updateTradeTurn();
 	if(checkWin() || checkNextTurn()){
 		if(checkWin()){
 			game.state = GAME_INSTANT_WIN;//Instant win
 		}
 		updateTurn();
 	}
-	updateTradeTurn();
 }
 
 static char actionCall(int id){
@@ -330,6 +333,8 @@ static char actionAllIn(int id) {
 static char actionConnectRequest(unsigned int session) {
 	int i;
 	int id = -1;
+	int oldPlayersCount = 0;
+
 	printf("[gameLogic] actionConnectRequest %d ", session);
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		if(game.players[i].session == session &&
@@ -338,12 +343,15 @@ static char actionConnectRequest(unsigned int session) {
 			game.players[i].state = PLAYER_PASS;
 			id = game.players[i].id;
 			add_id_to_table(0, id);
+			oldPlayersCount = game.playersCount;
 			game.playersCount++;
-			//updateState();
 			send_message(ALL_CLIENTS, 0, STATE_NEW_PLAYER, sizeof(struct player_t),
 					&(game.players[i]));
 			send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_CONFIRMED,
 					sizeof(int), &id);
+			if(oldPlayersCount == 1){
+				startNewGame();
+			}
 			break;
 		}
 	}
@@ -371,6 +379,13 @@ static void removePlayer(int id){
 void initGameLogic() {
 	int i;
 	memset(&game, 0, sizeof(struct gameState_t));
+	for(i=0;i<5;i++){
+		game.cards[i] = FALSE_CARD;
+	}
+	for(i=0;i<MAX_PLAYERS_PER_TABLE;i++){
+		game.players[i].cards[0] = FALSE_CARD;
+		game.players[i].cards[1] = FALSE_CARD;
+	}
 	for(i=0; i<MAX_PLAYERS_PER_TABLE; i++){
 		game.players[i].state = PLAYER_FREE;
 	}
@@ -381,7 +396,6 @@ void initGameLogic() {
 
 void gameEvents(int sourceType, int id, int type, void *data){
 	char errorFlag = 0;
-	printf("[gameLogic] gameEvents\n");
 	if(sourceType == CLIENT){ //Клиент
 		switch(type) {
 			case(ACTION_EXIT):
@@ -449,10 +463,17 @@ void gameEvents(int sourceType, int id, int type, void *data){
 				break;
 		}
 	}
+
 	/* Сообщение об разрыве соединения с клиентом */
 	/* gameEvents(NETWORK, disconnected_client_id, 0, NULL); */
 	if(sourceType == NETWORK){
 		/* Клиент с ID = disconnected_client_id отвалился */
+		removePlayer(id);
+		send_message(LOBBY_SERVER, 0, INTERNAL_PLAYER_LEFT, sizeof(int), &id);
+		send_message(ALL_CLIENTS, 0, STATE_PLAYER_DISCONECTED,
+				sizeof(int), &id);
+		send_message(ALL_CLIENTS, 0, STATE_FULL_UPDATE,
+				sizeof(struct gameState_t), &game);
 		printf("[game_logic] Client with id %d disconnected\n", id);
 	}
 }

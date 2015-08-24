@@ -12,6 +12,7 @@
 #endif
 
 extern int session;
+extern int myId;
 
 int lobbyServer();
 void gameServer();

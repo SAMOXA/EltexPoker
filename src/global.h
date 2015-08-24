@@ -13,7 +13,7 @@
 
 #define FALSE_CARD 60
 
-#define HAVE_NCURSES //потом будет задоваться из configure
+//#define HAVE_NCURSES //потом будет задоваться из configure
 
 enum lears {
 	HEARTS,
@@ -76,6 +76,7 @@ struct selectResponce_t {
 	int status;
 	int port;
 	int session;
+	int id;
 	char error[MAX_ERROR_MSG_LEN];
 };
 

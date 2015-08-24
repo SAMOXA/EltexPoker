@@ -81,6 +81,9 @@ int testsCount = 3;
 void printCard(unsigned char card){
 	char lear = GET_CARD_LEAR(card);
 	char value = GET_CARD_VALUE(card);
+	if(card == FALSE_CARD){
+        printf("XX ");
+    }
 	switch(value){
 		case(TWO):
 		case(THREE):

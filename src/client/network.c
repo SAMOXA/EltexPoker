@@ -54,13 +54,14 @@ void *recvMsg(int *type) {
 }
 
 void *networkLoop(void *arg){
-    struct network_msg_hdr_t msg;
+    struct network_msg_hdr_t *msg;
     int readBytes = 0;
 
     while(1){
-        readBytes = read(fd, (char*)(&msg), sizeof(struct network_msg_hdr_t));
-        readBytes = read(fd, readBuf, msg.payload_len);
-        gameHandler(msg.payload_type, readBuf);
+        if(read(fd, readBuf, 1024) <= 0)
+            break;
+        msg = (struct network_msg_hdr_t *)readBuf;
+        gameHandler(msg->payload_type, readBuf + sizeof(struct network_msg_hdr_t));
     }
 }
 
