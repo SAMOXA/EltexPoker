@@ -108,7 +108,7 @@ void listen_server_loop(void)
 	int new_client = 0;
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
-	int return_val;
+	int index;
 
 	struct timeval select_interval;
 	struct network_msg_hdr_t *net_header;
@@ -214,14 +214,14 @@ void listen_server_loop(void)
 					/* вызвать events(), передать параметры и сообщение */
 					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
-					return_val = get_index_by_fd(fd_table[i][1]);
+					index = get_index_by_fd(fd_table[i][1]);
 
-					if(return_val < 0){
+					if(index < 0){
 						printf("[listen_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][0]);
 						events(GAME_SERVER, 0, net_header->payload_type, (void *) (buf + 8));
 					}
 					else
-						events(GAME_SERVER, return_val, net_header->payload_type, (void *) (buf + 8));
+						events(GAME_SERVER, fd_table[index][0], net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -283,7 +283,7 @@ void game_server_loop()
 	int new_client = 0;
 	char buf[MSG_BUF_LEN];
 	int bytes_recv = 0;
-	int return_val;
+	int index;
 
 	struct timeval select_interval;
 	struct network_msg_hdr_t *net_header;
@@ -408,14 +408,14 @@ void game_server_loop()
 					/* вызвать events(), передать параметры и сообщение */
 					net_header = (struct network_msg_hdr_t *) buf;
 					/* Получение индекса записи с ИД игрового сервера */
-					return_val = get_index_by_fd(fd_table[i][1]);
+					index = get_index_by_fd(fd_table[i][1]);
 
-					if(return_val < 0){
+					if(index < 0){
 						printf("[game_server_network] get_index_by_fd() returned -1, cant find entry with id = %d\n", fd_table[i][0]);
 						gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
 					}
 					else
-						gameEvents(CLIENT, return_val, net_header->payload_type, (void *) (buf + 8));
+						gameEvents(CLIENT, fd_table[index][0], net_header->payload_type, (void *) (buf + 8));
 				}
 			}
 		}
@@ -629,7 +629,7 @@ void close_current_client_connection(void)
  */
 void add_id_to_table(int fd, int id)
 {
-	int i = get_index_by_id(0);	/* поиск свободной ячейки*/
+	int i = get_index_by_id(0);	/* поиск свободной ячейки */
 
 	if(i < 0){	/* ошибка */
 		printf("[network] add_id_to_table(): table overflowed or cant find entry with id = %d\n", id);
