@@ -12,7 +12,7 @@
 #include "graf_api.h"
 
 #define NCS_GRAF_CARD_SIZE_Y 4
-#define NCS_GRAF_CARD_SIZE_X 4
+#define NCS_GRAF_CARD_SIZE_X 5
 
 #define NCS_GRAF_TABLE_SIZE_Y 24
 #define NCS_GRAF_TABLE_SIZE_X 80
