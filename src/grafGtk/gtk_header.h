@@ -17,30 +17,30 @@
 #define DISTANCE_BETWEEN_BANK_TOP_BOTTOM_PLAYERS 20
 
 struct playerBox {
-		GtkWidget *box;
-		GtkWidget *cardInfoBox;
-		GtkWidget *cardsBox;
-		GtkWidget *imgBox;
-		GtkWidget *leftCard;
-		GtkWidget *rightCard;
-		GtkWidget *infoBox;
-		GtkWidget *name;
-		GtkWidget *money;
-		GtkWidget *bet;
+	GtkWidget *box;
+	GtkWidget *cardInfoBox;
+	GtkWidget *cardsBox;
+	GtkWidget *imgBox;
+	GtkWidget *leftCard;
+	GtkWidget *rightCard;
+	GtkWidget *infoBox;
+	GtkWidget *name;
+	GtkWidget *money;
+	GtkWidget *bet;
 };
 
 struct playersGameTableBox {
-		GtkWidget *mainWindow;
-		GtkWidget *tableCard[5];
-		GtkWidget *labelInfo;
-		GtkWidget *gameTable;
-		GtkWidget *entryRaise;
-		struct playerBox players[MAX_PLAYERS];
+	GtkWidget *mainWindow;
+	GtkWidget *tableCard[5];
+	GtkWidget *labelInfo;
+	GtkWidget *gameTable;
+	GtkWidget *entryRaise;
+	struct playerBox players[MAX_PLAYERS];
 };
 
 void funcExit();
 
-void funcBet(int sum);
+void funcBet();
 
 void funcPass();
 
@@ -53,7 +53,7 @@ void initBoxPlayers (struct graf_player_t *p, struct playerBox *players);
 void createBoxPlayers(struct playerBox *players);
 
 void initBoxTable (struct graf_bank_t *p, 
-		struct playersGameTableBox *playersGameTable);
+	struct playersGameTableBox *playersGameTable);
 
 GtkWidget *initUserPlayer(struct playerBox *players);
 
