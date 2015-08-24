@@ -2,7 +2,7 @@
 
 int countAllPlayers = 0; /*Кол-во всех игроков*/
 int countCurrentTables = 0; /*Текущее кол-во столов*/
-int playersID = 0; /*Последний id игрока*/
+int playersID = 1; /*Последний id игрока*/
 unsigned int tableID = 0;/*id таблицы*/
 int currentPlayer = 0; /*текущий игрок*/
 
@@ -202,7 +202,7 @@ int getIDtoName(char *name)
 {
 	int i;
 	for (i = 0; i <= currentPlayer; i++) {
-		if (strcmp(name, IdName[i].name)) {
+		if (!strcmp(name, IdName[i].name)) {
 			return IdName[i].id;
 		}
 	}
@@ -241,6 +241,7 @@ void createTable(void *buf)
 	newSessison = getSession();
 	newPlayer.session = newSessison;
 	newPlayer.id = id;
+	printf("ID cre - %d\n", newPlayer.id);
 	/*Money*/
 	newPlayer.money = 1000;
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
@@ -337,7 +338,8 @@ void connectTable(void *buf)
 	int newSessison = getSession();
 	newPlayer.session = newSessison;
 	newPlayer.money = 1000;
-
+	newPlayer.id = id;
+	printf("ID  - %d\n", newPlayer.id );
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
 	responce.status = STATUS_OK;
 	responce.session = newSessison;
