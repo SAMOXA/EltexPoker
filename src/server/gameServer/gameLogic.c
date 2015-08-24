@@ -449,4 +449,5 @@ void gameEvents(int sourceType, int id, int type, void *data){
 				break;
 		}
 	}
+	printf("LOL\n");
 }

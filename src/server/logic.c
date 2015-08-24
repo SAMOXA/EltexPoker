@@ -249,7 +249,8 @@ void createTable(void *buf)
 	/*Money*/
 	newPlayer.money = 1000;
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
-	room.tables[empt].id = tableID++;
+	tableID++;
+	room.tables[empt].id = tableID;
 
 	if (socketpair(AF_UNIX, SOCK_STREAM, 0, pipedes) < 0 ) {
 		perror("pipe");
@@ -274,6 +275,8 @@ void createTable(void *buf)
 		inofList[empt].port = responce.port;
 		responce.status = STATUS_OK;
 		responce.session = newSessison;
+		responce.id = id;
+		printf("Logic id after fork %d\n", id);
 		add_id_to_table(pipedes[1], tableID);
 
 		send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
@@ -342,11 +345,13 @@ void connectTable(void *buf)
 	int newSessison = getSession();
 	newPlayer.session = newSessison;
 	newPlayer.money = 1000;
+	newPlayer.id = id;
 
 	strncpy(newPlayer.name, request->name, MAX_NAME_LENGTH);
 	responce.status = STATUS_OK;
 	responce.session = newSessison;
 	responce.port = inofList[check].port;
+	responce.id = id;
 
 	send_message(GAME_SERVER, tableID, INTERNAL_NEW_PLAYER, sizeof(struct newPlayer_t), (void *) &newPlayer);
 	send_message(CURRENT, 0, CONNECT_TO_TABLE, sizeof(struct selectResponce_t), (void *) &responce);
@@ -374,6 +379,7 @@ void confirmedConnect(void *buf, int serverID)
 	inofList[num].countPlayer++;
 	(inofList[num].countPlayer == 4) ? (inofList[num].status = FULL) : (inofList[num].status = SLEEP);
 	strncpy(room.tables[num].players[inofList[num].countPlayer], IdName[IDforName].name, MAX_NAME_LENGTH);
+	printf("[logic] Player confirmed %d %s\n", *clID, IdName[IDforName].name);
 }
 
 /*Удаление игрока*/

@@ -71,6 +71,9 @@ void selectTable() {
 	}
 	if(msgType == LIST_TABLE){
 		for(i=0;i<MAX_TABLES_COUNT;i++){
+			if(tables[i].id == 0){
+				continue;
+			}
 			printf("%d ", tables[i].id);
 			for(j=0;j<MAX_PLAYERS_PER_TABLE;j++){
 				printf("%s ", tables[i].players[j]);
@@ -118,10 +121,10 @@ void createTable() {
 	if(selectResp->status == STATUS_OK){
 		port = selectResp->port;
 		session = selectResp->session;
+		myId = selectResp->id;
 #ifndef HAVE_NCURSES
 		return 0;
 #else
-		grafDrawMsgList("unclock");
 		pthread_mutex_unlock(&lock);
 		return;
 #endif
@@ -143,6 +146,7 @@ void connectToTable(int id) {
 	struct selectRequest_t selectReq;
 	struct selectResponce_t *selectResp;
 	int msgType;
+	
 
 	strcpy(selectReq.name, user_name);
 	selectReq.tableID = id;
@@ -151,6 +155,8 @@ void connectToTable(int id) {
 	if(selectResp->status == STATUS_OK){
 		port = selectResp->port;
 		session = selectResp->session;
+		myId = selectResp->id;
+		printf("Recv id %d\n", myId);
 #ifndef HAVE_NCURSES
 		return 0;
 #else
@@ -202,6 +208,7 @@ int lobbyServer(){
 			if(retCode < 0){
 				continue;
 			}
+			break;
 		}
 		if(tableId == -2){
 			exit(0);

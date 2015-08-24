@@ -319,11 +319,10 @@ void game_server_loop()
 		}
 
 		select_interval.tv_sec = 0;
-		select_interval.tv_usec = 100000UL;
+		select_interval.tv_usec = 1000000UL;
 
 		if(select(max_fd + 1, &fd_read_set, NULL, NULL, &select_interval) < 0)
 			perror("[game_server_network] Game server, select(): ");
-
 		if(FD_ISSET(listen_socket, &fd_read_set)){	/* обработка нового подключения */
 			new_client = accept(listen_socket, (struct sockaddr *) &new_client_addr,(socklen_t *)  &new_client_addr_len);
 			if(new_client < 0){
@@ -375,33 +374,6 @@ void game_server_loop()
 			}
 		}
 
-		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
-			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
-				memset(buf, 0, MSG_BUF_LEN);
-				bytes_recv = 0;
-				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
-
-				if(bytes_recv < 0){
-                	perror("[game_server_network] read()");
-                	close(active_connection_socket[i]);
-                }
-                else if(bytes_recv == 0){
-                	printf("[game_server_network] read() returned 0, closing connection\n");
-                	close(active_connection_socket[i]);
-                }
-				else{
-					current_fd = active_connection_socket[i];
-					/* получить сообщение в соответствии с его длиной */
-
-					/* вызвать events(), передать параметры и сообщение */
-					net_header = (struct network_msg_hdr_t *) buf;
-					gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
-					active_connection_socket[i] = 0;
-					connections_count--;
-				}
-			}
-		}
-
 		for(i = 0; i < MAX_TABLE_LEN; i++){	/* Сообщения от клиентов */
 			if(FD_ISSET(fd_table[i][1], &fd_read_set)){
 				memset(buf, 0, MSG_BUF_LEN);
@@ -436,6 +408,7 @@ void game_server_loop()
 				}
 			}
 		}
+
 		for(i = 0; i < MAX_ACTIVE_CONNECTIONS; i++){	/* Сообщения от клиентов */
 			if(FD_ISSET(active_connection_socket[i], &fd_read_set)){
 				memset(buf, 0, MSG_BUF_LEN);
@@ -443,20 +416,22 @@ void game_server_loop()
 				bytes_recv = read(active_connection_socket[i], buf, MSG_BUF_LEN);
 
 				if(bytes_recv < 0){
-					perror("[game_server_network] read()");
-					current_fd = active_connection_socket[i];
-					close_current_client_connection();
-				}
-				else if(bytes_recv == 0){
-					printf("[game_server_network] read() returned 0, closing connection\n");
-					current_fd = active_connection_socket[i];
-					close_current_client_connection();
-				}
+                	perror("[game_server_network] read()");
+                	close(active_connection_socket[i]);
+                }
+                else if(bytes_recv == 0){
+                	printf("[game_server_network] read() returned 0, closing connection\n");
+                	close(active_connection_socket[i]);
+                }
 				else{
 					current_fd = active_connection_socket[i];
 					/* получить сообщение в соответствии с его длиной */
+
+					/* вызвать events(), передать параметры и сообщение */
 					net_header = (struct network_msg_hdr_t *) buf;
-					events(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
+					gameEvents(CLIENT, 0, net_header->payload_type, (void *) (buf + 8));
+					active_connection_socket[i] = 0;
+					connections_count--;
 				}
 			}
 		}

@@ -58,7 +58,8 @@ void *networkLoop(void *arg){
     int readBytes = 0;
 
     while(1){
-        read(fd, readBuf, 1024);
+        if(read(fd, readBuf, 1024) <= 0)
+            break;
         msg = (struct network_msg_hdr_t *)readBuf;
         gameHandler(msg->payload_type, readBuf + sizeof(struct network_msg_hdr_t));
     }
