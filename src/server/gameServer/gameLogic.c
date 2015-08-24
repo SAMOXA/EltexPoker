@@ -420,7 +420,6 @@ void gameEvents(int sourceType, int id, int type, void *data){
 				}
 				break;
 			case(ACTION_CONNECT_REQUEST):
-				printf("ACTION_CONNECT_REQUEST\n");
 				if(actionConnectRequest(*((unsigned int *)data)) == -1){
 					*((char *)data) = 0;
 					errorFlag = 1;
@@ -449,5 +448,11 @@ void gameEvents(int sourceType, int id, int type, void *data){
 				//ERROR
 				break;
 		}
+	}
+	/* Сообщение об разрыве соединения с клиентом */
+	/* gameEvents(NETWORK, disconnected_client_id, 0, NULL); */
+	if(sourceType == NETWORK){
+		/* Клиент с ID = disconnected_client_id отвалился */
+		printf("[game_logic] Client with id %d disconnected\n", id);
 	}
 }

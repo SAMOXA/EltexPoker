@@ -141,7 +141,7 @@ void gameFullUpdate(void *buf, struct gameState_t *gameState, struct graf_table_
         grafShowInput("YOUR TURN", msg);
         pthread_mutex_unlock(&mut);
     } else {
-        grafHideInput();
+        //grafHideInput();
     }
     convertBank(&(grafState->bank), gameState);
     grafDrawAll(grafState);
@@ -168,23 +168,41 @@ void gameEventBet(int sum) {
     if (mypos == -1) {
         printf("Меня нету в списке (O_o)\n");
         gameExit();
-    }        
+    }
     unsigned int curMyMoney = gameState.players[mypos].money;
-    //Если не хватает денег, то ALL_IN
-    if (sum < gameState.bet && ) {
-        pthread_mutex_lock(&mut);
-        grafShowInput("", const char *default_text)
-        pthread_mutex_unlock(&mut);
-
+    if (sum < gameState.bet) {
+        //Если не хватает денег, то ALL_IN
+        if (curMyMoney <= gameState.bet) {
+            net_send(NULL, ACTION_ALL_IN, 0);
+            return;
+        } else {
+            pthread_mutex_lock(&mut);
+            grafShowInput("Your bet is too low", "");
+            pthread_mutex_unlock(&mut);
+        }
     }
-    if (mypos == -1) {
-        printf("Ошибка в определении позиции\n");
-        gameExit();
-    }
-    if (gameState.bet == sum && sum <= gameState.players[mypos].money) {
+    // CHECK
+    if (gameState.bet == sum && sum <= curMyMoney) {
         net_send(NULL, ACTION_CHECK, 0);
+        return;
     }
-    if (gameState)
+    //BET 
+    else {
+        sum -= gameState.bet;
+        net_send(&sum, ACTION_RISE, sizeof(sum));
+        return;
+    }
+    printf("Что-то пошло не так с ф-ей: gameEventBet(int sum)\n");
+}
+
+void gameEventFold() {
+    net_send(NULL, ACTION_FOLD, 0);
+}
+
+void initGrafGameFunc() {
+    graf_exit_event = gameExit;
+    graf_bet_event = gameEventBet;
+    graf_pass_event = gameEventFold;
 }
 
 
@@ -239,7 +257,9 @@ void gameHandlerListener() {
 void run_game(char *ip, int port, int session) {
     myid = 0;
     cur_pos = -1;
+    initGrafGameFunc();
     pthread_mutex_init(&mut, NULL);
+
     int err = net_create_connect_server(ip, port);
     printf("port = %d\n", port);
     fflush(stdout);
