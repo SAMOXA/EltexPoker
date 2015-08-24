@@ -242,6 +242,7 @@ void init_game_server_network(int game_server_port, int listen_server_fd)
 	pipe_fd = listen_server_fd;
 	current_fd = listen_server_fd;
 	connections_count = 0;
+	tables_count = 0;
 
 	listen_socket = socket (AF_INET, SOCK_STREAM, 0);
 	if(listen_socket < 0){
@@ -621,6 +622,7 @@ void add_id_to_table(int fd, int id)
 	else{
 		fd_table[i][0] = id;
 		fd_table[i][1] = fd == 0 ? current_fd : fd;
+		tables_count++;
 	}
 }
 
@@ -640,8 +642,8 @@ void del_id_from_table(int fd, int id)
 			printf("[network] del_id_from_table(): closing connection error:\n");
 			perror("close()");
 		}
-
 		fd_table[index][0] = 0;
 		fd_table[index][1] = 0;
+		tables_count--;
 	}
 }
