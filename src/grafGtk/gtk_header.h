@@ -16,6 +16,8 @@
 #define DISTANCE_BETWEEN_CARDS_MAIN_BOX 20
 #define DISTANCE_BETWEEN_BANK_TOP_BOTTOM_PLAYERS 20
 
+int FLG_GAME = 0;
+
 struct playerBox {
 	GtkWidget *box;
 	GtkWidget *cardInfoBox;
@@ -59,12 +61,12 @@ GtkWidget *initUserPlayer(struct playerBox *players);
 
 GtkWidget *initEnemyPlayer(struct playerBox *players);
 
-GtkWidget *crateBoxTable(struct playersGameTableBox *p);
+GtkWidget *createBoxTable(struct playersGameTableBox *p);
 
 GtkWidget *createGameField(struct playersGameTableBox *playersGameTable);
 
 GtkWidget *createButtoms();
 
-void createMainGameWindow(struct playersGameTableBox *playersGameTable);
+void createMainGameWindow(struct playersGameTableBox *playersGameTable,  struct  graf_table_t* p);
 
 #endif

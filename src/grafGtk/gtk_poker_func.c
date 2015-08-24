@@ -6,17 +6,21 @@ void (*graf_bet_event)(int sum) = funcBet;
 void (*graf_pass_event)(void) = funcPass;
 
 void funcExit() {
+	free(gameTable);
 	gtk_main_quit();
 }
 
 void funcBet() {
 	const char *entry_text;
-	
+
 	/* Извлечение текста из окна виджета */
 	entry_text = gtk_entry_get_text (GTK_ENTRY (gameTable->entryRaise));
+	printf("%s\n", entry_text);
 	
 	/* Затирание сообщения (после нажатие "enter") */
 	gtk_entry_set_text(GTK_ENTRY (gameTable->entryRaise), "");
+	
+	//graf_bet_event("");
 	
 	return;
 }
@@ -59,8 +63,7 @@ void destroyWidget (struct playerBox *players) {
 void initBoxPlayers (struct graf_player_t *p, struct playerBox *players) {
 	GdkRGBA color = {5.0, 5.0, 5.0, 5.0};
 	destroyWidget (players);
-	int i; 
-	int j;
+	int i, j;
 	
 	char path[100];
 	char suitCard[2];
@@ -68,62 +71,60 @@ void initBoxPlayers (struct graf_player_t *p, struct playerBox *players) {
 	char format[] = ".png\0";
 	
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		if (p->enabled != 0) {
-			for (j = 0; j < 100; j++)
-				path[j] = '\0';
-			players[i].infoBox = gtk_box_new(TRUE, 10);	
+		if (p[i].enabled != 0) {
+			players[i].infoBox = gtk_box_new(TRUE, 10);
 			players[i].cardInfoBox = gtk_box_new(FALSE, 0);
 			players[i].cardsBox = gtk_box_new(FALSE, DISTANCE_BETWEEN_CARDS);
-			
+
 			players[i].name = gtk_label_new (p[i].name);
 			players[i].money = gtk_label_new (p[i].money_text);
 			players[i].bet = gtk_label_new (p[i].status_text);
-			
+
 			gtk_widget_override_color(players[i].name, 
 				GTK_STATE_NORMAL, &color);  
 			gtk_widget_override_color(players[i].money, 
 				GTK_STATE_NORMAL, &color);  
 			gtk_widget_override_color(players[i].bet, 
 				GTK_STATE_NORMAL, &color);  
-			
-			if (i != 0) {
-				gtk_box_pack_start(GTK_BOX(players[i].infoBox),
-					players[i].name, FALSE, FALSE, 10);
-			} else {
+
+			//if (i != 0) {
+			gtk_box_pack_start(GTK_BOX(players[i].infoBox),
+				players[i].name, FALSE, FALSE, 10);
+			/*} else {
 				gtk_box_pack_start(GTK_BOX(players[i].infoBox),
 					players[i].name, FALSE, FALSE, 30);
-			}
-			
+			}*/
+
 			players[i].leftCard = NULL;
 			players[i].rightCard = NULL;
 			
-			for (j = 0; j < 2; j++) {
-				if (p->cards->val[0] != '\0') {
-					suitCard[1] = '\0';
-					if ( p->cards[j].index_suit == GRAF_INDEX_SPADES) {
-						suitCard[0] = '\0' + GRAF_INDEX_SPADES;
-					}
-					if ( p->cards[j].index_suit == GRAF_INDEX_CLUBS) {
-						suitCard[0] = '\0' + GRAF_INDEX_CLUBS;
-					}
-					if ( p->cards[j].index_suit == GRAF_INDEX_HEARTS) {
-						suitCard[0] = '\0' + GRAF_INDEX_HEARTS;
-					}		
-					if ( p->cards[j].index_suit == GRAF_INDEX_DIAMONDS) {
-						suitCard[0] = '\0' + GRAF_INDEX_DIAMONDS;
-					}		
+			if (p->cards[i].index_suit != -1)
+				for (j = 0; j < 2; j++) {
+					bzero(path, sizeof(path));
+					if (p[i].cards->val[0] != '\0') {
+						suitCard[1] = '\0';
+						if ( p->cards[j].index_suit == GRAF_INDEX_SPADES) {
+							suitCard[0] = '0' + GRAF_INDEX_SPADES;
+						}
+						if ( p->cards[j].index_suit == GRAF_INDEX_CLUBS) {
+							suitCard[0] = '0' + GRAF_INDEX_CLUBS;
+						}
+						if ( p->cards[j].index_suit == GRAF_INDEX_HEARTS) {
+							suitCard[0] = '0' + GRAF_INDEX_HEARTS;
+						}
+						if ( p->cards[j].index_suit == GRAF_INDEX_DIAMONDS) {
+							suitCard[0] = '0' + GRAF_INDEX_DIAMONDS;
+						}
 
-					strncpy(path,  tmp_path, strlen(tmp_path));
-					strncat(path,  p->cards[j].val , strlen(p->cards[j].val));
-					strncat(path,  suitCard , strlen(suitCard));
-					strncat(path,  format, strlen(format));
-					
-					if (j == 0) players[i].leftCard = pngBox(path); 
-					if (j == 1) players[i].rightCard = pngBox(path);
+						strncpy(path,  tmp_path, strlen(tmp_path));
+						strncat(path,  p[i].cards[j].val , strlen(p->cards[j].val));
+						strncat(path,  suitCard , strlen(suitCard));
+						strncat(path,  format, strlen(format));
+						
+						if (j == 0) players[i].leftCard = pngBox(path); 
+						if (j == 1) players[i].rightCard = pngBox(path);
+					}
 				}
-			}
-			gtk_box_pack_start(GTK_BOX(players[i].infoBox),
-				players[i].name, FALSE, FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(players[i].infoBox),
 				players[i].money, FALSE, FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(players[i].infoBox),
@@ -136,7 +137,7 @@ void initBoxPlayers (struct graf_player_t *p, struct playerBox *players) {
 			}
 			
 			// Отображение хода текущего игрока 
-			if (p->selected == 1) {
+			if (p[i].selected == 1) {
 				if (gameTable->players[i].imgBox != NULL)
 					gtk_widget_destroy(gameTable->players[i].imgBox);
 				gameTable->players[i].imgBox = pngBox("gfx/playerActive.png");
@@ -170,11 +171,15 @@ void initBoxTable (struct graf_bank_t *p,
 	struct playersGameTableBox *playersGameTable) {
 	
 	gchar str[256] ;
+	char path[100];
+	char suitCard[2];
+	char tmp_path[] = "gfx/\0";
+	char format[] = ".png\0";
 	int i;
 	
 	strncpy(str, "Bank: \0", strlen( "Bank: \0"));
 	strncat(str,  p->money_text, strlen(p->money_text));
-	strncpy(str, "\n\0", strlen( "\n\0"));
+	strncat(str, "\n\0", strlen( "\n\0"));
 	strncat(str,   "Timer: \0", strlen("Status: \0"));
 	strncat(str,  p->timer_text, strlen(p->timer_text));
 
@@ -186,7 +191,34 @@ void initBoxTable (struct graf_bank_t *p,
 			// разбор карты
 		
 		gtk_widget_destroy(playersGameTable->tableCard[i]);
-		playersGameTable->tableCard[i] = pngBox("gfx/rubashka.png");
+		
+		if (p->cards[i].index_suit != -1) {
+			bzero(path, sizeof(path));
+				if (p->cards->val[0] != '\0') {
+					suitCard[1] = '\0';
+					if ( p->cards[i].index_suit == GRAF_INDEX_SPADES) {
+						suitCard[0] = '0' + GRAF_INDEX_SPADES;
+					}
+					if ( p->cards[i].index_suit == GRAF_INDEX_CLUBS) {
+						suitCard[0] = '0' + GRAF_INDEX_CLUBS;
+					}
+					if ( p->cards[i].index_suit == GRAF_INDEX_HEARTS) {
+							suitCard[0] = '0' + GRAF_INDEX_HEARTS;
+					}
+					if ( p->cards[i].index_suit == GRAF_INDEX_DIAMONDS) {
+							suitCard[0] = '0' + GRAF_INDEX_DIAMONDS;
+					}
+
+					strncpy(path,  tmp_path, strlen(tmp_path));
+					strncat(path,  p->cards[i].val , strlen(p->cards[i].val));
+					strncat(path,  suitCard , strlen(suitCard));
+					strncat(path,  format, strlen(format));
+					
+					playersGameTable->tableCard[i] = pngBox(path); 
+				}
+		} else {
+			playersGameTable->tableCard[i] = pngBox("gfx/flipside.png");
+		}
 		gtk_box_pack_start(GTK_BOX(playersGameTable->gameTable),
 			playersGameTable->tableCard[i], 
 			FALSE, FALSE, DISTANCE_BETWEEN_CARDS_BANK);
@@ -229,26 +261,26 @@ GtkWidget *initEnemyPlayer(struct playerBox *players) {
 	return box;
 }
 
-GtkWidget *crateBoxTable(struct playersGameTableBox *p) {
+GtkWidget *createBoxTable(struct playersGameTableBox *p) {
 	GtkWidget *box;
-	GtkWidget *labelInfo;
+
 	GdkRGBA color = {5.0, 5.0, 5.0, 5.0};
 	gchar str[] = "$$$ Bank $$$";
 	int i;
 	
 	box = gtk_box_new(FALSE, 0);
 	p->gameTable = gtk_box_new(FALSE, 0);
-	labelInfo = gtk_label_new(str);
+	p->labelInfo = gtk_label_new(str);
 	
 	/* Меняем цвет шрифта */ 
-	gtk_widget_override_color(labelInfo, GTK_STATE_NORMAL, &color);
+	gtk_widget_override_color(p->labelInfo, GTK_STATE_NORMAL, &color);
 	
 	for (i = 0; i < 5; i++) {
 		p->tableCard[i] = pngBox("gfx/flipside.png");
 		gtk_box_pack_end(GTK_BOX(p->gameTable), p->tableCard[i], 
 		FALSE, FALSE, DISTANCE_BETWEEN_CARDS_BANK);
 	}
-	gtk_box_pack_start(GTK_BOX(box), labelInfo, 
+	gtk_box_pack_start(GTK_BOX(box), p->labelInfo, 
 		FALSE, FALSE, 40);
 	gtk_box_pack_start(GTK_BOX(box), p->gameTable,
 		FALSE, FALSE, 0);
@@ -258,9 +290,9 @@ GtkWidget *crateBoxTable(struct playersGameTableBox *p) {
 
 GtkWidget *createButtoms() {
 	GtkWidget *box;
-	GtkWidget *buttomFold, *buttomRaise, *buttomCheck, *buttomAdopt;
-	GtkWidget *imgFold, *imgRaise, *imgCheck, *imgAdopt;
-	GtkWidget *reiseField;
+	GtkWidget *buttomFold, *buttomRaise, *buttomCheck;
+	GtkWidget *imgFold, *imgRaise, *imgCheck;
+	GtkWidget *raiseField;
 	
 	box = gtk_box_new(TRUE, 5);
 	gtk_widget_set_size_request (GTK_WIDGET(box), 100, 20);
@@ -268,12 +300,8 @@ GtkWidget *createButtoms() {
 	buttomCheck = gtk_button_new();
 	imgCheck = pngBox("gfx/check.png");
 	gtk_button_set_image(GTK_BUTTON(buttomCheck), imgCheck);
-	
-	buttomAdopt = gtk_button_new();
-	imgAdopt = pngBox("gfx/adopt.png");
-	gtk_button_set_image(GTK_BUTTON(buttomAdopt), imgAdopt);
-	
-	reiseField = gtk_box_new(FALSE, 5);
+
+	raiseField = gtk_box_new(FALSE, 5);
 	buttomRaise = gtk_button_new();
 	imgRaise = pngBox("gfx/raise.png");
 	gtk_button_set_image(GTK_BUTTON(buttomRaise), imgRaise);
@@ -281,29 +309,26 @@ GtkWidget *createButtoms() {
 	gameTable->entryRaise = gtk_entry_new();
 	gtk_entry_set_max_length (GTK_ENTRY(gameTable->entryRaise), 7);
 	
-	gtk_widget_set_size_request (GTK_WIDGET(reiseField), 100, 20);
+	gtk_widget_set_size_request (GTK_WIDGET(raiseField), 100, 20);
 	gtk_widget_set_size_request (GTK_WIDGET(gameTable->entryRaise), 40, 20);
 	
-	    g_signal_connect (G_OBJECT (gameTable->entryRaise), "activate",
+	g_signal_connect (G_OBJECT (gameTable->entryRaise), "activate",
 		G_CALLBACK (funcBet), NULL);
 	g_signal_connect (G_OBJECT (buttomRaise), "clicked",
 		G_CALLBACK (funcBet), NULL);
 		
 	g_signal_connect (G_OBJECT (buttomCheck), "clicked", 
 		G_CALLBACK (funcPass), NULL);
-		
-	g_signal_connect (G_OBJECT (buttomAdopt), "clicked",
-		 G_CALLBACK (funcPass),  NULL);
 
-	gtk_container_add(GTK_CONTAINER(reiseField), gameTable->entryRaise);
-	gtk_container_add(GTK_CONTAINER(reiseField), buttomRaise);
+	gtk_container_add(GTK_CONTAINER(raiseField), gameTable->entryRaise);
+	gtk_container_add(GTK_CONTAINER(raiseField), buttomRaise);
 	
 	buttomFold = gtk_button_new();
 	imgFold = pngBox("gfx/fold.png");
 	gtk_button_set_image(GTK_BUTTON(buttomFold), imgFold);
 	
-	gtk_box_pack_start(GTK_BOX(box), reiseField, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(box), buttomAdopt, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(box), raiseField, FALSE, FALSE, 0);
+	
 	gtk_box_pack_start(GTK_BOX(box), buttomCheck, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(box), buttomFold, FALSE, FALSE, 0);
 	
@@ -328,7 +353,7 @@ GtkWidget *createGameField(struct playersGameTableBox *playersGameTable) {
 	userPlayerBox = initUserPlayer(playersGameTable->players);
 	enemyPlayerBox = initEnemyPlayer(playersGameTable->players);	
 	
-	gameTableBox = crateBoxTable(playersGameTable);
+	gameTableBox = createBoxTable(playersGameTable);
 	buttomsBox = createButtoms(playersGameTable);	
 	
 	mainContainer = gtk_box_new(FALSE, 0);
@@ -362,7 +387,7 @@ GtkWidget *createGameField(struct playersGameTableBox *playersGameTable) {
 	return (mainBox);
 }
 
-void createMainGameWindow(struct playersGameTableBox *playersGameTable) {
+void createMainGameWindow(struct playersGameTableBox *playersGameTable, struct  graf_table_t* p) {
 	
 	GtkWidget *mainContainer;
 
@@ -379,6 +404,9 @@ void createMainGameWindow(struct playersGameTableBox *playersGameTable) {
 
 	gtk_widget_show_all(playersGameTable->mainWindow);
 	
+	initBoxPlayers (p->players, gameTable->players);
+	initBoxTable(&(p->bank), gameTable);
+	
 	/* когда пользователь закроет окно, то выйти из приложения */
 	g_signal_connect(G_OBJECT(playersGameTable->mainWindow), "destroy", G_CALLBACK(funcExit), NULL);
 	
@@ -388,16 +416,71 @@ void createMainGameWindow(struct playersGameTableBox *playersGameTable) {
 
 void grafDrawAll(struct  graf_table_t* p) {
 	//Разрушить ранее отображение
-	if (gameTable != NULL) 
-		gtk_widget_destroy(gameTable->mainWindow);
-		
-	createMainGameWindow(gameTable);		
-	initBoxPlayers (p->players, gameTable->players);
-	initBoxTable(&(p->bank), gameTable);
+
+	if (FLG_GAME == 0) {
+		FLG_GAME = 1;
+		if (gameTable != NULL) 
+			gtk_widget_destroy(gameTable->mainWindow);
+		else gameTable = (struct playersGameTableBox *) malloc(sizeof(struct playersGameTableBox));
+		createMainGameWindow(gameTable, p);
+	} else {
+		initBoxPlayers (p->players, gameTable->players);
+		initBoxTable(&(p->bank), gameTable);
+	}
+
 }
 
-/* 
-void grafDrawTimer(struct graf_table_t* p, const char *strTimer) {
-	initBoxTable(&(p->bank), gameTable);
-}*/
+int main() {
+	struct  graf_table_t p;
+	int i;
+	
+	char tname[10] = "TestUser";
+	char tmoney[10] = "5000$";
+	char status_text[10] = "20$";
+	
+	for (i = 0; i < 10; i++) {
+		tname[i] = '\0';
+		tmoney[i] = '\0';
+		status_text[i] = '\0';
+	}
+	strncpy(tname, "TestUser", strlen("TestUser"));
+	strncpy(tmoney, "5000$", strlen("5000$"));
+	strncpy(status_text, "20$", strlen("20$"));
+	
+	strncpy(p.bank.money_text, "5014$\0", strlen("5014$\0"));
+	strncpy(p.bank.timer_text, "14c\0", strlen("14c\0"));
+	p.bank.timer_text[3] = '\0';
+	p.bank.money_text[5]= '\0';
+	for (i = 0; i < 4; i++) {
+		p.players[i].enabled = 1;
+		p.players[i].selected = 0;
+
+		strcpy(p.players[i].name, tname);
+		strcpy(p.players[i].money_text, tmoney);
+		strcpy(p.players[i].status_text, status_text);
+		
+		p.players[i].cards[0].val[0] = '0' + i + 2;
+		p.players[i].cards[1].val[0] = '0' + i + 3;
+		p.players[i].cards[0].val[1] = '\0'; 
+		p.players[i].cards[1].val[1] = '\0';
+		
+		p.players[i].cards[0].index_suit = 0;
+		p.players[i].cards[1].index_suit = 3;
+		/*if (i > 2)
+			p.bank.cards[i].index_suit = -1;
+		else */
+		p.bank.cards[i].index_suit = 1;
+		p.bank.cards[i].val[0] = '0' + i + 5;
+		p.bank.cards[i].val[1] = '\0';
+	}
+	p.bank.cards[i].val[0] = '0' + i + 5;
+	p.bank.cards[i].val[1] = '\0';
+	p.bank.cards[i].index_suit = 1;
+	
+	p.players[2].selected = 1;	
+	
+	grafDrawAll(&p);
+	
+	return 0;
+}
 
