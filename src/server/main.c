@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 	init_listen_server_network(atoi(argv[2]), argv[1]);
-	init();
+	init(atoi(argv[2]));
 	listen_server_loop();
 	return 0;
 }

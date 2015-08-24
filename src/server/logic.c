@@ -56,11 +56,11 @@ void saveFile()
 	fclose(fp);
 }
 
-void init() {
+void init(unsigned int port) {
 	int i;
 	bzero(&inofList, sizeof(struct infoOfTable) * MAX_TABLES_COUNT);
 	bzero(&IdName, (sizeof(struct listNameId) * MAX_PLAYERS_PER_TABLE * MAX_TABLES_COUNT));
-	gPorts.listPort[0] = DEFAULT_LISTEN_SERVER_PORT + 1;
+	gPorts.listPort[0] = port + 1;
 	gPorts.statusListPort[0] = EMPTY;
 	for (i = 1; i < MAX_TABLES_COUNT; i++) {
 		gPorts.listPort[i] = ++gPorts.listPort[i - 1];
