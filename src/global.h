@@ -13,7 +13,7 @@
 
 #define FALSE_CARD 60
 
-#define HAVE_NCURSES //потом будет задоваться из configure
+//#define HAVE_NCURSES //потом будет задоваться из configure
 
 enum lears {
 	HEARTS,
