@@ -626,6 +626,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+GTK_LIBS
+GTK_CFLAGS
 EGREP
 GREP
 CPP
@@ -3997,7 +3999,6 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
-AC_LIBTOOL
 
 
 # Checks for libraries.
@@ -6060,10 +6061,15 @@ fi
 done
 
 
-#AC_CHECK_LIB ([lpthread], [pthread_create])
+# AC_CHECK_LIB ([gtk+-3.0], [])
 #AC_CHECK_LIB ([lncursesw], [clear])
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile src/grafGtk/Makefile"
+GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
+GTK_LIBS=`pkg-config --libs gtk+-3.0`
+
+
+
+ac_config_files="$ac_config_files Makefile src/Makefile src/grafGtk/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -6800,11 +6806,11 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "src/grafGtk/Makefile") CONFIG_FILES="$CONFIG_FILES src/grafGtk/Makefile" ;;
     "src/client/Makefile") CONFIG_FILES="$CONFIG_FILES src/client/Makefile" ;;
     "src/server/Makefile") CONFIG_FILES="$CONFIG_FILES src/server/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "tests/coreLogic/Makefile") CONFIG_FILES="$CONFIG_FILES tests/coreLogic/Makefile" ;;
-    "src/grafGtk/Makefile") CONFIG_FILES="$CONFIG_FILES src/grafGtk/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

@@ -41,16 +41,21 @@ AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([select])
 AC_CHECK_FUNCS([socket])
 
-#AC_CHECK_LIB ([lpthread], [pthread_create])
+# AC_CHECK_LIB ([gtk+-3.0], [])
 #AC_CHECK_LIB ([lncursesw], [clear])
+
+GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
+GTK_LIBS=`pkg-config --libs gtk+-3.0`
+AC_SUBST([GTK_CFLAGS])
+AC_SUBST([GTK_LIBS])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/grafGtk/Makefile
                  src/client/Makefile
                  src/server/Makefile
                  tests/Makefile
                  tests/coreLogic/Makefile
-                 src/grafGtk/Makefile
                  ])
 
 AC_OUTPUT
