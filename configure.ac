@@ -49,6 +49,8 @@ AC_CONFIG_FILES([Makefile
                  src/client/Makefile
                  src/server/Makefile
                  tests/Makefile
-                 tests/coreLogic/Makefile])
+                 tests/coreLogic/Makefile
+                 src/grafGtk/Makefile
+                 ])
 
 AC_OUTPUT
