@@ -12,6 +12,8 @@ static int selected_index=0;
 static int ncurses_enabled=0;
 static int need_to_init=1;
 
+static pthread_mutex_t graf_lock;
+
 void (*graf_exit_event)(void)=ncsTempExit;
 void (*graf_bet_event)(int sum)=ncsTempBet;
 void (*graf_pass_event)(void)=ncsTempPass;
@@ -143,6 +145,7 @@ void ncs_grafAutoInit(struct graf_table_t* tbl)
 
     ncsGrafImportTable(tbl,&main_tbl);
 
+
     pthread_create(&controls_thread,NULL,ncsControlsFunc,NULL);
 //    pthread_detach(thread);
 
@@ -161,11 +164,11 @@ void grafDrawAll(struct graf_table_t* tbl)
     }
     else{
 //	grafDrawUserMsg("Import\n");
+
 	ncsGrafImportTable(tbl,&main_tbl);
 	ncsStartGraf(main_tbl);
 //	grafDrawUserMsg("Import OK\n");
     }
-
 //    grafDrawUserMsg("Show\n");
     ncsShow(main_tbl);
 //    grafDrawUserMsg("Show OK\n");
@@ -219,8 +222,15 @@ void grafExit()
     ncsEndGraf();
 }
 
-void grafShowInput(const char *title,const char *default_text)
+void grafShowInput(struct graf_table_t *tbl,const char *title,const char *default_text)
 {
+    if(need_to_init){
+	need_to_init=0;
+//	grafDrawUserMsg("Init\n");
+	ncs_grafAutoInit(tbl);
+//	grafDrawUserMsg("Init OK\n");
+    }
+
     strcpy(main_tbl->input.title,title);
     strcpy(main_tbl->input.buffer,default_text);
     main_tbl->input.enabled=1;
@@ -229,9 +239,16 @@ void grafShowInput(const char *title,const char *default_text)
     refresh();
 }
 
-void grafHideInput()
+void grafHideInput(struct graf_table_t *tbl)
 {
     int index=0;
+
+    if(need_to_init){
+	need_to_init=0;
+//	grafDrawUserMsg("Init\n");
+	ncs_grafAutoInit(tbl);
+//	grafDrawUserMsg("Init OK\n");
+    }
 
     main_tbl->input.enabled=0;
     clear();
@@ -371,6 +388,7 @@ void ncsGrafInitPlayer(const struct ncs_graf_table_t* tbl,\
     }
 
     player->enabled=enabled;
+    player->last_enabled=0;
 
     if(!enabled){
 //	memset(&player,0,sizeof(struct ncs_graf_player_t));
@@ -463,8 +481,6 @@ void ncsGrafSetCard(	const struct ncs_graf_player_t* player,\
 			const char* suit,
 			int selected)
 {
-//тут проверка на правильность ввода данных
-
     strncpy(player->cards[index].name,val,3);//19
 
     player->cards[index].name[19]='\0';
@@ -485,8 +501,6 @@ void ncsGrafSetBankCard(const struct ncs_graf_bank_t* bank,\
 			const char* suit,
 			int selected)
 {
-//тут проверка на правильность ввода данных
-
     strncpy(bank->cards[index].name,val,3);//19
 
     bank->cards[index].name[19]='\0';
@@ -529,13 +543,13 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 
     struct ncs_graf_card_t* card=NULL;
 
-
     if(!ncurses_enabled){
 
         tcgetattr(0,&stored_settings);
 	setlocale(LC_ALL, "");
 
 	initscr();
+	pthread_mutex_init(&graf_lock,NULL);
 	start_color();
 
         cbreak();
@@ -546,13 +560,20 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
         ncsInitColorPairs();
 
 	ncurses_enabled=1;    
+	ncsSetWndColor(stdscr,COLOR_WHITE,COLOR_BLACK);
+        clear();
     }
 
-    CUR_TEXT_COLOR=COLOR_WHITE;
-    CUR_BACK_COLOR=COLOR_BLACK;
+
 
     ncsSetWndColor(stdscr,CUR_TEXT_COLOR,CUR_BACK_COLOR);
     for(index_player=0;index_player<GRAF_MAX_PLAYERS;index_player++){
+	CUR_TEXT_COLOR=COLOR_WHITE;
+	CUR_BACK_COLOR=COLOR_BLACK;	
+	if(	tbl->players[index_player]==NULL || \
+		tbl->players[index_player]->enabled==0){
+	    wclear(tbl->players[index_player]->wnd);
+	}
 	if(	tbl->players[index_player]!=NULL && \
 		tbl->players[index_player]->enabled){
 	    if(tbl->players[index_player]->wnd==NULL){
@@ -561,6 +582,8 @@ void ncsStartGraf(struct ncs_graf_table_t *tbl)
 					    tbl->players[index_player]->pos[0],\
 					    tbl->players[index_player]->pos[1]);
 	    }
+	    ncsSetWndColor(tbl->players[index_player]->wnd,COLOR_WHITE,COLOR_GREEN);
+	    wclear(tbl->players[index_player]->wnd);
 	    for(index_card=0;\
 		index_card<tbl->players[index_player]->card_num;\
 		index_card++){
@@ -761,6 +784,8 @@ void ncsShowBtn(const struct ncs_graf_button_t* btn)
 
 void ncsShow(const struct ncs_graf_table_t *tbl)
 {
+    pthread_mutex_lock(&graf_lock);
+    
     int index_player=0;
     int index_card=0;
 
@@ -771,16 +796,24 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 //    SetWndColor(stdscr,COLOR_WHITE,COLOR_GREEN);
 
 //    move(0,0);
-    clear();
+//    clear();
 
 //    refresh();
 
     for(index_player=0;index_player<GRAF_MAX_PLAYERS;index_player++){
 	if(tbl->players[index_player]!=NULL){
-	    ncsSetWndColor(tbl->players[index_player]->wnd,COLOR_WHITE,COLOR_GREEN);
-//	    wbkgdset(tbl->players[index]->wnd,COLOR_PAIR(COLOR_WHITE*8+COLOR_GREEN));
+	    if(	tbl->players[index_player]->enabled==1 && \
+		tbl->players[index_player]->last_enabled==0){
+		ncsSetWndColor(tbl->players[index_player]->wnd,COLOR_WHITE,COLOR_GREEN);
+		wclear(tbl->players[index_player]->wnd);
+	    }
+	    if(	tbl->players[index_player]->enabled==0 && \
+		tbl->players[index_player]->last_enabled==1){
+		ncsSetWndColor(tbl->players[index_player]->wnd,COLOR_WHITE,COLOR_BLACK);
+		wclear(tbl->players[index_player]->wnd);
+		break;
+	    }
 
-	    wclear(tbl->players[index_player]->wnd);
 	    ncsPrintInWnd(tbl->players[index_player]->wnd,\
 			tbl->players[index_player]->name_pos,\
 			tbl->players[index_player]->name);
@@ -838,7 +871,7 @@ void ncsShow(const struct ncs_graf_table_t *tbl)
 
     refresh();
 //    getch();
-
+    pthread_mutex_unlock(&graf_lock);
     return;
 }
 
@@ -863,6 +896,8 @@ void* ncsGrafFunc(void* data)
 
 void ncsChElem(int _step)
 {
+    pthread_mutex_trylock(&graf_lock);
+
     int ok=0;
     int step=1;
 
@@ -906,6 +941,7 @@ void ncsChElem(int _step)
 	wrefresh(main_tbl->pass_btn.wnd);
 	refresh();
     }
+    pthread_mutex_unlock(&graf_lock);
 }
 
 void* ncsControlsFunc(void* data)
@@ -934,7 +970,7 @@ void* ncsControlsFunc(void* data)
 	        ncsShowInput(main_tbl);
 	    }
 	}
-//	refresh();
+	refresh();
 	if(c==27){
 	    graf_exit_event();
 //	    return NULL;
@@ -974,13 +1010,11 @@ void* ncsControlsFunc(void* data)
 		len=strlen(main_tbl->input.buffer);
 		main_tbl->input.buffer[len]=c;
 		main_tbl->input.buffer[len+1]='\0';
-
 		ncsShowInput(main_tbl);
 	    }
 	}
 	refresh();
     }
-
     return NULL;
 }
 
@@ -992,7 +1026,8 @@ void ncsTempExit()
 
 void ncsTempBet(int sum)
 {
-    grafHideInput();
+//    grafHideInput();
+    return;
 }
 
 void ncsTempPass()

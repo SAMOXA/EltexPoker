@@ -5,20 +5,15 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <ncurses.h>
 #include <locale.h>
 #include <pthread.h>
 #include <time.h>
+#include <fcntl.h>
+#include <signal.h>
 
 #include "graf_api.h"
-
-#define NCS_GRAF_CARD_SIZE_Y 4
-#define NCS_GRAF_CARD_SIZE_X 5
-
-#define NCS_GRAF_TABLE_SIZE_Y 24
-#define NCS_GRAF_TABLE_SIZE_X 80
-
-#define NCS_GRAF_CARD_NONE_COLOR COLOR_BLUE
 
 #define NCS_GRAF_INPUT_TITLE_SIZE 128
 #define NCS_GRAF_INPUT_BUFFER_SIZE 128
@@ -36,6 +31,8 @@
 
 struct ncs_graf_card_t{
     int color;
+    int enabled;
+    int last_enabled;
     int selected;
     char name[20];
     unsigned int pos[2];
@@ -49,8 +46,7 @@ struct ncs_graf_player_t{
     char name[GRAF_MAX_NAME_SIZE];
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];
-    unsigned int card_num;
-    struct ncs_graf_card_t *cards;
+    struct ncs_graf_card_t cards[GRAF_CARDS_PER_PLAYER_COUNT];
     unsigned int pos[2];
     unsigned int size[2];
     unsigned int name_pos[2];
@@ -63,8 +59,7 @@ struct ncs_graf_player_t{
 struct ncs_graf_bank_t{
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char timer_text[GRAF_MAX_TIMER_TEXT_SIZE];
-    unsigned int card_num;
-    struct ncs_graf_card_t *cards;
+    struct ncs_graf_card_t cards[GRAF_CARDS_ON_TABLE_COUNT];
     unsigned int pos[2];
     unsigned int size[2];
     unsigned int money_pos[2];
@@ -96,48 +91,50 @@ struct ncs_graf_button_t{
 };
 
 struct ncs_graf_table_t{
-    struct ncs_graf_player_t** players;
-    struct ncs_graf_bank_t bank;
-    struct ncs_graf_input_t input;
-    struct ncs_graf_button_t exit_btn;
-    struct ncs_graf_button_t pass_btn;
-    WINDOW *msg_wnd;
-    unsigned int msg_pos[2];
-    unsigned int msg_size[2];
-    unsigned int card_size[2];
+	double top_player_size[2];
+	double side_player_size[2];
+	double bank_size[2];
+
+	int text_color;
+	int back_color;
+
+	int player_text_color;
+	int player_back_color;
+
+	int sel_player_text_color;
+	int sel_player_back_color;
+
+	int card_text_color;
+	int card_back_color;
+
+	int sel_card_text_color;
+	int sel_card_back_color;
+
+	int bank_text_color;
+	int bank_back_color;
+
+	int btn_text_color;
+	int btn_back_color;
+
+	struct ncs_graf_player_t players[GRAF_MAX_PLAYERS];
+	struct ncs_graf_bank_t bank;
+	struct ncs_graf_input_t input;
+	struct ncs_graf_button_t exit_btn;
+	struct ncs_graf_button_t pass_btn;
+	WINDOW *msg_wnd;
+	unsigned int msg_pos[2];
+	unsigned int msg_size[2];
+	unsigned int card_size[2];
 };
 
-void ncs_grafAutoInit(	struct graf_table_t*);
-
-void ncsGrafInitTable(	struct ncs_graf_table_t*,const struct graf_bank_t*,\
-			const int,const int);
-void ncsGrafInitPlayer(const struct ncs_graf_table_t*,\
-		    int,\
-		    int,const char*,\
-		    const char*,\
-		    const char*,\
-		    int,int,int);
-void ncsGrafSetCard(const struct ncs_graf_player_t*,\
-		int,int,const char*,const char*,\
-		int);
-void ncsGrafSetBankCard(const struct ncs_graf_bank_t*,\
-		int,int,const char*,const char*,\
-		int);
-void ncsStartGraf(struct ncs_graf_table_t*);
+int ncsSetColor(WINDOW *wnd,unsigned int TextColor,unsigned int BackColor);
+int ncsSetWndColor(WINDOW *wnd,unsigned int TextColor,unsigned int BackColor);
+void ncsPrintInWnd(WINDOW* wnd,const unsigned int *pos,const char *text);
 void ncsInitColorPairs();
-int ncsSetColor(unsigned int,unsigned int);
-int ncsSetWndColor(WINDOW*,unsigned int,unsigned int);
-void ncsPrintInWnd(WINDOW*,const unsigned int*,const char*);
-void ncsShow(const struct ncs_graf_table_t*);
-void ncsShowBank(const struct ncs_graf_table_t*);
-void ncsShowInput(const struct ncs_graf_table_t*);
-void ncsShowBtn(const struct ncs_graf_button_t*);
-void ncsEndGraf();
-
-void* ncsControlsFunc(void*);
-
-void ncsTempExit();
-void ncsTempBet(int sum);
-void ncsTempPass();
-
+void ncsResize(int signo);
+void ncsInitMainTable(struct graf_table_t *tbl);
+void ncsInitGame(struct graf_table_t *tbl);//инициализация
+void ncsSetGame(struct graf_table_t *tbl);
+void ncsClearPrint(WINDOW* wnd,unsigned int pos[2],char *text, int len);
+void ncsShow();
 #endif
