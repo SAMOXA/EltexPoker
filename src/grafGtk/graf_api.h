@@ -30,15 +30,12 @@ struct graf_player_t{
     char name[GRAF_MAX_NAME_SIZE];
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char status_text[GRAF_MAX_STATUS_TEXT_SIZE];
-    unsigned int card_num;
     struct graf_card_t cards[2];
-//  unsigned int index_pos;//0 - пользователь
 };
 
 struct graf_bank_t{
     char money_text[GRAF_MAX_MONEY_TEXT_SIZE];
     char timer_text[GRAF_MAX_TIMER_TEXT_SIZE];
-    unsigned int card_num;
     struct graf_card_t cards[5];
 };
 
