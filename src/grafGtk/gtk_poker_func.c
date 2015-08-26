@@ -430,7 +430,7 @@ void grafDrawAll(struct  graf_table_t* p) {
 	}
 }
 
-/*
+
 int main() {
 	struct  graf_table_t p;
 	int i;
@@ -467,9 +467,9 @@ int main() {
 		
 		p.players[i].cards[0].index_suit = 0;
 		p.players[i].cards[1].index_suit = 3;
-		/*if (i > 2)
+		if (i > 2)
 			p.bank.cards[i].index_suit = -1;
-		else *//*
+		else 
 		p.bank.cards[i].index_suit = 1;
 		p.bank.cards[i].val[0] = '0' + i + 5;
 		p.bank.cards[i].val[1] = '\0';
@@ -478,10 +478,10 @@ int main() {
 	p.bank.cards[i].val[1] = '\0';
 	p.bank.cards[i].index_suit = 1;
 	
-	p.players[2].selected = 1;	
+	p.players[2].selected = 1;
 	
 	grafDrawAll(&p);
 	
 	return 0;
 }
-*/
+
