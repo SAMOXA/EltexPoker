@@ -14,7 +14,6 @@
 
 @SET_MAKE@
 
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -89,8 +88,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = pokerServer$(EXEEXT)
-subdir = src/server
+bin_PROGRAMS = clientgtk$(EXEEXT)
+subdir = src/grafGtk
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_pthread.m4 \
 	$(top_srcdir)/m4/ax_with_curses.m4 $(top_srcdir)/configure.ac
@@ -101,27 +100,12 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-AR = ar
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libtestcorelogic_a_AR = $(AR) $(ARFLAGS)
-libtestcorelogic_a_LIBADD =
-am__dirstamp = $(am__leading_dot)dirstamp
-am_libtestcorelogic_a_OBJECTS = gameServer/shared.$(OBJEXT) \
-	gameServer/win.$(OBJEXT)
-libtestcorelogic_a_OBJECTS = $(am_libtestcorelogic_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_pokerServer_OBJECTS = main.$(OBJEXT) server_network.$(OBJEXT) \
-	events.$(OBJEXT) logic.$(OBJEXT) \
-	gameServer/gameLogic.$(OBJEXT) gameServer/win.$(OBJEXT) \
-	gameServer/shared.$(OBJEXT) gameServer/start.$(OBJEXT)
-pokerServer_OBJECTS = $(am_pokerServer_OBJECTS)
-pokerServer_LDADD = $(LDADD)
+am_clientgtk_OBJECTS = gtk_poker_main.$(OBJEXT)
+clientgtk_OBJECTS = $(am_clientgtk_OBJECTS)
+clientgtk_LDADD = $(LDADD)
+clientgtk_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -150,8 +134,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libtestcorelogic_a_SOURCES) $(pokerServer_SOURCES)
-DIST_SOURCES = $(libtestcorelogic_a_SOURCES) $(pokerServer_SOURCES)
+SOURCES = $(clientgtk_SOURCES)
+DIST_SOURCES = $(clientgtk_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -282,18 +266,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pokerServer_SOURCES = main.c ../global.h server_network.c \
-	server_network.h events.c events.h logic.c logic.h \
-	gameServer/gameLogic.c gameServer/gameLogic.h gameServer/win.c \
-	gameServer/win.h gameServer/shared.c gameServer/shared.h \
-	gameServer/start.c gameServer/start.h
-noinst_LIBRARIES = libtestcorelogic.a
-libtestcorelogic_a_SOURCES = gameServer/shared.c gameServer/shared.h \
-	gameServer/win.c gameServer/win.h
-AM_CFLAGS = -Wall -I$(top_builddir)/src -I$(top_builddir)/src/server \
-	-I$(top_builddir)/src/server/lobbiServer \
-	-I$(top_builddir)/src/server/gameServer -Wunused-function \
-	#static functions in modules warning
+clientgtk_SOURCES = gtk_poker_main.c graf_api.h graf_list.h gtk_header.h
+AM_CFLAGS = @GTK_CFLAGS@
+LDADD = @GTK_LIBS@
 all: all-am
 
 .SUFFIXES:
@@ -307,9 +282,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/server/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/grafGtk/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/server/Makefile
+	  $(AUTOMAKE) --gnu src/grafGtk/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -327,24 +302,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-gameServer/$(am__dirstamp):
-	@$(MKDIR_P) gameServer
-	@: > gameServer/$(am__dirstamp)
-gameServer/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) gameServer/$(DEPDIR)
-	@: > gameServer/$(DEPDIR)/$(am__dirstamp)
-gameServer/shared.$(OBJEXT): gameServer/$(am__dirstamp) \
-	gameServer/$(DEPDIR)/$(am__dirstamp)
-gameServer/win.$(OBJEXT): gameServer/$(am__dirstamp) \
-	gameServer/$(DEPDIR)/$(am__dirstamp)
-
-libtestcorelogic.a: $(libtestcorelogic_a_OBJECTS) $(libtestcorelogic_a_DEPENDENCIES) $(EXTRA_libtestcorelogic_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libtestcorelogic.a
-	$(AM_V_AR)$(libtestcorelogic_a_AR) libtestcorelogic.a $(libtestcorelogic_a_OBJECTS) $(libtestcorelogic_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libtestcorelogic.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -387,30 +344,18 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-gameServer/gameLogic.$(OBJEXT): gameServer/$(am__dirstamp) \
-	gameServer/$(DEPDIR)/$(am__dirstamp)
-gameServer/start.$(OBJEXT): gameServer/$(am__dirstamp) \
-	gameServer/$(DEPDIR)/$(am__dirstamp)
 
-pokerServer$(EXEEXT): $(pokerServer_OBJECTS) $(pokerServer_DEPENDENCIES) $(EXTRA_pokerServer_DEPENDENCIES) 
-	@rm -f pokerServer$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(pokerServer_OBJECTS) $(pokerServer_LDADD) $(LIBS)
+clientgtk$(EXEEXT): $(clientgtk_OBJECTS) $(clientgtk_DEPENDENCIES) $(EXTRA_clientgtk_DEPENDENCIES) 
+	@rm -f clientgtk$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(clientgtk_OBJECTS) $(clientgtk_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f gameServer/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/events.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server_network.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/gameLogic.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/shared.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/start.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gameServer/$(DEPDIR)/win.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk_poker_main.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -512,7 +457,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS)
+all-am: Makefile $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -543,19 +488,16 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f gameServer/$(DEPDIR)/$(am__dirstamp)
-	-rm -f gameServer/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -601,7 +543,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) gameServer/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -622,18 +564,18 @@ uninstall-am: uninstall-binPROGRAMS
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 

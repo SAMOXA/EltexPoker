@@ -626,6 +626,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+GTK_LIBS
+GTK_CFLAGS
 EGREP
 GREP
 CPP
@@ -2229,7 +2231,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-am__api_version='1.14'
+am__api_version='1.15'
 
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
@@ -2450,7 +2452,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -2778,8 +2780,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -6059,10 +6061,15 @@ fi
 done
 
 
-#AC_CHECK_LIB ([lpthread], [pthread_create])
+# AC_CHECK_LIB ([gtk+-3.0], [])
 #AC_CHECK_LIB ([lncursesw], [clear])
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
+GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
+GTK_LIBS=`pkg-config --libs gtk+-3.0`
+
+
+
+ac_config_files="$ac_config_files Makefile src/Makefile src/grafGtk/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -6799,6 +6806,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "src/grafGtk/Makefile") CONFIG_FILES="$CONFIG_FILES src/grafGtk/Makefile" ;;
     "src/client/Makefile") CONFIG_FILES="$CONFIG_FILES src/client/Makefile" ;;
     "src/server/Makefile") CONFIG_FILES="$CONFIG_FILES src/server/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;

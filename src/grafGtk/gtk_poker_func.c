@@ -25,6 +25,8 @@ void funcBet() {
 }
 
 void funcPass() {
+	
+	graf_pass_event();
 	return;
 }
 
