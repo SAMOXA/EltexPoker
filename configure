@@ -625,6 +625,8 @@ ac_includes_default="\
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+GTK_LIBS
+GTK_CFLAGS
 LIBOBJS
 EGREP
 GREP
@@ -6259,7 +6261,12 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
+GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
+GTK_LIBS=`pkg-config --libs gtk+-3.0`
+
+
+
+ac_config_files="$ac_config_files Makefile src/Makefile src/grafGtk/Makefile src/client/Makefile src/server/Makefile tests/Makefile tests/coreLogic/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -6996,6 +7003,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "src/grafGtk/Makefile") CONFIG_FILES="$CONFIG_FILES src/grafGtk/Makefile" ;;
     "src/client/Makefile") CONFIG_FILES="$CONFIG_FILES src/client/Makefile" ;;
     "src/server/Makefile") CONFIG_FILES="$CONFIG_FILES src/server/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;

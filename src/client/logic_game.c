@@ -198,7 +198,7 @@ void *printState(void *arg){
                 printf("%d count - %s",timerCounter, tempInput);
             }
         }else{
-            printf("\n\n");
+            printf("\n");
         }
         fflush(0);
         if(isFirstRun == 1){

@@ -93,10 +93,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__dirstamp = $(am__leading_dot)dirstamp
 am_pokerClient_OBJECTS = main.$(OBJEXT) logic_menu.$(OBJEXT) \
-	logic_game.$(OBJEXT) network.$(OBJEXT) graf/graf.$(OBJEXT) \
-	graf/graf_list.$(OBJEXT)
+	logic_game.$(OBJEXT) network.$(OBJEXT)
 pokerClient_OBJECTS = $(am_pokerClient_OBJECTS)
 pokerClient_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -176,6 +174,8 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 GREP = @GREP@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -257,8 +257,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pokerClient_SOURCES = main.c global.h logic_menu.c logic.h \
-	logic_game.c network.h network.c graf/graf.c graf/graf.h \
-	graf/graf_api.h graf/graf_list.c graf/graf_list.h
+	logic_game.c network.h network.c
+#pokerClient_SOURCES += graf/graf.c graf/graf.h graf/graf_api.h graf/graf_list.c graf/graf_list.h
 pokerClient_LDADD = @CURSES_LIB@
 AM_CFLAGS = $(PTHREAD_CFLAGS) -Wall -I$(top_builddir)/src \
 	-I$(top_builddir)/src/client -I$(top_builddir)/src/client/graf
@@ -338,16 +338,6 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-graf/$(am__dirstamp):
-	@$(MKDIR_P) graf
-	@: > graf/$(am__dirstamp)
-graf/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) graf/$(DEPDIR)
-	@: > graf/$(DEPDIR)/$(am__dirstamp)
-graf/graf.$(OBJEXT): graf/$(am__dirstamp) \
-	graf/$(DEPDIR)/$(am__dirstamp)
-graf/graf_list.$(OBJEXT): graf/$(am__dirstamp) \
-	graf/$(DEPDIR)/$(am__dirstamp)
 
 pokerClient$(EXEEXT): $(pokerClient_OBJECTS) $(pokerClient_DEPENDENCIES) $(EXTRA_pokerClient_DEPENDENCIES) 
 	@rm -f pokerClient$(EXEEXT)
@@ -355,7 +345,6 @@ pokerClient$(EXEEXT): $(pokerClient_OBJECTS) $(pokerClient_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f graf/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -364,8 +353,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logic_menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@graf/$(DEPDIR)/graf.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@graf/$(DEPDIR)/graf_list.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -498,8 +485,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f graf/$(DEPDIR)/$(am__dirstamp)
-	-rm -f graf/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -509,7 +494,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) graf/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -555,7 +540,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) graf/$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

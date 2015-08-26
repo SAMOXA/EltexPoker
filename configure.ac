@@ -36,11 +36,18 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([bzero inet_ntoa memmove memset select setlocale socket])
 
+GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
+GTK_LIBS=`pkg-config --libs gtk+-3.0`
+AC_SUBST([GTK_CFLAGS])
+AC_SUBST([GTK_LIBS])
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/grafGtk/Makefile
                  src/client/Makefile
                  src/server/Makefile
                  tests/Makefile
-                 tests/coreLogic/Makefile])
+                 tests/coreLogic/Makefile
+                 ])
 
 AC_OUTPUT
